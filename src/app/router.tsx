@@ -8,6 +8,10 @@ export const router = createBrowserRouter([
     children: [
       {
         path: '/',
+        element: <div>esta es la pagina informativa</div>,
+      },
+      {
+        path: '/ando_desafio_capri',
         element: <HomePage />,
       },
     ],
