@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { newsletterService } from '../../services/newsletter.service';
 import { useNavigate } from 'react-router-dom';
+import { healthService } from '../../services/health.service';
 
 const TARGET_DATE = new Date('2026-05-16T10:00:00');
 
@@ -98,6 +99,10 @@ export default function ComingSoon() {
   const isButtonDisabled = buttonStatus === 'loading';
 
   useEffect(() => {
+    healthService.health().catch((error) => {
+      console.error('Error de salud del backend:', error);
+    });
+
     const timeLeft = getTimeLeft();
 
     if (timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds === 0) {
