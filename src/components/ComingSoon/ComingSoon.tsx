@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
 import { newsletterService } from '../../services/newsletter.service';
 
-const HERO_IMAGE = 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=80';
-
 const TARGET_DATE = new Date('2026-05-30T10:00:00');
 
 const DEFAULT_BUTTON_TEXT = 'Quiero enterarme';
