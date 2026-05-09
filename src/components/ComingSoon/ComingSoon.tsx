@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { newsletterService } from '../../services/newsletter.service';
 
-const TARGET_DATE = new Date('2026-05-30T10:00:00');
+const TARGET_DATE = new Date('2026-05-16T10:00:00');
 
 const DEFAULT_BUTTON_TEXT = 'Quiero enterarme';
 
@@ -151,7 +151,7 @@ export default function ComingSoon() {
 
   return (
     <main className='min-h-screen w-full bg-earth-50 text-teal-900'>
-      <section className='mx-auto flex min-h-screen max-w-7xl flex-col px-4 py-6 sm:px-6 lg:px-8'>
+      <section className='mx-auto flex min-h-screen max-w-500 flex-col px-4 py-6 sm:px-6 lg:px-8'>
         <div className='relative h-70 overflow-hidden rounded-3xl shadow-xl sm:h-90 lg:h-107.5'>
           <img src={'./images/banner.jpeg'} alt='Paisaje de montaña y naturaleza outdoor' className='h-full w-full object-cover' />
 
@@ -222,7 +222,7 @@ export default function ComingSoon() {
                 </div>
               </div>
 
-              <p className='mt-5 text-center text-sm text-white/70'>30 de mayo de 2026 · 10:00 hs</p>
+              <p className='mt-5 text-center text-sm text-white/70'>16 de mayo de 2026 · 10:00 hs</p>
             </div>
 
             <div className='rounded-3xl border border-earth-100 bg-white p-6 shadow-xl sm:p-8'>
