@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port 3000",
-    "build": "node -e \"console.log('BUILD VITE_API_BASE_URL=', process.env.VITE_API_BASE_URL)\" && vite build",
+    "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "npm run build && wrangler pages dev",
     "deploy": "npm run build && wrangler pages deploy",
