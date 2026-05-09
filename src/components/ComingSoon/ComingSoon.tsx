@@ -153,10 +153,9 @@ export default function ComingSoon() {
 
   return (
     <main className='min-h-screen w-full bg-earth-50 text-teal-900'>
-      <section className='mx-auto flex min-h-screen max-w-6xl flex-col px-4 py-6 sm:px-6 lg:px-8'>
-        {/* Banner / Hero image */}
+      <section className='mx-auto flex min-h-screen max-w-7xl flex-col px-4 py-6 sm:px-6 lg:px-8'>
         <div className='relative h-70 overflow-hidden rounded-3xl shadow-xl sm:h-90 lg:h-107.5'>
-          <img src={HERO_IMAGE} alt='Paisaje de montaña y naturaleza outdoor' className='h-full w-full object-cover' />
+          <img src={'./images/banner.jpeg'} alt='Paisaje de montaña y naturaleza outdoor' className='h-full w-full object-cover' />
 
           <div className='absolute inset-0 bg-linear-to-t from-black/70 via-black/25 to-transparent' />
 
@@ -173,7 +172,6 @@ export default function ComingSoon() {
           </div>
         </div>
 
-        {/* Content */}
         <div className='grid flex-1 items-center gap-10 py-12 lg:grid-cols-[1.1fr_0.9fr] lg:py-16'>
           <div>
             <p className='mb-4 text-sm font-semibold uppercase tracking-[0.25em] text-teal-600'>
@@ -201,7 +199,6 @@ export default function ComingSoon() {
           </div>
 
           <div className='space-y-6'>
-            {/* Countdown */}
             <div className='rounded-3xl border border-teal-100 bg-teal-900 p-6 text-white shadow-xl sm:p-8'>
               <p className='text-center text-sm font-semibold uppercase tracking-[0.25em] text-earth-200'>Tiempo para la carrera</p>
 
@@ -230,7 +227,6 @@ export default function ComingSoon() {
               <p className='mt-5 text-center text-sm text-white/70'>30 de mayo de 2026 · 10:00 hs</p>
             </div>
 
-            {/* Email capture card */}
             <div className='rounded-3xl border border-earth-100 bg-white p-6 shadow-xl sm:p-8'>
               <h3 className='text-2xl font-bold text-teal-900'>Sumate antes del lanzamiento</h3>
 
