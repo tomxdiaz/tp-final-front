@@ -127,7 +127,7 @@ export default function ComingSoon() {
       setButtonStatus('loading');
       setButtonMessage('Registrando...');
 
-      const res = await newsletterService.suscribe({ email });
+      const res = await newsletterService.subscribe({ email });
 
       setButtonStatus('success');
       setButtonMessage(getApiMessage(res));
