@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
-import { newsletterService } from '../../services/newsletter.service';
+import { supabaseService } from '../../services/supabase.service';
 import { useNavigate } from 'react-router-dom';
-// import { healthService } from '../../services/health.service';
 
 const TARGET_DATE = new Date('2026-05-16T11:00:00');
 
@@ -42,67 +41,16 @@ function formatTime(value: number): string {
   return String(value).padStart(2, '0');
 }
 
-function getApiMessage(response: unknown): string {
-  if (response && typeof response === 'object' && 'message' in response && typeof response.message === 'string') {
-    return response.message;
-  }
-
-  if (
-    response &&
-    typeof response === 'object' &&
-    'data' in response &&
-    response.data &&
-    typeof response.data === 'object' &&
-    'message' in response.data &&
-    typeof response.data.message === 'string'
-  ) {
-    return response.data.message;
-  }
-
-  return 'Suscripción registrada correctamente';
-}
-
-function getErrorMessage(error: unknown): string {
-  if (
-    error &&
-    typeof error === 'object' &&
-    'response' in error &&
-    error.response &&
-    typeof error.response === 'object' &&
-    'data' in error.response &&
-    error.response.data &&
-    typeof error.response.data === 'object' &&
-    'message' in error.response.data
-  ) {
-    const message = error.response.data.message;
-
-    if (Array.isArray(message)) {
-      return message[0] ?? 'No pudimos registrar tu email';
-    }
-
-    if (typeof message === 'string') {
-      return message;
-    }
-  }
-
-  return 'No pudimos registrar tu email';
-}
-
 export default function ComingSoon() {
   const navigate = useNavigate();
   const [timeLeft, setTimeLeft] = useState<TimeLeft>(getTimeLeft);
   const [buttonStatus, setButtonStatus] = useState<ButtonStatus>('idle');
   const [buttonMessage, setButtonMessage] = useState(DEFAULT_BUTTON_TEXT);
-  // Cambiar a true para funcionamiento real del popup
   const [isPopupOpen, setIsPopupOpen] = useState(true);
 
-  const isButtonDisabled = buttonStatus === 'loading';
+  const isButtonDisabled = buttonStatus === 'loading' || buttonStatus === 'success';
 
   useEffect(() => {
-    // healthService.health().catch((error) => {
-    //   console.error('Error de salud del backend:', error);
-    // });
-
     const timeLeft = getTimeLeft();
 
     if (timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds === 0) {
@@ -118,14 +66,7 @@ export default function ComingSoon() {
     };
   }, [navigate]);
 
-  const resetButtonAfterDelay = () => {
-    window.setTimeout(() => {
-      setButtonStatus('idle');
-      setButtonMessage(DEFAULT_BUTTON_TEXT);
-    }, 3000);
-  };
-
-  const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (isButtonDisabled) return;
@@ -136,27 +77,25 @@ export default function ComingSoon() {
 
     if (!email || typeof email !== 'string') return;
 
-    try {
-      setButtonStatus('loading');
-      setButtonMessage('Registrando...');
+    setButtonStatus('success');
+    setButtonMessage('Registrado!');
 
-      const res = await newsletterService.subscribe({ email });
+    supabaseService
+      .subscribe({ email })
+      .then((res) => {
+        console.log('Suscripción registrada:', res);
+      })
+      .catch((error) => {
+        console.error('Error al suscribir:', error);
+      });
 
-      setButtonStatus('success');
-      setButtonMessage(getApiMessage(res));
+    form.reset();
 
-      form.reset();
+    window.setTimeout(() => {
       setIsPopupOpen(false);
-
-      resetButtonAfterDelay();
-    } catch (error) {
-      console.error('Error al suscribir:', error);
-
-      setButtonStatus('error');
-      setButtonMessage(getErrorMessage(error));
-
-      resetButtonAfterDelay();
-    }
+      setButtonStatus('idle');
+      setButtonMessage(DEFAULT_BUTTON_TEXT);
+    }, 3000);
   };
 
   const buttonClassName = {
@@ -222,10 +161,8 @@ export default function ComingSoon() {
 
           <div className='absolute bottom-0 left-0 right-0 p-6 sm:p-10'>
             <div className='flex flex-row items-center gap-4'>
-              {/* <h1 className='max-w-3xl text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl'>ANDO</h1> */}
               <img src={'./logos/ando.png'} alt='Logo Ando' className='h-18 sm:h-20 md:h-28 w-auto object-cover' />
 
-              {/* <h1 className='max-w-3xl text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl'>DESAFIO CAPRI</h1> */}
               <img src={'./logos/desafio_capri_blanco.png'} alt='Logo Desafío Capri' className='h-18 sm:h-20 md:h-28 w-auto object-cover' />
             </div>
 
