@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { AlertTriangle, MapPin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { supabaseService } from '../../services/supabase.service';
+import { healthService } from '../../services/health.service';
 
-const TARGET_DATE = new Date('2026-05-16T11:00:00');
+const TARGET_DATE = new Date('2026-05-16T10:00:00');
 
 type TimeLeft = {
   days: number;
@@ -11,10 +11,6 @@ type TimeLeft = {
   minutes: number;
   seconds: number;
 };
-
-type ButtonStatus = 'idle' | 'loading' | 'success' | 'error';
-
-const DEFAULT_BUTTON_TEXT = 'Siguiente';
 
 function getTimeLeft(): TimeLeft {
   const now = new Date().getTime();
@@ -45,13 +41,12 @@ function formatTime(value: number): string {
 export default function ComingSoon() {
   const navigate = useNavigate();
   const [timeLeft, setTimeLeft] = useState<TimeLeft>(getTimeLeft);
-  const [buttonStatus, setButtonStatus] = useState<ButtonStatus>('idle');
-  const [buttonMessage, setButtonMessage] = useState(DEFAULT_BUTTON_TEXT);
-  const [isPopupOpen, setIsPopupOpen] = useState(true);
-
-  const isButtonDisabled = buttonStatus === 'loading' || buttonStatus === 'success';
 
   useEffect(() => {
+    healthService.health().catch((error) => {
+      console.error('Error de salud del backend:', error);
+    });
+
     const timeLeft = getTimeLeft();
 
     if (timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds === 0) {
@@ -67,93 +62,8 @@ export default function ComingSoon() {
     };
   }, [navigate]);
 
-  const handleSubmit = (event: React.SubmitEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    if (isButtonDisabled) return;
-
-    const form = event.currentTarget;
-    const formData = new FormData(form);
-    const email = formData.get('email');
-
-    if (!email || typeof email !== 'string') return;
-
-    setButtonStatus('success');
-    setButtonMessage('Registrado!');
-
-    supabaseService
-      .subscribe({ email })
-      .then((res) => {
-        console.log('Suscripción registrada:', res);
-      })
-      .catch((error) => {
-        console.error('Error al suscribir:', error);
-      });
-
-    form.reset();
-
-    window.setTimeout(() => {
-      setIsPopupOpen(false);
-      setButtonStatus('idle');
-      setButtonMessage(DEFAULT_BUTTON_TEXT);
-    }, 3000);
-  };
-
-  const buttonClassName = {
-    idle: 'bg-teal-600 hover:bg-teal-700',
-    loading: 'cursor-not-allowed bg-sage-600',
-    success: 'bg-sage-600',
-    error: 'bg-red-600',
-  }[buttonStatus];
-
   return (
     <main className='min-h-screen w-full bg-earth-50 text-teal-900'>
-      {isPopupOpen && (
-        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm'>
-          <div className='w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl sm:p-8'>
-            <div className='w-full flex flex-row items-center justify-start gap-2'>
-              <img src={'./logos/ando.png'} alt='Logo Ando' className='h-22 sm:h-28 md:h-28 w-auto object-cover' />
-              <img src={'./logos/desafio_capri.png'} alt='Logo Desafío Capri' className='h-20 sm:h-24 md:h-24 w-auto object-cover' />
-            </div>
-
-            <h2 className='mt-3 text-3xl font-bold text-teal-800'>
-              <span className='text-sage-800 italic'>Ando</span> y <span className='text-earth-600 italic'>Desafío Capri</span> te tienen
-              una propuesta
-            </h2>
-
-            <p className='mt-3 text-sm leading-6 text-sage-800'>
-              Dejanos tu email para recibir novedades sobre <span className='text-teal-600 italic font-semibold'>ANDO</span>, la nueva
-              plataforma que conecta a turistas con las mejores actividades outdoor de la región.
-            </p>
-
-            <form className='mt-6 space-y-4' onSubmit={handleSubmit}>
-              <label htmlFor='popup-email' className='block text-sm font-medium text-teal-900'>
-                Email
-              </label>
-
-              <input
-                id='popup-email'
-                name='email'
-                type='email'
-                required
-                disabled={isButtonDisabled}
-                placeholder='tuemail@ejemplo.com'
-                className='w-full rounded-2xl border border-teal-100 bg-earth-50 px-4 py-3 text-base text-teal-900 outline-none transition placeholder:text-sage-800/60 disabled:cursor-not-allowed disabled:opacity-70 focus:border-transparent focus:ring-4 focus:ring-teal-600/20'
-              />
-
-              <button
-                type='submit'
-                disabled={isButtonDisabled}
-                className={`w-full rounded-2xl px-5 py-3 text-base font-semibold text-white shadow-md transition active:scale-[0.99] disabled:scale-100 ${buttonClassName}`}>
-                {buttonMessage}
-              </button>
-            </form>
-
-            <p className='mt-4 text-xs leading-5 text-sage-800'>Sin spam. Solo novedades importantes sobre el lanzamiento del proyecto.</p>
-          </div>
-        </div>
-      )}
-
       <section className='mx-auto flex min-h-screen max-w-500 flex-col'>
         <div className='relative h-70 overflow-hidden shadow-xl sm:h-90 lg:h-107.5'>
           <img src={'./images/banner.jpeg'} alt='Paisaje de montaña y naturaleza outdoor' className='h-full w-full object-cover' />
@@ -162,8 +72,10 @@ export default function ComingSoon() {
 
           <div className='absolute bottom-0 left-0 right-0 p-6 sm:p-10'>
             <div className='flex flex-row items-center gap-4'>
+              {/* <h1 className='max-w-3xl text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl'>ANDO</h1> */}
               <img src={'./logos/ando.png'} alt='Logo Ando' className='h-18 sm:h-20 md:h-28 w-auto object-cover' />
-            </div>
+
+              </div>
 
             <p className='mt-3 max-w-2xl text-base leading-7 text-white/90 sm:text-lg'>
               La forma simple de descubrir, comparar y reservar experiencias outdoor en Esquel.
@@ -208,6 +120,7 @@ export default function ComingSoon() {
 
           <div className='rounded-3xl border border-teal-100 bg-white p-6 shadow-xl sm:p-8'>
             <div className='flex items-start gap-3'>
+          
               <div>
                 <p className='text-sm font-semibold uppercase tracking-[0.2em] text-teal-600'>Ando Info</p>
                 <h3 className='mt-2 text-2xl font-bold text-teal-900'>Cronograma y Puntos Clave</h3>
@@ -224,22 +137,16 @@ export default function ComingSoon() {
                 <ul className='mt-3 space-y-3'>
                   <li>
                     <p className='font-semibold text-teal-900'>Largada: 11:00 hs (Puntual) en El Tambo.</p>
-                    <p className='mt-1 text-sm text-sage-700'>
-                      Nota: Se debe asistir con antelacion para le control de chips y un buen calentamiento.
-                    </p>
+                    <p className='mt-1 text-sm text-sage-700'>Nota: Se debe asistir con antelacion para le control de chips y un buen calentamiento.</p>
                   </li>
                   <li>
                     <p className='font-semibold text-teal-900'>Llegada y Premiación: En 25 de Mayo y Rivadavia.</p>
-                    <p className='mt-1 text-sm text-sage-700'>
-                      Horario: Premiación estimada a las 15:00 hs (sujeta a cambios informados por los locutores del evento).
-                    </p>
+                    <p className='mt-1 text-sm text-sage-700'>Horario: Premiación estimada a las 15:00 hs (sujeta a cambios informados por los locutores del evento).</p>
                   </li>
                   <li>
                     <p className='font-semibold text-teal-900'>Capri Fest: 22:00 hs en VER DISCO CLUB.</p>
                     <p className='mt-1 text-sm text-sage-700'>Acceso: Libre y gratuito para corredores y acompañantes.</p>
-                    <p className='mt-1 text-sm text-sage-700'>
-                      Importante: Menores hasta las 00:00 hs. Corredores deben llevar la pulsera del kit para participar de los sorteos.
-                    </p>
+                    <p className='mt-1 text-sm text-sage-700'>Importante: Menores hasta las 00:00 hs. Corredores deben llevar la pulsera del kit para participar de los sorteos.</p>
                   </li>
                 </ul>
               </div>
@@ -247,7 +154,7 @@ export default function ComingSoon() {
                 <iframe
                   title='Mapa de la largada'
                   src='https://www.google.com/maps?q=-42.87918,-71.28880&z=16&output=embed'
-                  className='h-100 w-full border-0'
+                  className='h-[400px] w-full border-0'
                   allowFullScreen
                   loading='lazy'
                   referrerPolicy='no-referrer-when-downgrade'
@@ -259,61 +166,39 @@ export default function ComingSoon() {
                   <AlertTriangle className='h-4 w-4' />
                   <p className='text-sm font-semibold'>Guía del Corredor: Ando Tips</p>
                 </div>
-                <p className='mt-3 text-sm text-sage-700'>
-                  La seguridad y el respeto por el entorno son nuestra prioridad. Seguí estas instrucciones para garantizar tu
-                  clasificación:
-                </p>
+                <p className='mt-3 text-sm text-sage-700'>La seguridad y el respeto por el entorno son nuestra prioridad. Seguí estas instrucciones para garantizar tu clasificación:</p>
                 <ul className='mt-3 space-y-3'>
                   <li>
                     <p className='font-semibold text-teal-900'>Ando Tip | Identidad y Clasificación</p>
-                    <p className='mt-1 text-sm text-sage-700'>
-                      El dorsal debe estar siempre al frente y visible sobre cualquier prenda. No lo coloques en la espalda. Tené en cuenta
-                      que perder el dorsal o no llevarlo correctamente implica la descalificación inmediata de la carrera.
-                    </p>
+                    <p className='mt-1 text-sm text-sage-700'>El dorsal debe estar siempre al frente y visible sobre cualquier prenda. No lo coloques en la espalda. Tené en cuenta que perder el dorsal o no llevarlo correctamente implica la descalificación inmediata de la carrera.</p>
                   </li>
                   <li>
                     <p className='font-semibold text-teal-900'>Ando Tip | Navegación y Seguridad</p>
-                    <p className='mt-1 text-sm text-sage-700'>
-                      El circuito está marcado para que siempre puedas ver de una cinta a la otra. Si avanzás unos metros y no visualizás la
-                      próxima cinta flúor, detenete y volvé a la anterior para retomar el camino correcto. No improvises senderos.
-                    </p>
+                    <p className='mt-1 text-sm text-sage-700'>El circuito está marcado para que siempre puedas ver de una cinta a la otra. Si avanzás unos metros y no visualizás la próxima cinta flúor, detenete y volvé a la anterior para retomar el camino correcto. No improvises senderos.</p>
                   </li>
                   <li>
                     <p className='font-semibold text-teal-900'>Ando Tip | Compromiso Ambiental</p>
-                    <p className='mt-1 text-sm text-sage-700'>
-                      Huella cero. Está estrictamente prohibido arrojar envoltorios o geles en el recorrido. Usá los cestos en los Puestos
-                      de Abastecimiento. Cuidar el cerro es responsabilidad de todos.
-                    </p>
+                    <p className='mt-1 text-sm text-sage-700'>Huella cero. Está estrictamente prohibido arrojar envoltorios o geles en el recorrido. Usá los cestos en los Puestos de Abastecimiento. Cuidar el cerro es responsabilidad de todos.</p>
                   </li>
                   <li>
                     <p className='font-semibold text-teal-900'>Ando Tip | Hidratación Responsable</p>
-                    <p className='mt-1 text-sm text-sage-700'>
-                      Sé autosuficiente. No habrá vasos descartables en los puestos. Asegurate de llevar tu propio recipiente (soft flask,
-                      mochila o botellita) para recargar.
-                    </p>
+                    <p className='mt-1 text-sm text-sage-700'>Sé autosuficiente. No habrá vasos descartables en los puestos. Asegurate de llevar tu propio recipiente (soft flask, mochila o botellita) para recargar.</p>
                   </li>
                 </ul>
               </div>
 
               <div className='rounded-2xl border border-sage-100 bg-white p-4'>
                 <p className='text-sm font-semibold text-teal-900'>Explorá con confianza. Explorá con Ando.</p>
-                <p className='mt-3 text-sm text-sage-700'>
-                  Ando es mucho más que una plataforma: es nuestra insignia de seguridad, compromiso ambiental y calidad en cada aventura.
-                  Nacimos en Esquel para ser el puente entre quienes buscan descubrir la inmensidad de la Patagonia y los prestadores
-                  locales que mejor conocen sus secretos.
-                </p>
-                <p className='mt-3 text-sm text-sage-700'>
-                  Creemos en un turismo que cuida lo que amamos. Por eso, cada experiencia conectada por Ando garantiza estándares de
-                  seguridad profesional y un respeto absoluto por nuestro entorno natural.
-                </p>
-                <p className='mt-3 text-sm text-sage-700'>
-                  Hoy te acompañamos en el Desafío Capri. Mañana, te acompañamos a descubrir tu próxima meta.
-                </p>
+                <p className='mt-3 text-sm text-sage-700'>Ando es mucho más que una plataforma: es nuestra insignia de seguridad, compromiso ambiental y calidad en cada aventura. Nacimos en Esquel para ser el puente entre quienes buscan descubrir la inmensidad de la Patagonia y los prestadores locales que mejor conocen sus secretos.</p>
+                <p className='mt-3 text-sm text-sage-700'>Creemos en un turismo que cuida lo que amamos. Por eso, cada experiencia conectada por Ando garantiza estándares de seguridad profesional y un respeto absoluto por nuestro entorno natural.</p>
+                <p className='mt-3 text-sm text-sage-700'>Hoy te acompañamos en el Desafío Capri. Mañana, te acompañamos a descubrir tu próxima meta.</p>
               </div>
             </div>
           </div>
         </div>
       </section>
+
+      
     </main>
   );
 }
