@@ -82,12 +82,12 @@ export default function ComingSoon() {
     setButtonMessage('Registrado!');
 
     supabaseService
-      .subscribe({ email })
-      .then((res) => {
-        console.log('Suscripción registrada:', res);
+      .subscribe(email)
+      .then(() => {
+        console.log('Suscripción registrada');
       })
-      .catch((error) => {
-        console.error('Error al suscribir:', error);
+      .catch(() => {
+        console.error('Error al suscribir');
       });
 
     form.reset();
