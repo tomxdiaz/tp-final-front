@@ -107,7 +107,7 @@ export default function ComingSoon() {
   }[buttonStatus];
 
   return (
-    <main className='min-h-screen w-full bg-earth-50 text-teal-900'>
+    <main className='min-h-screen w-fullbg-earth-50 text-teal-900'>
       {isPopupOpen && (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm'>
           <div className='w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl sm:p-8'>
@@ -154,7 +154,7 @@ export default function ComingSoon() {
         </div>
       )}
 
-      <section className='mx-auto flex min-h-screen max-w-500 flex-col'>
+      <section className='mx-auto flex min-h-screen flex-col'>
         <div className='relative h-70 overflow-hidden shadow-xl sm:h-90 lg:h-107.5'>
           <img src={'./images/banner.jpeg'} alt='Paisaje de montaña y naturaleza outdoor' className='h-full w-full object-cover' />
 
@@ -171,7 +171,7 @@ export default function ComingSoon() {
           </div>
         </div>
 
-        <div className='flex flex-1 flex-col gap-6 p-6 py-6 lg:py-16'>
+        <div className='flex flex-1 flex-col gap-6 p-6 py-6 lg:py-16 max-w-400 m-auto'>
           <div className='flex flex-col items-center gap-4 rounded-3xl border border-sage-100 bg-teal-800 p-6 text-white shadow-xl sm:p-8'>
             <img src={'./logos/desafio_capri_blanco.png'} alt='Logo Desafio Capri' className='h-38 w-auto object-cover' />
 
@@ -202,7 +202,7 @@ export default function ComingSoon() {
                 </div>
               </div>
 
-              <p className='mt-5 text-center text-sm text-white/70'>16 de mayo de 2026 · 10:00 hs</p>
+              <p className='mt-5 text-center text-sm text-white/70'>16 de mayo de 2026 · 11:00 hs</p>
             </div>
           </div>
 
