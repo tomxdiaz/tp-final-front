@@ -74,8 +74,7 @@ export default function ComingSoon() {
             <div className='flex flex-row items-center gap-4'>
               {/* <h1 className='max-w-3xl text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl'>ANDO</h1> */}
               <img src={'./logos/ando.png'} alt='Logo Ando' className='h-18 sm:h-20 md:h-28 w-auto object-cover' />
-
-              </div>
+            </div>
 
             <p className='mt-3 max-w-2xl text-base leading-7 text-white/90 sm:text-lg'>
               La forma simple de descubrir, comparar y reservar experiencias outdoor en Esquel.
@@ -120,7 +119,6 @@ export default function ComingSoon() {
 
           <div className='rounded-3xl border border-teal-100 bg-white p-6 shadow-xl sm:p-8'>
             <div className='flex items-start gap-3'>
-          
               <div>
                 <p className='text-sm font-semibold uppercase tracking-[0.2em] text-teal-600'>Ando Info</p>
                 <h3 className='mt-2 text-2xl font-bold text-teal-900'>Cronograma y Puntos Clave</h3>
@@ -137,16 +135,22 @@ export default function ComingSoon() {
                 <ul className='mt-3 space-y-3'>
                   <li>
                     <p className='font-semibold text-teal-900'>Largada: 11:00 hs (Puntual) en El Tambo.</p>
-                    <p className='mt-1 text-sm text-sage-700'>Nota: Se debe asistir con antelacion para le control de chips y un buen calentamiento.</p>
+                    <p className='mt-1 text-sm text-sage-700'>
+                      Nota: Se debe asistir con antelacion para le control de chips y un buen calentamiento.
+                    </p>
                   </li>
                   <li>
                     <p className='font-semibold text-teal-900'>Llegada y Premiación: En 25 de Mayo y Rivadavia.</p>
-                    <p className='mt-1 text-sm text-sage-700'>Horario: Premiación estimada a las 15:00 hs (sujeta a cambios informados por los locutores del evento).</p>
+                    <p className='mt-1 text-sm text-sage-700'>
+                      Horario: Premiación estimada a las 15:00 hs (sujeta a cambios informados por los locutores del evento).
+                    </p>
                   </li>
                   <li>
                     <p className='font-semibold text-teal-900'>Capri Fest: 22:00 hs en VER DISCO CLUB.</p>
                     <p className='mt-1 text-sm text-sage-700'>Acceso: Libre y gratuito para corredores y acompañantes.</p>
-                    <p className='mt-1 text-sm text-sage-700'>Importante: Menores hasta las 00:00 hs. Corredores deben llevar la pulsera del kit para participar de los sorteos.</p>
+                    <p className='mt-1 text-sm text-sage-700'>
+                      Importante: Menores hasta las 00:00 hs. Corredores deben llevar la pulsera del kit para participar de los sorteos.
+                    </p>
                   </li>
                 </ul>
               </div>
@@ -154,7 +158,7 @@ export default function ComingSoon() {
                 <iframe
                   title='Mapa de la largada'
                   src='https://www.google.com/maps?q=-42.87918,-71.28880&z=16&output=embed'
-                  className='h-[400px] w-full border-0'
+                  className='h-100 w-full border-0'
                   allowFullScreen
                   loading='lazy'
                   referrerPolicy='no-referrer-when-downgrade'
@@ -166,39 +170,61 @@ export default function ComingSoon() {
                   <AlertTriangle className='h-4 w-4' />
                   <p className='text-sm font-semibold'>Guía del Corredor: Ando Tips</p>
                 </div>
-                <p className='mt-3 text-sm text-sage-700'>La seguridad y el respeto por el entorno son nuestra prioridad. Seguí estas instrucciones para garantizar tu clasificación:</p>
+                <p className='mt-3 text-sm text-sage-700'>
+                  La seguridad y el respeto por el entorno son nuestra prioridad. Seguí estas instrucciones para garantizar tu
+                  clasificación:
+                </p>
                 <ul className='mt-3 space-y-3'>
                   <li>
                     <p className='font-semibold text-teal-900'>Ando Tip | Identidad y Clasificación</p>
-                    <p className='mt-1 text-sm text-sage-700'>El dorsal debe estar siempre al frente y visible sobre cualquier prenda. No lo coloques en la espalda. Tené en cuenta que perder el dorsal o no llevarlo correctamente implica la descalificación inmediata de la carrera.</p>
+                    <p className='mt-1 text-sm text-sage-700'>
+                      El dorsal debe estar siempre al frente y visible sobre cualquier prenda. No lo coloques en la espalda. Tené en cuenta
+                      que perder el dorsal o no llevarlo correctamente implica la descalificación inmediata de la carrera.
+                    </p>
                   </li>
                   <li>
                     <p className='font-semibold text-teal-900'>Ando Tip | Navegación y Seguridad</p>
-                    <p className='mt-1 text-sm text-sage-700'>El circuito está marcado para que siempre puedas ver de una cinta a la otra. Si avanzás unos metros y no visualizás la próxima cinta flúor, detenete y volvé a la anterior para retomar el camino correcto. No improvises senderos.</p>
+                    <p className='mt-1 text-sm text-sage-700'>
+                      El circuito está marcado para que siempre puedas ver de una cinta a la otra. Si avanzás unos metros y no visualizás la
+                      próxima cinta flúor, detenete y volvé a la anterior para retomar el camino correcto. No improvises senderos.
+                    </p>
                   </li>
                   <li>
                     <p className='font-semibold text-teal-900'>Ando Tip | Compromiso Ambiental</p>
-                    <p className='mt-1 text-sm text-sage-700'>Huella cero. Está estrictamente prohibido arrojar envoltorios o geles en el recorrido. Usá los cestos en los Puestos de Abastecimiento. Cuidar el cerro es responsabilidad de todos.</p>
+                    <p className='mt-1 text-sm text-sage-700'>
+                      Huella cero. Está estrictamente prohibido arrojar envoltorios o geles en el recorrido. Usá los cestos en los Puestos
+                      de Abastecimiento. Cuidar el cerro es responsabilidad de todos.
+                    </p>
                   </li>
                   <li>
                     <p className='font-semibold text-teal-900'>Ando Tip | Hidratación Responsable</p>
-                    <p className='mt-1 text-sm text-sage-700'>Sé autosuficiente. No habrá vasos descartables en los puestos. Asegurate de llevar tu propio recipiente (soft flask, mochila o botellita) para recargar.</p>
+                    <p className='mt-1 text-sm text-sage-700'>
+                      Sé autosuficiente. No habrá vasos descartables en los puestos. Asegurate de llevar tu propio recipiente (soft flask,
+                      mochila o botellita) para recargar.
+                    </p>
                   </li>
                 </ul>
               </div>
 
               <div className='rounded-2xl border border-sage-100 bg-white p-4'>
                 <p className='text-sm font-semibold text-teal-900'>Explorá con confianza. Explorá con Ando.</p>
-                <p className='mt-3 text-sm text-sage-700'>Ando es mucho más que una plataforma: es nuestra insignia de seguridad, compromiso ambiental y calidad en cada aventura. Nacimos en Esquel para ser el puente entre quienes buscan descubrir la inmensidad de la Patagonia y los prestadores locales que mejor conocen sus secretos.</p>
-                <p className='mt-3 text-sm text-sage-700'>Creemos en un turismo que cuida lo que amamos. Por eso, cada experiencia conectada por Ando garantiza estándares de seguridad profesional y un respeto absoluto por nuestro entorno natural.</p>
-                <p className='mt-3 text-sm text-sage-700'>Hoy te acompañamos en el Desafío Capri. Mañana, te acompañamos a descubrir tu próxima meta.</p>
+                <p className='mt-3 text-sm text-sage-700'>
+                  Ando es mucho más que una plataforma: es nuestra insignia de seguridad, compromiso ambiental y calidad en cada aventura.
+                  Nacimos en Esquel para ser el puente entre quienes buscan descubrir la inmensidad de la Patagonia y los prestadores
+                  locales que mejor conocen sus secretos.
+                </p>
+                <p className='mt-3 text-sm text-sage-700'>
+                  Creemos en un turismo que cuida lo que amamos. Por eso, cada experiencia conectada por Ando garantiza estándares de
+                  seguridad profesional y un respeto absoluto por nuestro entorno natural.
+                </p>
+                <p className='mt-3 text-sm text-sage-700'>
+                  Hoy te acompañamos en el Desafío Capri. Mañana, te acompañamos a descubrir tu próxima meta.
+                </p>
               </div>
             </div>
           </div>
         </div>
       </section>
-
-      
     </main>
   );
 }
