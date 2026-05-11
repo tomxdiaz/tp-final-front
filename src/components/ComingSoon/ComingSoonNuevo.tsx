@@ -120,10 +120,7 @@ export default function ComingSoon() {
 
           <div className='rounded-3xl border border-teal-100 bg-white p-6 shadow-xl sm:p-8'>
             <div className='flex items-start gap-3'>
-              <div className='rounded-2xl bg-teal-900 p-2 text-white'>
-                <AlertTriangle className='h-5 w-5' />
-              </div>
-
+          
               <div>
                 <p className='text-sm font-semibold uppercase tracking-[0.2em] text-teal-600'>Ando Info</p>
                 <h3 className='mt-2 text-2xl font-bold text-teal-900'>Cronograma y Puntos Clave</h3>
@@ -152,6 +149,16 @@ export default function ComingSoon() {
                     <p className='mt-1 text-sm text-sage-700'>Importante: Menores hasta las 00:00 hs. Corredores deben llevar la pulsera del kit para participar de los sorteos.</p>
                   </li>
                 </ul>
+              </div>
+              <div className='mt-6 w-full'>
+                <iframe
+                  title='Mapa de la largada'
+                  src='https://www.google.com/maps?q=-42.87918,-71.28880&z=16&output=embed'
+                  className='h-[400px] w-full border-0'
+                  allowFullScreen
+                  loading='lazy'
+                  referrerPolicy='no-referrer-when-downgrade'
+                />
               </div>
 
               <div className='rounded-2xl border border-sage-100 bg-white p-4'>
@@ -190,6 +197,8 @@ export default function ComingSoon() {
           </div>
         </div>
       </section>
+
+      
     </main>
   );
 }
