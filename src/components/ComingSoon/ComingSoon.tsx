@@ -157,7 +157,7 @@ export default function ComingSoon() {
         <div className='relative overflow-hidden rounded-none bg-white shadow-lg'>
           <div className='relative h-107.5'>
             <img
-              src={'./images/hero.jpg'}
+              src={'./images/hero_image.jpg'}
               alt='Paisaje de montaña y naturaleza outdoor'
               className='inset-0 h-full w-full object-cover object-[50%100%]'
             />
