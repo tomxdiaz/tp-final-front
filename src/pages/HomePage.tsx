@@ -1,7 +1,7 @@
-import ComingSoon from '../components/ComingSoon/ComingSoon';
+import Home from '../components/Home/Home';
 
 const HomePage = () => {
-  return <ComingSoon />;
+  return <Home />;
 };
 
 export default HomePage;

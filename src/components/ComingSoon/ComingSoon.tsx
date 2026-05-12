@@ -159,7 +159,7 @@ export default function ComingSoon() {
             <img
               src={'./images/hero.jpg'}
               alt='Paisaje de montaña y naturaleza outdoor'
-              className='absolute inset-0 h-full w-full object-cover object-[50%100%]'
+              className='inset-0 h-full w-full object-cover object-[50%100%]'
             />
 
             <div className='absolute inset-0 bg-linear-to-t from-black/90 via-black/30 to-transparent' />
