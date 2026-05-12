@@ -155,7 +155,7 @@ export default function ComingSoon() {
 
       <section className='relative left-1/2 w-full -translate-x-1/2'>
         <div className='relative overflow-hidden rounded-none bg-white shadow-lg'>
-          <div className='relative h-107.5'>
+          <div className='relative h-80 md:h-105'>
             <img
               src={'./images/hero_image.jpg'}
               alt='Paisaje de montaña y naturaleza outdoor'
