@@ -154,7 +154,7 @@ export default function ComingSoon() {
         </div>
       )}
 
-      <section className='mx-auto flex min-h-screen w-full max-w-[460px] flex-col gap-4 px-4 pb-10 pt-0 sm:px-5'>
+      <section className='mx-auto flex min-h-screen w-full max-w-[1200px] flex-col gap-4 px-4 pb-10 pt-0 sm:px-5'>
         <section className='relative w-screen left-1/2 -translate-x-1/2'>
           <div className='relative overflow-hidden rounded-none bg-white shadow-lg'>
             <div className='relative h-[430px]'>
@@ -215,7 +215,7 @@ export default function ComingSoon() {
           </div>
 
           <div className='relative z-10 -mt-4 px-4'>
-            <div className='mx-auto min-h-[104px] max-w-[420px] rounded-[18px] bg-teal-700 px-3 py-3.5 text-white shadow-md'>
+            <div className='mx-auto min-h-[104px] max-w-[600px] rounded-[18px] bg-teal-700 px-3 py-3.5 text-white shadow-md'>
               <img
                 src={'./logos/desafio_capri_blanco.png'}
                 alt='Logo Desafio Capri'
@@ -342,7 +342,7 @@ export default function ComingSoon() {
               <div className='relative flex items-stretch gap-0'>
                 <div className='relative flex w-12 shrink-0 items-center justify-center'>
                   {/* Línea horizontal */}
-                  <span className='absolute left-[40px] top-1/2 z-0 h-[2.5px] w-[50px] -translate-y-1/2 bg-teal-400' />
+                  <span className='absolute left-10 top-1/2 z-0 h-[2.5px] w-12.5 -translate-y-1/2 bg-teal-400' />
                   {/* Punto bullseye verde */}
                   <div className='relative z-10 flex h-4 w-4 items-center justify-center rounded-full border-[2.5px] border-teal-600 bg-transparent'>
                     <div className='relative z-10 h-1.5 w-1.5 rounded-full bg-teal-600' />
@@ -353,13 +353,13 @@ export default function ComingSoon() {
                 <div className='relative z-0 flex items-center justify-center w-2 shrink-0' />
 
                 <div className='relative flex-1 pl-4'>
-                  <div className='absolute left-[-4px] top-1/2 z-10 -translate-y-1/2 flex h-[50px] w-[50px] items-center justify-center rounded-full bg-[#EAEFE9]'>
-                    <div className='flex h-[36px] w-[36px] items-center justify-center rounded-full bg-teal-400 text-white shadow-sm'>
+                  <div className='absolute -left-1 top-1/2 z-10 -translate-y-1/2 flex h-12.5 w-12.5 items-center justify-center rounded-full bg-[#EAEFE9]'>
+                    <div className='flex h-9 w-9 items-center justify-center rounded-full bg-teal-400 text-white shadow-sm'>
                       <Music className='h-4 w-4' strokeWidth={2.2} />
                     </div>
                   </div>
 
-                  <div className='min-h-[64px] rounded-[12px] border border-teal-100 bg-teal-50 py-3 pl-[54px] pr-4'>
+                  <div className='min-h-16 rounded-xl border border-teal-100 bg-teal-50 py-3 pl-13.5 pr-4'>
                     <p className='text-[13px] font-bold text-teal-800'>Capri Fest: 22:00 hs en VER DISCO CLUB.</p>
                     <p className='mt-0.5 text-[12px] text-teal-700'>
                       Acceso libre y gratuito para corredores y acompañantes.
@@ -375,13 +375,13 @@ export default function ComingSoon() {
           </div>
         </section>
 
-        <section className='rounded-[12px] bg-white p-4 shadow-sm'>
+        <section className='rounded-xl bg-white p-4 shadow-sm'>
           <div className='mb-3 flex items-center gap-2'>
-            <MapPin className='h-[18px] w-[18px] text-earth-900' />
+            <MapPin className='h-4.5 w-4.5 text-earth-900' />
             <h2 className='text-[15px] font-bold text-earth-900'>Ubicación</h2>
           </div>
 
-          <div className='flex flex-col md:flex-row overflow-hidden rounded-[10px] shadow-md bg-earth-50'>
+          <div className='flex flex-col overflow-hidden rounded-[10px] shadow-md bg-earth-50'>
             {/* Left Column */}
             <div className='flex flex-1 items-center justify-between gap-4 p-4 pl-5'>
               <div className='flex flex-col justify-center'>
@@ -393,17 +393,17 @@ export default function ComingSoon() {
                 href='https://www.google.com/maps/search/?api=1&query=-42.87940096434897,-71.28898438152648'
                 target='_blank'
                 rel='noopener noreferrer'
-                className='flex shrink-0 items-center gap-2 rounded-[20px] shadow-sm px-4 py-[7px] transition-colors bg-earth-200'>
+                className='flex shrink-0 items-center gap-2 rounded-[20px] shadow-sm px-4 py-1.75 transition-colors bg-earth-200'>
                 <Navigation className='h-3.5 w-3.5 text-earth-900' />
                 <span className='text-[11px] font-bold text-earth-900 tracking-[0.02em]'>ABRIR EN MAPS</span>
               </a>
             </div>
 
             {/* Right Column (Map) */}
-            <div className='relative h-[130px] w-full shrink-0 overflow-hidden border-t border-[#E9F0E9] md:h-auto md:min-h-[130px] md:w-[50%] md:border-l md:border-t-0'>
+            <div className='relative h-32.5 md:h-75 w-full shrink-0 overflow-hidden border-t border-[#E9F0E9] md:border-l md:border-t-0'>
               <iframe
                 src='https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d517.5858036615381!2d-71.28898438152648!3d-42.87940096434897!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e1!3m2!1ses!ar!4v1778593929524!5m2!1ses!ar'
-                className='absolute left-[-2px] top-[-65px] h-[calc(100%+100px)] w-[calc(100%+4px)] pointer-events-none'
+                className='absolute h-full w-[calc(100%+4px)] pointer-events-none'
                 style={{ border: 0 }}
                 allowFullScreen={false}
                 loading='lazy'
