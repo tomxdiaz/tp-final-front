@@ -111,7 +111,7 @@ export default function ComingSoon() {
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm'>
           <div className='w-full max-w-md rounded-7 border border-sage-100 bg-white p-6 shadow-2xl sm:p-8'>
             <div className='flex w-full flex-row items-center justify-start gap-2'>
-              <img src={'./logos/ando.png'} alt='Logo Ando' className='h-22 w-auto object-cover sm:h-28 md:h-28' />
+              <img src={'./logos/logo_ando.png'} alt='Logo Ando' className='h-22 w-auto object-cover sm:h-28 md:h-28' />
               <img src={'./logos/desafio_capri.png'} alt='Logo Desafío Capri' className='h-20 w-auto object-cover sm:h-24 md:h-24' />
             </div>
 
