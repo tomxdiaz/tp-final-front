@@ -264,7 +264,7 @@ export default function ComingSoon() {
 
                 <div className='relative flex-1'>
                   <div className='flex items-center gap-4 min-h-16 rounded-xl border border-teal-100 bg-teal-50 p-2'>
-                    <div className='flex h-9 w-9 items-center justify-center rounded-full bg-teal-400 text-white shadow-sm'>
+                    <div className='flex h-9 w-9 items-center justify-center rounded-full bg-teal-400 text-white shadow-sm shrink-0'>
                       <Flag className='h-4 w-4' strokeWidth={2.2} />
                     </div>
                     <div>
@@ -285,7 +285,7 @@ export default function ComingSoon() {
 
                 <div className='relative flex-1'>
                   <div className='flex items-center gap-4 min-h-16 rounded-xl border border-teal-100 bg-teal-50 p-2'>
-                    <div className='flex h-9 w-9 items-center justify-center rounded-full bg-teal-400 text-white shadow-sm'>
+                    <div className='flex h-9 w-9 items-center justify-center rounded-full bg-teal-400 text-white shadow-sm shrink-0'>
                       <Trophy className='h-4 w-4' strokeWidth={2.2} />
                     </div>
                     <div>
@@ -308,7 +308,7 @@ export default function ComingSoon() {
 
                 <div className='relative flex-1'>
                   <div className='flex items-center gap-4 min-h-16 rounded-xl border border-teal-100 bg-teal-50 p-2'>
-                    <div className='flex h-9 w-9 items-center justify-center rounded-full bg-teal-400 text-white shadow-sm'>
+                    <div className='flex h-9 w-9 items-center justify-center rounded-full bg-teal-400 text-white shadow-sm shrink-0'>
                       <Music className='h-4 w-4' strokeWidth={2.2} />
                     </div>
                     <div>
