@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { newsletterService } from '../../services/newsletter.service';
+import { Flag, Trophy, Music, MapPin, Navigation, TriangleAlert, Calendar, Compass, Leaf, Droplet } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { healthService } from '../../services/health.service';
+import { supabaseService } from '../../services/supabase.service';
 
-const TARGET_DATE = new Date('2026-05-16T10:00:00');
+const TARGET_DATE = new Date('2026-05-16T11:00:00');
 
 const DEFAULT_BUTTON_TEXT = 'Siguiente';
 
@@ -18,8 +18,7 @@ type ButtonStatus = 'idle' | 'loading' | 'success' | 'error';
 
 function getTimeLeft(): TimeLeft {
   const now = new Date().getTime();
-  const target = TARGET_DATE.getTime();
-  const difference = target - now;
+  const difference = TARGET_DATE.getTime() - now;
 
   if (difference <= 0) {
     return {
@@ -42,67 +41,16 @@ function formatTime(value: number): string {
   return String(value).padStart(2, '0');
 }
 
-function getApiMessage(response: unknown): string {
-  if (response && typeof response === 'object' && 'message' in response && typeof response.message === 'string') {
-    return response.message;
-  }
-
-  if (
-    response &&
-    typeof response === 'object' &&
-    'data' in response &&
-    response.data &&
-    typeof response.data === 'object' &&
-    'message' in response.data &&
-    typeof response.data.message === 'string'
-  ) {
-    return response.data.message;
-  }
-
-  return 'Suscripción registrada correctamente';
-}
-
-function getErrorMessage(error: unknown): string {
-  if (
-    error &&
-    typeof error === 'object' &&
-    'response' in error &&
-    error.response &&
-    typeof error.response === 'object' &&
-    'data' in error.response &&
-    error.response.data &&
-    typeof error.response.data === 'object' &&
-    'message' in error.response.data
-  ) {
-    const message = error.response.data.message;
-
-    if (Array.isArray(message)) {
-      return message[0] ?? 'No pudimos registrar tu email';
-    }
-
-    if (typeof message === 'string') {
-      return message;
-    }
-  }
-
-  return 'No pudimos registrar tu email';
-}
-
 export default function ComingSoon() {
   const navigate = useNavigate();
   const [timeLeft, setTimeLeft] = useState<TimeLeft>(getTimeLeft);
   const [buttonStatus, setButtonStatus] = useState<ButtonStatus>('idle');
   const [buttonMessage, setButtonMessage] = useState(DEFAULT_BUTTON_TEXT);
-  // cambiar a true para funcionamiento real del popup
   const [isPopupOpen, setIsPopupOpen] = useState(true);
 
-  const isButtonDisabled = buttonStatus === 'loading';
+  const isButtonDisabled = buttonStatus === 'loading' || buttonStatus === 'success';
 
   useEffect(() => {
-    healthService.health().catch((error) => {
-      console.error('Error de salud del backend:', error);
-    });
-
     const timeLeft = getTimeLeft();
 
     if (timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds === 0) {
@@ -118,14 +66,7 @@ export default function ComingSoon() {
     };
   }, [navigate]);
 
-  const resetButtonAfterDelay = () => {
-    window.setTimeout(() => {
-      setButtonStatus('idle');
-      setButtonMessage(DEFAULT_BUTTON_TEXT);
-    }, 3000);
-  };
-
-  const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (isButtonDisabled) return;
@@ -136,27 +77,25 @@ export default function ComingSoon() {
 
     if (!email || typeof email !== 'string') return;
 
-    try {
-      setButtonStatus('loading');
-      setButtonMessage('Registrando...');
+    setButtonStatus('success');
+    setButtonMessage('Registrado!');
 
-      const res = await newsletterService.subscribe({ email });
+    supabaseService
+      .subscribe(email)
+      .then(() => {
+        console.log('Suscripción registrada');
+      })
+      .catch(() => {
+        console.error('Error al suscribir');
+      });
 
-      setButtonStatus('success');
-      setButtonMessage(getApiMessage(res));
+    form.reset();
 
-      form.reset();
+    window.setTimeout(() => {
       setIsPopupOpen(false);
-
-      resetButtonAfterDelay();
-    } catch (error) {
-      console.error('Error al suscribir:', error);
-
-      setButtonStatus('error');
-      setButtonMessage(getErrorMessage(error));
-
-      resetButtonAfterDelay();
-    }
+      setButtonStatus('idle');
+      setButtonMessage(DEFAULT_BUTTON_TEXT);
+    }, 3000);
   };
 
   const buttonClassName = {
@@ -167,13 +106,13 @@ export default function ComingSoon() {
   }[buttonStatus];
 
   return (
-    <main className='min-h-screen w-full bg-earth-50 text-teal-900'>
+    <main className='min-h-screen w-full bg-sage-50 text-teal-900'>
       {isPopupOpen && (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm'>
-          <div className='w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl sm:p-8'>
-            <div className='w-full flex flex-row items-center justify-start gap-2'>
-              <img src={'./logos/ando.png'} alt='Logo Ando' className='h-22 sm:h-28 md:h-28 w-auto object-cover' />
-              <img src={'./logos/desafio_capri.png'} alt='Logo Desafio Capri' className='h-20 sm:h-24 md:h-24 w-auto object-cover' />
+          <div className='w-full max-w-md rounded-xl border border-sage-100 bg-white p-6 shadow-2xl sm:p-8'>
+            <div className='flex w-full flex-row items-center justify-start gap-2'>
+              <img src={'./logos/logo_ando.png'} alt='Logo Ando' className='h-22 w-auto object-cover sm:h-28 md:h-28' />
+              <img src={'./logos/desafio_capri.png'} alt='Logo Desafío Capri' className='h-20 w-auto object-cover sm:h-24 md:h-24' />
             </div>
 
             <h2 className='mt-3 text-3xl font-bold text-teal-800'>
@@ -204,7 +143,7 @@ export default function ComingSoon() {
               <button
                 type='submit'
                 disabled={isButtonDisabled}
-                className={`w-full rounded-2xl px-5 py-3 text-base font-semibold text-white shadow-md transition active:scale-[0.99] disabled:scale-100 ${buttonClassName}`}>
+                className={`w-full rounded-2xl px-5 py-3 text-base font-semibold text-white shadow-md transition active:scale-99 disabled:scale-100 ${buttonClassName}`}>
                 {buttonMessage}
               </button>
             </form>
@@ -214,125 +153,303 @@ export default function ComingSoon() {
         </div>
       )}
 
-      <section className='mx-auto flex min-h-screen max-w-500 flex-col'>
-        <div className='relative h-70 overflow-hidden shadow-xl sm:h-90 lg:h-107.5'>
-          <img src={'./images/banner.jpeg'} alt='Paisaje de montaña y naturaleza outdoor' className='h-full w-full object-cover' />
+      <section className='relative left-1/2 w-full -translate-x-1/2'>
+        <div className='relative overflow-hidden rounded-none bg-white shadow-lg'>
+          <div className='relative h-80 md:h-105'>
+            <img
+              src={'./images/hero_image.jpg'}
+              alt='Paisaje de montaña y naturaleza outdoor'
+              className='inset-0 h-full w-full object-cover object-[50%100%]'
+            />
 
-          <div className='absolute inset-0 bg-linear-to-t from-black/70 via-black/25 to-transparent' />
+            <div className='absolute inset-0 bg-linear-to-t from-black/90 via-black/30 to-transparent' />
 
-          <div className='absolute bottom-0 left-0 right-0 p-6 sm:p-10'>
-            <div className='flex flex-row items-center gap-4'>
-              {/* <h1 className='max-w-3xl text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl'>ANDO</h1> */}
-              <img src={'./logos/ando.png'} alt='Logo Ando' className='h-18 sm:h-20 md:h-28 w-auto object-cover' />
-
-              {/* <h1 className='max-w-3xl text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl'>DESAFIO CAPRI</h1> */}
-              <img src={'./logos/desafio_capri_blanco.png'} alt='Logo Desafio Capri' className='h-18 sm:h-20 md:h-28 w-auto object-cover' />
+            {/* <div className='absolute right-8 top-15'>
+              <img src={'./logos/logo_ando.png'} alt='Logo Ando' className='h-20 w-auto object-contain drop-shadow-md' />
             </div>
 
-            <p className='mt-3 max-w-2xl text-base leading-7 text-white/90 sm:text-lg'>
-              La forma simple de descubrir, comparar y reservar experiencias outdoor en Esquel.
-            </p>
+            <div className='absolute left-5 top-12'>
+              <img src={'./logos/desafio_capri_blanco.png'} alt='Logo Desafio Capri' className='h-28 w-auto object-contain' />
+            </div> */}
+
+            <div className='absolute bottom-12 left-5 right-5'>
+              <h1 className='text-4xl font-semibold uppercase tracking-[0.06em] text-white drop-shadow-sm'>DESAFIO CAPRI</h1>
+              <p className='mt-2 text-sm text-white/90'>Trail running en Esquel, Patagonia.</p>
+
+              <div className='mt-3 flex flex-wrap items-center gap-4 text-[11px] font-semibold uppercase tracking-[0.15em] text-white/90'>
+                <div className='flex items-center gap-2'>
+                  <Calendar className='h-4 w-4' strokeWidth={1.7} />
+                  16 DE MAYO DE 2026
+                </div>
+
+                <div className='flex items-center gap-2'>
+                  <svg
+                    className='h-4 w-4'
+                    viewBox='0 0 24 24'
+                    fill='none'
+                    stroke='currentColor'
+                    strokeWidth='1.7'
+                    strokeLinecap='round'
+                    strokeLinejoin='round'>
+                    <circle cx='12' cy='12' r='9' />
+                    <path d='M12 7v5l3 2' />
+                  </svg>
+                  11:00 HS
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className='grid flex-1 items-start gap-10 p-6 py-6 lg:grid-cols-[1.1fr_0.9fr] lg:py-16'>
-          <div className='order-2 lg:order-1'>
-            <p className='mb-4 text-sm font-semibold uppercase tracking-[0.25em] text-teal-600'>
-              Turismo outdoor, organizado en un solo lugar
+        <div className='relative z-10 -mt-8 px-4 mb-4'>
+          <div className='mx-auto min-h-26 max-w-150 rounded-xl bg-teal-700 px-3 py-3.5 text-white shadow-md'>
+            <img
+              src={'./logos/desafio_capri_blanco.png'}
+              alt='Logo Desafio Capri'
+              className='mx-auto mb-4 h-20 w-auto object-contain md:h-28'
+            />
+
+            <p className='text-center text-[11px] font-semibold uppercase tracking-[0.25em] text-sage-200'>
+              ¿Estás preparado para este desafío?
             </p>
 
-            <h2 className='max-w-3xl text-3xl font-bold leading-tight text-teal-900 sm:text-4xl lg:text-5xl'>
-              Estamos construyendo una nueva manera de conectar turistas con prestadores locales.
-            </h2>
-
-            <p className='mt-6 max-w-2xl text-base leading-8 text-sage-800 sm:text-lg'>
-              ANDO nace para resolver un problema concreto: hoy muchas actividades outdoor están dispersas entre Google, Instagram, WhatsApp
-              y recomendaciones. Queremos centralizar la información para que encontrar una experiencia sea más rápido, claro y confiable.
-            </p>
-
-            <div className='mt-8 grid gap-4 sm:grid-cols-3'>
-              {['Explorá actividades', 'Compará opciones', 'Reservá fácil'].map((item) => (
-                <div key={item} className='rounded-2xl border border-teal-100 bg-sage-50/80 p-4 shadow-sm backdrop-blur'>
-                  <div className='mb-3 h-2 w-10 rounded-full bg-earth-600' />
-
-                  <p className='text-sm font-semibold text-teal-900'>{item}</p>
-                </div>
-              ))}
+            <div className='mt-4 grid grid-cols-4 divide-x divide-white/15 text-center'>
+              <div className='px-2'>
+                <p className='text-[28px] font-bold leading-none'>{formatTime(timeLeft.days)}</p>
+                <p className='mt-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/70'>Días</p>
+              </div>
+              <div className='px-2'>
+                <p className='text-[28px] font-bold leading-none'>{formatTime(timeLeft.hours)}</p>
+                <p className='mt-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/70'>Hs</p>
+              </div>
+              <div className='px-2'>
+                <p className='text-[28px] font-bold leading-none'>{formatTime(timeLeft.minutes)}</p>
+                <p className='mt-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/70'>Min</p>
+              </div>
+              <div className='px-2'>
+                <p className='text-[28px] font-bold leading-none'>{formatTime(timeLeft.seconds)}</p>
+                <p className='mt-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/70'>Seg</p>
+              </div>
             </div>
           </div>
+        </div>
+      </section>
 
-          <div className='order-1 space-y-6 lg:order-2'>
-            <div className='flex flex-col items-center gap-4 rounded-3xl border border-sage-100 bg-teal-800 p-6 text-white shadow-xl sm:p-8'>
-              <img src={'./logos/desafio_capri_blanco.png'} alt='Logo Desafio Capri' className='h-38 w-auto object-cover' />
-
-              <div className='w-full'>
-                <p className='text-center text-sm font-semibold uppercase tracking-[0.25em] text-sage-200'>
-                  ¿Estás preparado para este desafío?
-                </p>
-
-                <div className='mt-6 grid grid-cols-4 gap-3 text-center'>
-                  <div className='rounded-2xl bg-white/10 p-3 backdrop-blur'>
-                    <p className='text-3xl font-bold sm:text-4xl'>{formatTime(timeLeft.days)}</p>
-                    <p className='mt-1 text-xs font-medium uppercase tracking-wide text-white/70'>Días</p>
-                  </div>
-
-                  <div className='rounded-2xl bg-white/10 p-3 backdrop-blur'>
-                    <p className='text-3xl font-bold sm:text-4xl'>{formatTime(timeLeft.hours)}</p>
-                    <p className='mt-1 text-xs font-medium uppercase tracking-wide text-white/70'>Hs</p>
-                  </div>
-
-                  <div className='rounded-2xl bg-white/10 p-3 backdrop-blur'>
-                    <p className='text-3xl font-bold sm:text-4xl'>{formatTime(timeLeft.minutes)}</p>
-                    <p className='mt-1 text-xs font-medium uppercase tracking-wide text-white/70'>Min</p>
-                  </div>
-
-                  <div className='rounded-2xl bg-white/10 p-3 backdrop-blur'>
-                    <p className='text-3xl font-bold sm:text-4xl'>{formatTime(timeLeft.seconds)}</p>
-                    <p className='mt-1 text-xs font-medium uppercase tracking-wide text-white/70'>Seg</p>
-                  </div>
-                </div>
-
-                <p className='mt-5 text-center text-sm text-white/70'>16 de mayo de 2026 · 10:00 hs</p>
+      <section className='overflow-hidden mx-auto flex min-h-screen w-full max-w-300 flex-col gap-4 px-4 pb-10 pt-0 sm:px-5'>
+        <section className='rounded-xl bg-white px-4 py-5 shadow-sm'>
+          <div className='flex items-start gap-3'>
+            <div className='flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-teal-50 shadow-sm'>
+              <div className='flex h-9 w-9 items-center justify-center rounded-full bg-teal-600 text-white shadow-sm'>
+                <Calendar className='z-10 h-4.5 w-4.5' strokeWidth={2} />
               </div>
             </div>
 
-            {/* <div className='rounded-3xl border border-earth-100 bg-white p-6 shadow-xl sm:p-8'>
-              <h3 className='text-2xl font-bold text-teal-900'>Sumate antes del lanzamiento</h3>
-
-              <p className='mt-3 text-sm leading-6 text-sage-800'>
-                Dejanos tu email y te avisamos cuando ANDO esté disponible. Vamos a compartir novedades, acceso anticipado y las primeras
-                experiencias outdoor cargadas en la plataforma.
-              </p>
-
-              <form className='mt-6 space-y-4' onSubmit={handleSubmit}>
-                <label htmlFor='email' className='block text-sm font-medium text-teal-900'>
-                  Email
-                </label>
-
-                <input
-                  id='email'
-                  name='email'
-                  type='email'
-                  required
-                  disabled={isButtonDisabled}
-                  placeholder='tuemail@ejemplo.com'
-                  className='w-full rounded-2xl border border-teal-100 bg-earth-50 px-4 py-3 text-base text-teal-900 outline-none transition placeholder:text-sage-800/60 disabled:cursor-not-allowed disabled:opacity-70 focus:border-transparent focus:ring-4 focus:ring-teal-600/20'
-                />
-
-                <button
-                  type='submit'
-                  disabled={isButtonDisabled}
-                  className={`w-full rounded-2xl px-5 py-3 text-base font-semibold text-white shadow-md transition active:scale-[0.99] disabled:scale-100 ${buttonClassName}`}>
-                  {buttonMessage}
-                </button>
-              </form>
-
-              <p className='mt-4 text-xs leading-5 text-sage-800'>
-                Sin spam. Solo novedades importantes sobre el lanzamiento del proyecto.
-              </p>
-            </div> */}
+            <div className='pt-0.5'>
+              <h2 className='text-base font-bold text-teal-800'>Ando Info | Cronograma y Puntos Clave</h2>
+              <p className='mt-1 text-xs leading-snug text-teal-700'>Todo lo que necesitás saber para moverte el día del evento:</p>
+            </div>
           </div>
-        </div>
+
+          <div className='relative mt-6'>
+            <span className='absolute bottom-12.5 left-5.75 -top-15 z-0 border-l-[2.5px] border-dotted border-teal-600' />
+
+            <div className='space-y-4'>
+              <div className='relative flex items-stretch gap-0'>
+                <div className='relative flex w-12 shrink-0 items-center justify-center'>
+                  <span className='absolute left-5 top-1/2 z-0 h-[2.5px] w-12.5 -translate-y-1/2 bg-teal-400' />
+                  <div className='relative z-10 flex h-4 w-4 items-center justify-center rounded-full border-[2.5px] border-teal-600 bg-white'>
+                    <div className='relative z-10 h-1.5 w-1.5 rounded-full bg-teal-600' />
+                  </div>
+                </div>
+
+                <div className='relative flex-1'>
+                  <div className='flex items-center gap-4 min-h-16 rounded-xl border border-teal-100 bg-teal-50 p-2'>
+                    <div className='flex h-9 w-9 items-center justify-center rounded-full bg-teal-400 text-white shadow-sm shrink-0'>
+                      <Flag className='h-4 w-4' strokeWidth={2.2} />
+                    </div>
+                    <div>
+                      <p className='text-[13px] font-bold text-teal-800'>Largada: 11:00 hs (Puntual) en El Tambo.</p>
+                      <p className='mt-0.5 text-xs text-teal-700'>Procura llegar con anticipación suficiente para el control de chips.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className='relative flex items-stretch gap-0'>
+                <div className='relative flex w-12 shrink-0 items-center justify-center'>
+                  <span className='absolute left-5 top-1/2 z-0 h-[2.5px] w-12.5 -translate-y-1/2 bg-teal-400' />
+                  <div className='relative z-10 flex h-4 w-4 items-center justify-center rounded-full border-[2.5px] border-teal-600 bg-white'>
+                    <div className='relative z-10 h-1.5 w-1.5 rounded-full bg-teal-600' />
+                  </div>
+                </div>
+
+                <div className='relative flex-1'>
+                  <div className='flex items-center gap-4 min-h-16 rounded-xl border border-teal-100 bg-teal-50 p-2'>
+                    <div className='flex h-9 w-9 items-center justify-center rounded-full bg-teal-400 text-white shadow-sm shrink-0'>
+                      <Trophy className='h-4 w-4' strokeWidth={2.2} />
+                    </div>
+                    <div>
+                      <p className='text-[13px] font-bold text-teal-800'>Llegada y Premiación: En 25 de Mayo y Rivadavia.</p>
+                      <p className='mt-0.5 text-xs text-teal-700'>
+                        Premiación estimada a las 15:00 hs. (sujeta a cambios informados por locución).
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className='relative flex items-stretch gap-0'>
+                <div className='relative flex w-12 shrink-0 items-center justify-center'>
+                  <span className='absolute left-5 top-1/2 z-0 h-[2.5px] w-12.5 -translate-y-1/2 bg-teal-400' />
+                  <div className='relative z-10 flex h-4 w-4 items-center justify-center rounded-full border-[2.5px] border-teal-600 bg-white'>
+                    <div className='relative z-10 h-1.5 w-1.5 rounded-full bg-teal-600' />
+                  </div>
+                </div>
+
+                <div className='relative flex-1'>
+                  <div className='flex items-center gap-4 min-h-16 rounded-xl border border-teal-100 bg-teal-50 p-2'>
+                    <div className='flex h-9 w-9 items-center justify-center rounded-full bg-teal-400 text-white shadow-sm shrink-0'>
+                      <Music className='h-4 w-4' strokeWidth={2.2} />
+                    </div>
+                    <div>
+                      <p className='text-[13px] font-bold text-teal-800'>Capri Fest: 22:00 hs en VER DISCO CLUB.</p>
+                      <p className='mt-0.5 text-xs text-teal-700'>
+                        Acceso libre y gratuito para corredores y acompañantes.
+                        <br />
+                        Menores hasta las 00:00 hs.
+                        <br />
+                        Corredores deben llevar la pulsera del kit para participar de los sorteos.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className='rounded-xl bg-white p-4 shadow-sm'>
+          <div className='mb-3 flex items-center gap-2'>
+            <MapPin className='h-4.5 w-4.5 text-earth-900' />
+            <h2 className='text-[15px] font-bold text-earth-900'>Ubicación</h2>
+          </div>
+
+          <div className='flex flex-col overflow-hidden rounded-xl bg-earth-50 shadow-md'>
+            <div className='flex flex-1 items-center justify-between gap-4 p-4 pl-5'>
+              <div className='flex flex-col justify-center'>
+                <p className='text-sm font-bold text-earth-900'>EL TAMBO</p>
+                <p className='mt-0.5 text-[13px] text-earth-900'>Largada: 11:00 hs</p>
+              </div>
+
+              <a
+                href='https://www.google.com/maps/search/?api=1&query=-42.87940096434897,-71.28898438152648'
+                target='_blank'
+                rel='noopener noreferrer'
+                className='flex shrink-0 items-center gap-2 rounded-xl bg-earth-200 px-4 py-1.75 shadow-sm transition-colors'>
+                <Navigation className='h-3.5 w-3.5 text-earth-900' />
+                <span className='text-[11px] font-bold tracking-[0.02em] text-earth-900'>ABRIR EN MAPS</span>
+              </a>
+            </div>
+
+            <div className='relative h-32.5 rounded-xl w-full shrink-0 overflow-hidden border-t border-[#E9F0E9] md:h-75 md:border-l md:border-t-0'>
+              <iframe
+                src='https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d517.5858036615381!2d-71.28898438152648!3d-42.87940096434897!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e1!3m2!1ses!ar!4v1778593929524!5m2!1ses!ar'
+                className='absolute h-full w-[calc(100%+4px)]'
+                style={{ border: 0 }}
+                allowFullScreen={false}
+                loading='lazy'
+                referrerPolicy='no-referrer-when-downgrade'
+              />
+            </div>
+          </div>
+        </section>
+
+        <section className='rounded-xl border border-[#E9F0E9] bg-white px-4 py-4 shadow-sm'>
+          <div className='flex items-start gap-2.5'>
+            <div>
+              <div className='flex items-end gap-2.5'>
+                <div className='flex items-center gap-2'>
+                  <TriangleAlert className='h-4.5 w-4.5 text-sage-800' />
+                  <h2 className='text-[15px] font-bold text-sage-800'>Guía del Corredor - Ando Tips</h2>
+                </div>
+              </div>
+              <p className='mt-1 text-[13px] leading-5 text-sage-800'>
+                La seguridad y el respeto por el entorno son nuestra prioridad. Seguí estas instrucciones para garantizar tu clasificación:
+              </p>
+            </div>
+          </div>
+
+          <div className='mt-4 flex flex-col gap-2.5'>
+            <div className='flex items-center gap-3 rounded-xl border border-sage-200/80 bg-sage-400/80 p-3 shadow-sm md:gap-4 md:p-4'>
+              <div className='relative flex h-13.5 w-13.5 shrink-0 items-center justify-center rounded-full border-2 border-sage-600/80 bg-sage-800/80'>
+                <Calendar className='h-6 w-6 text-white' strokeWidth={1.8} />
+              </div>
+              <div className='flex-1'>
+                <p className='text-sm font-bold text-sage-900'>Ando Tip | Identidad y Clasificación</p>
+                <p className='mt-0.5 text-xs leading-[1.35] text-sage-900'>
+                  El dorsal debe estar siempre al frente y visible sobre cualquier prenda. No lo coloques en la espalda. Perder el dorsal o
+                  no llevarlo correctamente implica la descalificación inmediata de la carrera.
+                </p>
+              </div>
+            </div>
+
+            <div className='flex items-center gap-3 rounded-xl border border-sage-200/70 bg-sage-400/60 p-3 shadow-sm md:gap-4 md:p-4'>
+              <div className='flex h-13.5 w-13.5 shrink-0 items-center justify-center rounded-full border-2 border-sage-600/70 bg-sage-800/70'>
+                <Compass className='h-6.5 w-6.5 text-white' strokeWidth={1.8} />
+              </div>
+              <div className='flex-1'>
+                <p className='text-sm font-bold text-sage-900'>Ando Tip | Navegación y Seguridad</p>
+                <p className='mt-0.5 text-xs leading-[1.35] text-sage-900'>
+                  El circuito está marcado para que siempre puedas ver de una cinta a la otra. Si avanzás unos metros y no visualizás la
+                  próxima cinta flúor, detenete y volvé a la anterior para retomar el camino correcto. No improvises senderos.
+                </p>
+              </div>
+            </div>
+
+            <div className='flex items-center gap-3 rounded-xl border border-sage-200/60 bg-sage-400/40 p-3 shadow-sm md:gap-4 md:p-4'>
+              <div className='flex h-13.5 w-13.5 shrink-0 items-center justify-center rounded-full border-2 border-sage-600/60 bg-sage-800/60'>
+                <Leaf className='h-6.5 w-6.5 text-white' strokeWidth={1.8} />
+              </div>
+              <div className='flex-1'>
+                <p className='text-sm font-bold text-sage-900'>Ando Tip | Compromiso Ambiental</p>
+                <p className='mt-0.5 text-xs leading-[1.35] text-sage-900'>
+                  Huella cero. Está estrictamente prohibido arrojar envoltorios o geles en el recorrido. Usá los cestos en los Puestos de
+                  Abastecimiento. Cuidar el cerro es responsabilidad de todos.
+                </p>
+              </div>
+            </div>
+
+            <div className='flex items-center gap-3 rounded-xl border border-sage-200/50 bg-sage-400/20 p-3 shadow-sm md:gap-4 md:p-4'>
+              <div className='flex h-13.5 w-13.5 shrink-0 items-center justify-center rounded-full border-2 border-sage-600/50 bg-sage-800/50'>
+                <Droplet className='h-6.5 w-6.5 text-white' strokeWidth={1.8} />
+              </div>
+              <div className='flex-1'>
+                <p className='text-sm font-bold text-sage-900'>Ando Tip | Hidratación Responsable</p>
+                <p className='mt-0.5 text-xs leading-[1.35] text-sage-900'>
+                  Sé autosuficiente. No habrá vasos descartables en los puestos. Asegurate de llevar tu propio recipiente (soft flask,
+                  mochila o botellita) para recargar.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className='relative overflow-hidden rounded-xl border border-teal-100/60 bg-teal-50 px-4 py-4 shadow-sm'>
+          <img src={'./logos/logo_ando.png'} alt='' className='pointer-events-none absolute -bottom-1 -right-2 h-50 opacity-16' />
+          <h2 className='text-[17px] font-semibold text-teal-800/90'>Explorá con confianza. Explorá con Ando.</h2>
+          <p className='mt-3 text-[13px] leading-6 text-teal-700'>
+            Ando es mucho más que una plataforma: es nuestra insignia de seguridad, compromiso ambiental y calidad en cada aventura. Nacimos
+            en Esquel para ser el puente entre quienes buscan descubrir la inmensidad de la Patagonia y los prestadores locales que mejor
+            conocen sus secretos.
+          </p>
+          <p className='mt-3 text-[13px] leading-6 text-teal-800/90'>
+            Creemos en un turismo que cuida lo que amamos. Por eso, cada experiencia conectada por Ando garantiza estándares de seguridad
+            profesional y un respeto absoluto por nuestro entorno natural.
+          </p>
+          <p className='mt-3 text-[13px] leading-6 text-teal-800/90'>
+            Hoy te acompañamos en el Desafío Capri. Mañana, te acompañamos a descubrir tu próxima meta.
+          </p>
+        </section>
       </section>
     </main>
   );
