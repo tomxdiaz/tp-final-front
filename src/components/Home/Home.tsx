@@ -5,10 +5,10 @@ const Home = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    navigate('/ando_desafio_capri');
+    navigate('/ando_desafio_capri', { replace: true });
   }, [navigate]);
 
-  return <div></div>;
+  return null;
 };
 
 export default Home;

@@ -51,11 +51,11 @@ export default function ComingSoon() {
   const isButtonDisabled = buttonStatus === 'loading' || buttonStatus === 'success';
 
   useEffect(() => {
-    const timeLeft = getTimeLeft();
+    // const timeLeft = getTimeLeft();
 
-    if (timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds === 0) {
-      navigate('/');
-    }
+    // if (timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds === 0) {
+    //   navigate('/');
+    // }
 
     const intervalId = window.setInterval(() => {
       setTimeLeft(getTimeLeft());
@@ -143,7 +143,7 @@ export default function ComingSoon() {
               <button
                 type='submit'
                 disabled={isButtonDisabled}
-                className={`w-full rounded-2xl px-5 py-3 text-base font-semibold text-white shadow-md transition active:scale-99 disabled:scale-100 ${buttonClassName}`}>
+                className={`w-full rounded-2xl px-5 py-3 text-base font-semibold text-white shadow-md transition ${buttonClassName}`}>
                 {buttonMessage}
               </button>
             </form>
