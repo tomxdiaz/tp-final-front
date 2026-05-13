@@ -354,7 +354,7 @@ export default function ComingSoon() {
             <div className='relative h-32.5 rounded-xl w-full shrink-0 overflow-hidden border-t border-[#E9F0E9] md:h-75 md:border-l md:border-t-0'>
               <iframe
                 src='https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d517.5858036615381!2d-71.28898438152648!3d-42.87940096434897!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e1!3m2!1ses!ar!4v1778593929524!5m2!1ses!ar'
-                className='pointer-events-none absolute h-full w-[calc(100%+4px)]'
+                className='absolute h-full w-[calc(100%+4px)]'
                 style={{ border: 0 }}
                 allowFullScreen={false}
                 loading='lazy'
