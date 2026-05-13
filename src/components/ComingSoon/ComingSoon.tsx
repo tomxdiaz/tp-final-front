@@ -202,7 +202,7 @@ export default function ComingSoon() {
         </div>
 
         <div className='relative z-10 -mt-8 px-4 mb-4'>
-          <div className='mx-auto min-h-26 max-w-150 rounded-4.5 bg-teal-700 px-3 py-3.5 text-white shadow-md  rounded-xl'>
+          <div className='mx-auto min-h-26 max-w-150 rounded-xl bg-teal-700 px-3 py-3.5 text-white shadow-md'>
             <img
               src={'./logos/desafio_capri_blanco.png'}
               alt='Logo Desafio Capri'
@@ -334,7 +334,7 @@ export default function ComingSoon() {
             <h2 className='text-[15px] font-bold text-earth-900'>Ubicación</h2>
           </div>
 
-          <div className='flex flex-col overflow-hidden rounded-2.5 bg-earth-50 shadow-md'>
+          <div className='flex flex-col overflow-hidden rounded-xl bg-earth-50 shadow-md'>
             <div className='flex flex-1 items-center justify-between gap-4 p-4 pl-5'>
               <div className='flex flex-col justify-center'>
                 <p className='text-sm font-bold text-earth-900'>EL TAMBO</p>
@@ -345,13 +345,13 @@ export default function ComingSoon() {
                 href='https://www.google.com/maps/search/?api=1&query=-42.87940096434897,-71.28898438152648'
                 target='_blank'
                 rel='noopener noreferrer'
-                className='flex shrink-0 items-center gap-2 rounded-5 bg-earth-200 px-4 py-1.75 shadow-sm transition-colors'>
+                className='flex shrink-0 items-center gap-2 rounded-xl bg-earth-200 px-4 py-1.75 shadow-sm transition-colors'>
                 <Navigation className='h-3.5 w-3.5 text-earth-900' />
                 <span className='text-[11px] font-bold tracking-[0.02em] text-earth-900'>ABRIR EN MAPS</span>
               </a>
             </div>
 
-            <div className='relative h-32.5 w-full shrink-0 overflow-hidden border-t border-[#E9F0E9] md:h-75 md:border-l md:border-t-0'>
+            <div className='relative h-32.5 rounded-xl w-full shrink-0 overflow-hidden border-t border-[#E9F0E9] md:h-75 md:border-l md:border-t-0'>
               <iframe
                 src='https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d517.5858036615381!2d-71.28898438152648!3d-42.87940096434897!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e1!3m2!1ses!ar!4v1778593929524!5m2!1ses!ar'
                 className='pointer-events-none absolute h-full w-[calc(100%+4px)]'
@@ -380,7 +380,7 @@ export default function ComingSoon() {
           </div>
 
           <div className='mt-4 flex flex-col gap-2.5'>
-            <div className='flex items-center gap-3 rounded-3 border border-sage-200/80 bg-sage-400/80 p-3 shadow-sm md:gap-4 md:p-4'>
+            <div className='flex items-center gap-3 rounded-xl border border-sage-200/80 bg-sage-400/80 p-3 shadow-sm md:gap-4 md:p-4'>
               <div className='relative flex h-13.5 w-13.5 shrink-0 items-center justify-center rounded-full border-2 border-sage-600/80 bg-sage-800/80'>
                 <Calendar className='h-6 w-6 text-white' strokeWidth={1.8} />
               </div>
@@ -393,7 +393,7 @@ export default function ComingSoon() {
               </div>
             </div>
 
-            <div className='flex items-center gap-3 rounded-3 border border-sage-200/70 bg-sage-400/60 p-3 shadow-sm md:gap-4 md:p-4'>
+            <div className='flex items-center gap-3 rounded-xl border border-sage-200/70 bg-sage-400/60 p-3 shadow-sm md:gap-4 md:p-4'>
               <div className='flex h-13.5 w-13.5 shrink-0 items-center justify-center rounded-full border-2 border-sage-600/70 bg-sage-800/70'>
                 <Compass className='h-6.5 w-6.5 text-white' strokeWidth={1.8} />
               </div>
@@ -406,7 +406,7 @@ export default function ComingSoon() {
               </div>
             </div>
 
-            <div className='flex items-center gap-3 rounded-3 border border-sage-200/60 bg-sage-400/40 p-3 shadow-sm md:gap-4 md:p-4'>
+            <div className='flex items-center gap-3 rounded-xl border border-sage-200/60 bg-sage-400/40 p-3 shadow-sm md:gap-4 md:p-4'>
               <div className='flex h-13.5 w-13.5 shrink-0 items-center justify-center rounded-full border-2 border-sage-600/60 bg-sage-800/60'>
                 <Leaf className='h-6.5 w-6.5 text-white' strokeWidth={1.8} />
               </div>
@@ -419,7 +419,7 @@ export default function ComingSoon() {
               </div>
             </div>
 
-            <div className='flex items-center gap-3 rounded-3 border border-sage-200/50 bg-sage-400/20 p-3 shadow-sm md:gap-4 md:p-4'>
+            <div className='flex items-center gap-3 rounded-xl border border-sage-200/50 bg-sage-400/20 p-3 shadow-sm md:gap-4 md:p-4'>
               <div className='flex h-13.5 w-13.5 shrink-0 items-center justify-center rounded-full border-2 border-sage-600/50 bg-sage-800/50'>
                 <Droplet className='h-6.5 w-6.5 text-white' strokeWidth={1.8} />
               </div>
@@ -434,7 +434,7 @@ export default function ComingSoon() {
           </div>
         </section>
 
-        <section className='relative overflow-hidden rounded-5.5 border border-teal-100/60 bg-teal-50 px-4 py-4 shadow-sm'>
+        <section className='relative overflow-hidden rounded-xl border border-teal-100/60 bg-teal-50 px-4 py-4 shadow-sm'>
           <img src={'./logos/logo_ando.png'} alt='' className='pointer-events-none absolute -bottom-1 -right-2 h-50 opacity-16' />
           <h2 className='text-[17px] font-semibold text-teal-800/90'>Explorá con confianza. Explorá con Ando.</h2>
           <p className='mt-3 text-[13px] leading-6 text-teal-700'>
