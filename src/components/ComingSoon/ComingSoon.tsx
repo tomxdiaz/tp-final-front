@@ -47,7 +47,7 @@ export default function ComingSoon() {
   const [buttonStatus, setButtonStatus] = useState<ButtonStatus>('idle');
   const [buttonMessage, setButtonMessage] = useState(DEFAULT_BUTTON_TEXT);
   // cambiar a true para funcionamiento real del popup
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [isPopupOpen, setIsPopupOpen] = useState(true);
 
   const isButtonDisabled = buttonStatus === 'loading' || buttonStatus === 'success';
 
@@ -112,18 +112,16 @@ export default function ComingSoon() {
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm'>
           <div className='w-full max-w-md rounded-[28px] border border-sage-100 bg-white p-6 shadow-2xl sm:p-8'>
             <div className='flex w-full flex-row items-center justify-start gap-2'>
-              <img src={'./logos/ando.png'} alt='Logo Ando' className='h-22 sm:h-28 md:h-28 w-auto object-cover' />
+              <img src={'./logos/LogoAndo.png'} alt='Logo Ando' className='h-22 sm:h-28 md:h-28 w-auto object-cover' />
               <img src={'./logos/desafio_capri.png'} alt='Logo Desafío Capri' className='h-20 sm:h-24 md:h-24 w-auto object-cover' />
             </div>
 
             <h2 className='mt-3 text-3xl font-bold text-teal-800'>
-              <span className='text-sage-800 italic'>Ando</span> y <span className='text-earth-600 italic'>Desafío Capri</span> te tienen
-              una propuesta
+              <span className='text-sage-800 italic'>Ando</span> - <span className='text-earth-600 italic'>Desafío Capri</span> Te agradecemos por acompañarnos en esta aventura!
             </h2>
 
             <p className='mt-3 text-sm leading-6 text-sage-800'>
-              Dejanos tu email para recibir novedades sobre <span className='text-teal-600 italic font-semibold'>ANDO</span>, la nueva
-              plataforma que conecta a turistas con las mejores actividades outdoor de la región.
+              Registrate con tu mail y recibi descuentos exclusivos en experiencias <span className='text-sage-900 italic'>Ando</span> y en la proxima edicion de  <span className='text-earth-600 italic'>Desafío Capri</span>
             </p>
 
             <form className='mt-6 space-y-4' onSubmit={handleSubmit}>
@@ -256,6 +254,32 @@ export default function ComingSoon() {
             <span className='absolute bottom-[87px] left-[29px] top-[-60px] z-0 border-l-[2.5px] border-dotted border-teal-600' />
 
             <div className='space-y-4'>
+              <div className='relative flex items-stretch gap-0'>
+                <div className='relative flex w-12 shrink-0 items-center justify-center'>
+                  {/* Línea horizontal */}
+                  <span className='absolute left-[40px] top-1/2 z-0 h-[2.5px] w-[50px] -translate-y-1/2 bg-teal-400' />
+                  {/* Punto bullseye verde */}
+                  <div className='relative z-10 flex h-4 w-4 items-center justify-center rounded-full border-[2.5px] border-teal-600 bg-transparent'>
+                    <div className='relative z-10 h-1.5 w-1.5 rounded-full bg-teal-600' />
+                  </div>
+                </div>
+                
+                {/* Espaciador */}
+                <div className='relative z-0 flex items-center justify-center w-2 shrink-0' />
+                
+                <div className='relative flex-1 pl-4'>
+                  <div className='absolute left-[-4px] top-1/2 z-10 -translate-y-1/2 flex h-[50px] w-[50px] items-center justify-center rounded-full bg-[#EAEFE9]'>
+                    <div className='flex h-[36px] w-[36px] items-center justify-center rounded-full bg-teal-400 text-white shadow-sm'>
+                      <Flag className='h-4 w-4' strokeWidth={2.2} />
+                    </div>
+                  </div>
+                  
+                  <div className='min-h-[64px] rounded-[12px] border border-teal-100 bg-teal-50 py-3 pl-[54px] pr-4'>
+                    <p className='text-[13px] font-bold text-teal-800'>Acreditacion: 10:00 hs a 13:00hs y 14:30 a 21:00hs.En Alfa Fitness</p>
+                    <p className='mt-0.5 text-[12px] text-teal-700'>Se realizara la entrega del kit de carrera a cada corredor con su respectivo numero</p>
+                  </div>
+                </div>
+              </div>
               {/* Card 1 */}
               <div className='relative flex items-stretch gap-0'>
                 <div className='relative flex w-12 shrink-0 items-center justify-center'>
@@ -449,8 +473,10 @@ export default function ComingSoon() {
                 </p>
               </div>
             </div>
+
           </div>
         </section>
+        
 
         <section className='relative overflow-hidden rounded-[22px] border border-teal-100/60 bg-teal-50 px-4 py-4 shadow-sm'>
           <img src={'./logos/LogoAndo.png'} alt='' className='pointer-events-none absolute -right-2 -bottom-1 h-50 opacity-16' />
