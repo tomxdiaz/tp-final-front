@@ -47,17 +47,13 @@ export default function ComingSoon() {
   const [buttonStatus, setButtonStatus] = useState<ButtonStatus>('idle');
   const [buttonMessage, setButtonMessage] = useState(DEFAULT_BUTTON_TEXT);
   // cambiar a true para funcionamiento real del popup
-  const [isPopupOpen, setIsPopupOpen] = useState(true);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+  const [isRouteMapOpen, setIsRouteMapOpen] = useState(false);
 
   const isButtonDisabled = buttonStatus === 'loading' || buttonStatus === 'success';
 
   useEffect(() => {
-    // const timeLeft = getTimeLeft();
-
-    // if (timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds === 0) {
-    //   navigate('/');
-    // }
-
     const intervalId = window.setInterval(() => {
       setTimeLeft(getTimeLeft());
     }, 1000);
@@ -107,7 +103,7 @@ export default function ComingSoon() {
   }[buttonStatus];
 
   return (
-    <main className='min-h-screen w-full bg-sage-50 text-teal-900'>
+    <main className='min-h-screen w-full bg-sage-50 text-teal-900 relative'>
       {isPopupOpen && (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm'>
           <div className='w-full max-w-md rounded-xl border border-sage-100 bg-white p-6 shadow-2xl sm:p-8'>
@@ -117,11 +113,13 @@ export default function ComingSoon() {
             </div>
 
             <h2 className='mt-3 text-3xl font-bold text-teal-800'>
-              <span className='text-sage-800 italic'>Ando</span> - <span className='text-earth-600 italic'>Desafío Capri</span> Te agradecemos por acompañarnos en esta aventura!
+              <span className='text-sage-800 italic'>Ando</span> - <span className='text-earth-600 italic'>Desafío Capri</span> Te
+              agradecemos por acompañarnos en esta aventura!
             </h2>
 
             <p className='mt-3 text-sm leading-6 text-sage-800'>
-              Registrate con tu mail y recibi descuentos exclusivos en experiencias <span className='text-sage-900 italic'>Ando</span> y en la proxima edicion de  <span className='text-earth-600 italic'>Desafío Capri</span>
+              Registrate con tu mail y recibi descuentos exclusivos en experiencias <span className='text-sage-900 italic'>Ando</span> y en
+              la proxima edicion de <span className='text-earth-600 italic'>Desafío Capri</span>
             </p>
 
             <form className='mt-6 space-y-4' onSubmit={handleSubmit}>
@@ -152,6 +150,23 @@ export default function ComingSoon() {
         </div>
       )}
 
+      {isRouteMapOpen && (
+        <div className='fixed inset-0 z-60 flex items-center justify-center bg-black/80 backdrop-blur-sm'>
+          <button
+            type='button'
+            onClick={() => setIsRouteMapOpen(false)}
+            className='absolute right-4 top-4 z-70 rounded-full bg-white px-4 py-2 text-sm font-bold text-teal-900 shadow-lg'>
+            Cerrar
+          </button>
+
+          <img
+            src='./images/recorrido.png'
+            alt='Recorrido de la carrera'
+            className='max-h-[90vw] max-w-[90vh] rotate-90 rounded-xl object-contain shadow-2xl'
+          />
+        </div>
+      )}
+
       <section className='relative left-1/2 w-full -translate-x-1/2'>
         <div className='relative overflow-hidden rounded-none bg-white shadow-lg'>
           <div className='relative h-80 md:h-105'>
@@ -163,13 +178,9 @@ export default function ComingSoon() {
 
             <div className='absolute inset-0 bg-linear-to-t from-black/90 via-black/30 to-transparent' />
 
-            {/* <div className='absolute right-8 top-15'>
+            <div className='absolute left-6 top-6'>
               <img src={'./logos/logo_ando.png'} alt='Logo Ando' className='h-20 w-auto object-contain drop-shadow-md' />
             </div>
-
-            <div className='absolute left-5 top-12'>
-              <img src={'./logos/desafio_capri_blanco.png'} alt='Logo Desafio Capri' className='h-28 w-auto object-contain' />
-            </div> */}
 
             <div className='absolute bottom-12 left-5 right-5'>
               <h1 className='text-4xl font-semibold uppercase tracking-[0.06em] text-white drop-shadow-sm'>DESAFIO CAPRI</h1>
@@ -253,29 +264,28 @@ export default function ComingSoon() {
             <span className='absolute bottom-12.5 left-5.75 -top-15 z-0 border-l-[2.5px] border-dotted border-teal-600' />
 
             <div className='space-y-4'>
+              {/* Card 0 */}
               <div className='relative flex items-stretch gap-0'>
                 <div className='relative flex w-12 shrink-0 items-center justify-center'>
-                  {/* Línea horizontal */}
-                  <span className='absolute left-[40px] top-1/2 z-0 h-[2.5px] w-[50px] -translate-y-1/2 bg-teal-400' />
-                  {/* Punto bullseye verde */}
-                  <div className='relative z-10 flex h-4 w-4 items-center justify-center rounded-full border-[2.5px] border-teal-600 bg-transparent'>
+                  <span className='absolute left-5 top-1/2 z-0 h-[2.5px] w-12.5 -translate-y-1/2 bg-teal-400' />
+                  <div className='relative z-10 flex h-4 w-4 items-center justify-center rounded-full border-[2.5px] border-teal-600 bg-white'>
                     <div className='relative z-10 h-1.5 w-1.5 rounded-full bg-teal-600' />
                   </div>
                 </div>
-                
-                {/* Espaciador */}
-                <div className='relative z-0 flex items-center justify-center w-2 shrink-0' />
-                
-                <div className='relative flex-1 pl-4'>
-                  <div className='absolute left-[-4px] top-1/2 z-10 -translate-y-1/2 flex h-[50px] w-[50px] items-center justify-center rounded-full bg-[#EAEFE9]'>
-                    <div className='flex h-[36px] w-[36px] items-center justify-center rounded-full bg-teal-400 text-white shadow-sm'>
+
+                <div className='relative flex-1'>
+                  <div className='flex items-center gap-4 min-h-16 rounded-xl border border-teal-100 bg-teal-50 p-2'>
+                    <div className='flex h-9 w-9 items-center justify-center rounded-full bg-teal-400 text-white shadow-sm shrink-0'>
                       <Flag className='h-4 w-4' strokeWidth={2.2} />
                     </div>
-                  </div>
-                  
-                  <div className='min-h-[64px] rounded-[12px] border border-teal-100 bg-teal-50 py-3 pl-[54px] pr-4'>
-                    <p className='text-[13px] font-bold text-teal-800'>Acreditacion: 10:00 hs a 13:00hs y 14:30 a 21:00hs.En Alfa Fitness</p>
-                    <p className='mt-0.5 text-[12px] text-teal-700'>Se realizara la entrega del kit de carrera a cada corredor con su respectivo numero</p>
+                    <div>
+                      <p className='text-[13px] font-bold text-teal-800'>
+                        Acreditacion: 10:00 hs a 13:00hs y 14:30 a 21:00hs en Alfa Fitness
+                      </p>
+                      <p className='mt-0.5 text-xs text-teal-700'>
+                        Se realizara la entrega del kit de carrera a cada corredor con su respectivo numero.
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -457,10 +467,31 @@ export default function ComingSoon() {
                 </p>
               </div>
             </div>
-
           </div>
         </section>
-        
+
+        {/* NEW SECTION START*/}
+
+        <section className='rounded-xl bg-white p-4 shadow-sm'>
+          <div className='mb-3 flex items-center gap-2'>
+            <MapPin className='h-4.5 w-4.5 text-earth-900' />
+            <h2 className='text-[15px] font-bold text-earth-900'>Recorrido de la carrera y puntos de interés</h2>
+          </div>
+
+          <div className='mb-3 flex items-center gap-2'>
+            <h4 className='text-[13px] font-bold text-earth-900'>Toca la imagen para ver en pantalla completa!</h4>
+          </div>
+
+          <button
+            type='button'
+            onClick={() => setIsRouteMapOpen(true)}
+            className='flex flex-col overflow-hidden rounded-xl bg-earth-50 shadow-md'
+            aria-label='Abrir recorrido de la carrera en pantalla completa'>
+            <img src='./images/recorrido.png' alt='Recorrido de la carrera' className='w-full cursor-pointer object-cover' />
+          </button>
+        </section>
+
+        {/* NEW SECTION END*/}
 
         <section className='relative overflow-hidden rounded-xl border border-teal-100/60 bg-teal-50 px-4 py-4 shadow-sm'>
           <img src={'./logos/logo_ando.png'} alt='' className='pointer-events-none absolute -bottom-1 -right-2 h-50 opacity-16' />
@@ -479,6 +510,15 @@ export default function ComingSoon() {
           </p>
         </section>
       </section>
+
+      <div className='fixed bg-white rounded-full bottom-5 right-5 w-14 h-14 shadow-lg'>
+        <a
+          className='block h-full w-full'
+          href='https://wa.me/5492945554490?text=Hola!%20Queria%20consultar%20sobre%20Desafio%20Capri...%20'
+          target='__blank'>
+          <img src={'./logos/whatsapp.png'} alt='whatsapp icon' className='block h-full w-full' />
+        </a>
+      </div>
     </main>
   );
 }
