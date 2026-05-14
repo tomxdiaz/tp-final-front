@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Flag, Trophy, Music, MapPin, Navigation, TriangleAlert, Calendar, Compass, Leaf, Droplet } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabaseService } from '../../services/supabase.service';
@@ -15,12 +15,6 @@ type TimeLeft = {
 };
 
 type ButtonStatus = 'idle' | 'loading' | 'success' | 'error';
-
-type TimelineLineStyle = {
-  top: number;
-  left: number;
-  height: number;
-};
 
 function getTimeLeft(): TimeLeft {
   const now = new Date().getTime();
@@ -53,19 +47,9 @@ export default function ComingSoon() {
   const [buttonStatus, setButtonStatus] = useState<ButtonStatus>('idle');
   const [buttonMessage, setButtonMessage] = useState(DEFAULT_BUTTON_TEXT);
   // cambiar a true para funcionamiento real del popup
-  const [isPopupOpen, setIsPopupOpen] = useState(true);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   const [isRouteMapOpen, setIsRouteMapOpen] = useState(false);
-
-  const timelineSectionRef = useRef<HTMLElement | null>(null);
-  const timelineTitleIconRef = useRef<HTMLDivElement | null>(null);
-  const lastTimelineDotRef = useRef<HTMLDivElement | null>(null);
-
-  const [timelineLineStyle, setTimelineLineStyle] = useState<TimelineLineStyle>({
-    top: 0,
-    left: 0,
-    height: 0,
-  });
 
   const isButtonDisabled = buttonStatus === 'loading' || buttonStatus === 'success';
 
@@ -79,59 +63,7 @@ export default function ComingSoon() {
     };
   }, [navigate]);
 
-  useLayoutEffect(() => {
-    const section = timelineSectionRef.current;
-    const titleIcon = timelineTitleIconRef.current;
-    const lastDot = lastTimelineDotRef.current;
-
-    if (!section || !titleIcon || !lastDot) return;
-
-    let animationFrameId = 0;
-
-    const updateTimelineLine = () => {
-      animationFrameId = window.requestAnimationFrame(() => {
-        const sectionRect = section.getBoundingClientRect();
-        const titleIconRect = titleIcon.getBoundingClientRect();
-        const lastDotRect = lastDot.getBoundingClientRect();
-
-        const titleIconCenterX = titleIconRect.left + titleIconRect.width / 2 - sectionRect.left;
-        const titleIconCenterY = titleIconRect.top + titleIconRect.height / 2 - sectionRect.top;
-        const lastDotCenterY = lastDotRect.top + lastDotRect.height / 2 - sectionRect.top;
-
-        const nextStyle = {
-          top: Math.round(titleIconCenterY),
-          left: Math.round(titleIconCenterX),
-          height: Math.max(0, Math.round(lastDotCenterY - titleIconCenterY)),
-        };
-
-        setTimelineLineStyle((currentStyle) => {
-          if (currentStyle.top === nextStyle.top && currentStyle.left === nextStyle.left && currentStyle.height === nextStyle.height) {
-            return currentStyle;
-          }
-
-          return nextStyle;
-        });
-      });
-    };
-
-    updateTimelineLine();
-
-    const resizeObserver = new ResizeObserver(updateTimelineLine);
-
-    resizeObserver.observe(section);
-    resizeObserver.observe(titleIcon);
-    resizeObserver.observe(lastDot);
-
-    window.addEventListener('resize', updateTimelineLine);
-
-    return () => {
-      window.cancelAnimationFrame(animationFrameId);
-      resizeObserver.disconnect();
-      window.removeEventListener('resize', updateTimelineLine);
-    };
-  }, []);
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (isButtonDisabled) return;
@@ -176,7 +108,7 @@ export default function ComingSoon() {
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm'>
           <div className='w-full max-w-md rounded-xl border border-sage-100 bg-white p-6 shadow-2xl sm:p-8'>
             <div className='flex w-full flex-row items-center justify-start gap-2'>
-              <img src={'./logos/logo_ando.png'} alt='Logo Ando' className='h-22 sm:h-28 md:h-28 w-auto object-cover' />
+              <img src={'./logos/LogoAndo.png'} alt='Logo Ando' className='h-22 sm:h-28 md:h-28 w-auto object-cover' />
               <img src={'./logos/desafio_capri.png'} alt='Logo Desafío Capri' className='h-20 sm:h-24 md:h-24 w-auto object-cover' />
             </div>
 
@@ -314,23 +246,9 @@ export default function ComingSoon() {
       </section>
 
       <section className='overflow-hidden mx-auto flex min-h-screen w-full max-w-300 flex-col gap-4 px-4 pb-10 pt-0 sm:px-5'>
-        <section ref={timelineSectionRef} className='relative rounded-xl bg-white px-4 py-5 shadow-sm'>
-          {timelineLineStyle.height > 0 && (
-            <span
-              aria-hidden='true'
-              className='pointer-events-none absolute z-0 border-l-[2.5px] border-dotted border-teal-600 transform -translate-x-1/2'
-              style={{
-                top: `${timelineLineStyle.top}px`,
-                left: `${timelineLineStyle.left}px`,
-                height: `${timelineLineStyle.height}px`,
-              }}
-            />
-          )}
-
-          <div className='relative z-10 flex items-start gap-3'>
-            <div
-              ref={timelineTitleIconRef}
-              className='flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-teal-50 shadow-sm'>
+        <section className='rounded-xl bg-white px-4 py-5 shadow-sm'>
+          <div className='flex items-start gap-3'>
+            <div className='flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-teal-50 shadow-sm'>
               <div className='flex h-9 w-9 items-center justify-center rounded-full bg-teal-600 text-white shadow-sm'>
                 <Calendar className='z-10 h-4.5 w-4.5' strokeWidth={2} />
               </div>
@@ -342,7 +260,9 @@ export default function ComingSoon() {
             </div>
           </div>
 
-          <div className='relative z-10 mt-6'>
+          <div className='relative mt-6'>
+            {/* <span className='absolute bottom-12.5 left-5.75 -top-15 z-0 border-l-[2.5px] border-dotted border-teal-600' /> */}
+
             <div className='space-y-4'>
               {/* Card 0 */}
               <div className='relative flex items-stretch gap-0'>
@@ -369,7 +289,6 @@ export default function ComingSoon() {
                   </div>
                 </div>
               </div>
-
               {/* Card 1 */}
               <div className='relative flex items-stretch gap-0'>
                 <div className='relative flex w-12 shrink-0 items-center justify-center'>
@@ -392,7 +311,6 @@ export default function ComingSoon() {
                 </div>
               </div>
 
-              {/* Card 2 */}
               <div className='relative flex items-stretch gap-0'>
                 <div className='relative flex w-12 shrink-0 items-center justify-center'>
                   <span className='absolute left-5 top-1/2 z-0 h-[2.5px] w-12.5 -translate-y-1/2 bg-teal-400' />
@@ -416,13 +334,10 @@ export default function ComingSoon() {
                 </div>
               </div>
 
-              {/* Card 3 */}
               <div className='relative flex items-stretch gap-0'>
                 <div className='relative flex w-12 shrink-0 items-center justify-center'>
                   <span className='absolute left-5 top-1/2 z-0 h-[2.5px] w-12.5 -translate-y-1/2 bg-teal-400' />
-                  <div
-                    ref={lastTimelineDotRef}
-                    className='relative z-10 flex h-4 w-4 items-center justify-center rounded-full border-[2.5px] border-teal-600 bg-white'>
+                  <div className='relative z-10 flex h-4 w-4 items-center justify-center rounded-full border-[2.5px] border-teal-600 bg-white'>
                     <div className='relative z-10 h-1.5 w-1.5 rounded-full bg-teal-600' />
                   </div>
                 </div>
