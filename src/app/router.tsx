@@ -1,6 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom';
-import HomePage from '../pages/HomePage';
 import Layout from '../components/Layout/Layout';
+import HomePage from '../pages/HomePage';
+import ComingSoonPage from '../pages/ComingSoonPage';
 
 export const router = createBrowserRouter([
   {
@@ -8,11 +9,11 @@ export const router = createBrowserRouter([
     children: [
       {
         path: '/',
-        element: <div>esta es la pagina informativa</div>,
+        element: <HomePage />,
       },
       {
         path: '/ando_desafio_capri',
-        element: <HomePage />,
+        element: <ComingSoonPage />,
       },
     ],
   },

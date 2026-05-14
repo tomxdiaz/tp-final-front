@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Flag, Trophy, Music, MapPin, Navigation, TriangleAlert, Calendar, Compass, Leaf, Droplet, ChevronDown } from 'lucide-react';
+import { Flag, Trophy, Music, MapPin, Navigation, TriangleAlert, Calendar, Compass, Leaf, Droplet } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabaseService } from '../../services/supabase.service';
 
@@ -52,11 +52,11 @@ export default function ComingSoon() {
   const isButtonDisabled = buttonStatus === 'loading' || buttonStatus === 'success';
 
   useEffect(() => {
-    const timeLeft = getTimeLeft();
+    // const timeLeft = getTimeLeft();
 
-    if (timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds === 0) {
-      navigate('/');
-    }
+    // if (timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds === 0) {
+    //   navigate('/');
+    // }
 
     const intervalId = window.setInterval(() => {
       setTimeLeft(getTimeLeft());
@@ -110,7 +110,7 @@ export default function ComingSoon() {
     <main className='min-h-screen w-full bg-sage-50 text-teal-900'>
       {isPopupOpen && (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm'>
-          <div className='w-full max-w-md rounded-[28px] border border-sage-100 bg-white p-6 shadow-2xl sm:p-8'>
+          <div className='w-full max-w-md rounded-xl border border-sage-100 bg-white p-6 shadow-2xl sm:p-8'>
             <div className='flex w-full flex-row items-center justify-start gap-2'>
               <img src={'./logos/LogoAndo.png'} alt='Logo Ando' className='h-22 sm:h-28 md:h-28 w-auto object-cover' />
               <img src={'./logos/desafio_capri.png'} alt='Logo Desafío Capri' className='h-20 sm:h-24 md:h-24 w-auto object-cover' />
@@ -142,7 +142,7 @@ export default function ComingSoon() {
               <button
                 type='submit'
                 disabled={isButtonDisabled}
-                className={`w-full rounded-2xl px-5 py-3 text-base font-semibold text-white shadow-md transition active:scale-[0.99] disabled:scale-100 ${buttonClassName}`}>
+                className={`w-full rounded-2xl px-5 py-3 text-base font-semibold text-white shadow-md transition ${buttonClassName}`}>
                 {buttonMessage}
               </button>
             </form>
@@ -152,106 +152,105 @@ export default function ComingSoon() {
         </div>
       )}
 
-      <section className='mx-auto flex min-h-screen w-full max-w-[460px] flex-col gap-4 px-4 pb-10 pt-0 sm:px-5'>
-        <section className='relative w-screen left-1/2 -translate-x-1/2'>
-          <div className='relative overflow-hidden rounded-none bg-white shadow-lg'>
-            <div className='relative h-[430px]'>
-              <img
-                src={'./images/Hero.JPG'}
-                alt='Paisaje de montaña y naturaleza outdoor'
-                className='absolute inset-0 h-full w-full object-cover object-[50%100%]'
-              />
-              {/* Degradado solo abajo para dejar la imagen viva arriba */}
-              <div className='absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent' />
+      <section className='relative left-1/2 w-full -translate-x-1/2'>
+        <div className='relative overflow-hidden rounded-none bg-white shadow-lg'>
+          <div className='relative h-80 md:h-105'>
+            <img
+              src={'./images/hero_image.jpg'}
+              alt='Paisaje de montaña y naturaleza outdoor'
+              className='inset-0 h-full w-full object-cover object-[50%100%]'
+            />
 
-              {/* Logo Ando flotando en esquina superior derecha */}
-              <div className='absolute right-8 top-15'>
-                <img src={'./logos/LogoAndo.png'} alt='Logo Ando' className='h-20 w-auto object-contain drop-shadow-md' />
-              </div>
+            <div className='absolute inset-0 bg-linear-to-t from-black/90 via-black/30 to-transparent' />
 
-              <div className='absolute left-5 top-12'>
-                <img src={'./logos/desafio_capri_blanco.png'} alt='Logo Desafio Capri' className='h-28 w-auto object-contain' />
-              </div>
+            {/* <div className='absolute right-8 top-15'>
+              <img src={'./logos/logo_ando.png'} alt='Logo Ando' className='h-20 w-auto object-contain drop-shadow-md' />
+            </div>
 
-              <div className='absolute bottom-5 left-5 right-5'>
-                <h1 className='text-[36px] font-semibold uppercase tracking-[0.06em] text-white drop-shadow-sm'>DESAFIO CAPRI</h1>
-                <p className='mt-2 text-sm text-white/90'>Trail running en Esquel, Patagonia.</p>
+            <div className='absolute left-5 top-12'>
+              <img src={'./logos/desafio_capri_blanco.png'} alt='Logo Desafio Capri' className='h-28 w-auto object-contain' />
+            </div> */}
 
-                <div className='mt-3 flex flex-wrap items-center gap-4 text-[11px] font-semibold uppercase tracking-[0.15em] text-white/90'>
-                  <div className='flex items-center gap-2'>
-                    <svg className='h-4 w-4' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='1.7' strokeLinecap='round' strokeLinejoin='round'>
-                      <rect x='3' y='4.5' width='18' height='16' rx='2' />
-                      <path d='M8 3v3M16 3v3M3 9h18' />
-                    </svg>
-                    16 DE MAYO DE 2026
-                  </div>
+            <div className='absolute bottom-12 left-5 right-5'>
+              <h1 className='text-4xl font-semibold uppercase tracking-[0.06em] text-white drop-shadow-sm'>DESAFIO CAPRI</h1>
+              <p className='mt-2 text-sm text-white/90'>Trail running en Esquel, Patagonia.</p>
 
-                  <div className='flex items-center gap-2'>
-                    <svg className='h-4 w-4' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='1.7' strokeLinecap='round' strokeLinejoin='round'>
-                      <circle cx='12' cy='12' r='9' />
-                      <path d='M12 7v5l3 2' />
-                    </svg>
-                    11:00 HS
-                  </div>
+              <div className='mt-3 flex flex-wrap items-center gap-4 text-[11px] font-semibold uppercase tracking-[0.15em] text-white/90'>
+                <div className='flex items-center gap-2'>
+                  <Calendar className='h-4 w-4' strokeWidth={1.7} />
+                  16 DE MAYO DE 2026
+                </div>
+
+                <div className='flex items-center gap-2'>
+                  <svg
+                    className='h-4 w-4'
+                    viewBox='0 0 24 24'
+                    fill='none'
+                    stroke='currentColor'
+                    strokeWidth='1.7'
+                    strokeLinecap='round'
+                    strokeLinejoin='round'>
+                    <circle cx='12' cy='12' r='9' />
+                    <path d='M12 7v5l3 2' />
+                  </svg>
+                  11:00 HS
                 </div>
               </div>
             </div>
           </div>
+        </div>
 
-          <div className='relative z-10 -mt-4 px-4'>
-            <div className='mx-auto min-h-[104px] max-w-[420px] rounded-[18px] bg-teal-700 px-3 py-3.5 text-white shadow-md'>
+        <div className='relative z-10 -mt-8 px-4 mb-4'>
+          <div className='mx-auto min-h-26 max-w-150 rounded-xl bg-teal-700 px-3 py-3.5 text-white shadow-md'>
+            <img
+              src={'./logos/desafio_capri_blanco.png'}
+              alt='Logo Desafio Capri'
+              className='mx-auto mb-4 h-20 w-auto object-contain md:h-28'
+            />
 
-                <img src={'./logos/desafio_capri_blanco.png'} alt='Logo Desafio Capri' className='h-20 md:h-28 mx-auto mb-4 w-auto object-contain' />
-             
-              <p className='text-center text-[11px] font-semibold uppercase tracking-[0.25em] text-sage-200'>
-                ¿Estás preparado para este desafío?
-              </p>
+            <p className='text-center text-[11px] font-semibold uppercase tracking-[0.25em] text-sage-200'>
+              ¿Estás preparado para este desafío?
+            </p>
 
-              <div className='mt-4 grid grid-cols-4 divide-x divide-white/15 text-center'>
-                <div className='px-2'>
-                  <p className='text-[28px] font-bold leading-none'>{formatTime(timeLeft.days)}</p>
-                  <p className='mt-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/70'>Días</p>
-                </div>
-                <div className='px-2'>
-                  <p className='text-[28px] font-bold leading-none'>{formatTime(timeLeft.hours)}</p>
-                  <p className='mt-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/70'>Hs</p>
-                </div>
-                <div className='px-2'>
-                  <p className='text-[28px] font-bold leading-none'>{formatTime(timeLeft.minutes)}</p>
-                  <p className='mt-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/70'>Min</p>
-                </div>
-                <div className='px-2'>
-                  <p className='text-[28px] font-bold leading-none'>{formatTime(timeLeft.seconds)}</p>
-                  <p className='mt-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/70'>Seg</p>
-                </div>
+            <div className='mt-4 grid grid-cols-4 divide-x divide-white/15 text-center'>
+              <div className='px-2'>
+                <p className='text-[28px] font-bold leading-none'>{formatTime(timeLeft.days)}</p>
+                <p className='mt-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/70'>Días</p>
+              </div>
+              <div className='px-2'>
+                <p className='text-[28px] font-bold leading-none'>{formatTime(timeLeft.hours)}</p>
+                <p className='mt-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/70'>Hs</p>
+              </div>
+              <div className='px-2'>
+                <p className='text-[28px] font-bold leading-none'>{formatTime(timeLeft.minutes)}</p>
+                <p className='mt-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/70'>Min</p>
+              </div>
+              <div className='px-2'>
+                <p className='text-[28px] font-bold leading-none'>{formatTime(timeLeft.seconds)}</p>
+                <p className='mt-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/70'>Seg</p>
               </div>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section className='rounded-[22px] bg-white px-4 py-5 shadow-sm'>
+      <section className='overflow-hidden mx-auto flex min-h-screen w-full max-w-300 flex-col gap-4 px-4 pb-10 pt-0 sm:px-5'>
+        <section className='rounded-xl bg-white px-4 py-5 shadow-sm'>
           <div className='flex items-start gap-3'>
-            <div className='flex h-12 w-12 shrink-0 items-center justify-center rounded-full shadow-sm bg-teal-50'>
+            <div className='flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-teal-50 shadow-sm'>
               <div className='flex h-9 w-9 items-center justify-center rounded-full bg-teal-600 text-white shadow-sm'>
-                <svg className='h-[18px] w-[18px]' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'>
-                  <rect x='3' y='4' width='18' height='18' rx='2' ry='2' />
-                  <line x1='16' y1='2' x2='16' y2='6' />
-                  <line x1='8' y1='2' x2='8' y2='6' />
-                  <line x1='3' y1='10' x2='21' y2='10' />
-                  <rect x='8' y='14' width='8' height='4' rx='1' />
-                </svg>
+                <Calendar className='z-10 h-4.5 w-4.5' strokeWidth={2} />
               </div>
             </div>
 
             <div className='pt-0.5'>
-              <h2 className='text-[16px] font-bold text-teal-800'>Ando Info | Cronograma y Puntos Clave</h2>
-              <p className='mt-1 text-[12px] leading-snug text-teal-700'>Todo lo que necesitás saber para moverte el día del evento:</p>
+              <h2 className='text-base font-bold text-teal-800'>Ando Info | Cronograma y Puntos Clave</h2>
+              <p className='mt-1 text-xs leading-snug text-teal-700'>Todo lo que necesitás saber para moverte el día del evento:</p>
             </div>
           </div>
 
           <div className='relative mt-6'>
-            {/* Línea vertical punteada */}
-            <span className='absolute bottom-[87px] left-[29px] top-[-60px] z-0 border-l-[2.5px] border-dotted border-teal-600' />
+            <span className='absolute bottom-12.5 left-5.75 -top-15 z-0 border-l-[2.5px] border-dotted border-teal-600' />
 
             <div className='space-y-4'>
               <div className='relative flex items-stretch gap-0'>
@@ -283,83 +282,71 @@ export default function ComingSoon() {
               {/* Card 1 */}
               <div className='relative flex items-stretch gap-0'>
                 <div className='relative flex w-12 shrink-0 items-center justify-center'>
-                  {/* Línea horizontal */}
-                  <span className='absolute left-[40px] top-1/2 z-0 h-[2.5px] w-[50px] -translate-y-1/2 bg-teal-400' />
-                  {/* Punto bullseye verde */}
-                  <div className='relative z-10 flex h-4 w-4 items-center justify-center rounded-full border-[2.5px] border-teal-600 bg-transparent'>
+                  <span className='absolute left-5 top-1/2 z-0 h-[2.5px] w-12.5 -translate-y-1/2 bg-teal-400' />
+                  <div className='relative z-10 flex h-4 w-4 items-center justify-center rounded-full border-[2.5px] border-teal-600 bg-white'>
                     <div className='relative z-10 h-1.5 w-1.5 rounded-full bg-teal-600' />
                   </div>
                 </div>
-                
-                {/* Espaciador */}
-                <div className='relative z-0 flex items-center justify-center w-2 shrink-0' />
-                
-                <div className='relative flex-1 pl-4'>
-                  <div className='absolute left-[-4px] top-1/2 z-10 -translate-y-1/2 flex h-[50px] w-[50px] items-center justify-center rounded-full bg-[#EAEFE9]'>
-                    <div className='flex h-[36px] w-[36px] items-center justify-center rounded-full bg-teal-400 text-white shadow-sm'>
+
+                <div className='relative flex-1'>
+                  <div className='flex items-center gap-4 min-h-16 rounded-xl border border-teal-100 bg-teal-50 p-2'>
+                    <div className='flex h-9 w-9 items-center justify-center rounded-full bg-teal-400 text-white shadow-sm shrink-0'>
                       <Flag className='h-4 w-4' strokeWidth={2.2} />
                     </div>
-                  </div>
-                  
-                  <div className='min-h-[64px] rounded-[12px] border border-teal-100 bg-teal-50 py-3 pl-[54px] pr-4'>
-                    <p className='text-[13px] font-bold text-teal-800'>Largada: 11:00 hs (Puntual) en El Tambo.</p>
-                    <p className='mt-0.5 text-[12px] text-teal-700'>Procura llegar con anticipación suficiente para el control de chips.</p>
+                    <div>
+                      <p className='text-[13px] font-bold text-teal-800'>Largada: 11:00 hs (Puntual) en El Tambo.</p>
+                      <p className='mt-0.5 text-xs text-teal-700'>Procura llegar con anticipación suficiente para el control de chips.</p>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Card 2 */}
               <div className='relative flex items-stretch gap-0'>
                 <div className='relative flex w-12 shrink-0 items-center justify-center'>
-                  {/* Línea horizontal */}
-                  <span className='absolute left-[40px] top-1/2 z-0 h-[2.5px] w-[50px] -translate-y-1/2 bg-teal-400' />
-                  {/* Punto bullseye verde */}
-                  <div className='relative z-10 flex h-4 w-4 items-center justify-center rounded-full border-[2.5px] border-teal-600 bg-transparent'>
+                  <span className='absolute left-5 top-1/2 z-0 h-[2.5px] w-12.5 -translate-y-1/2 bg-teal-400' />
+                  <div className='relative z-10 flex h-4 w-4 items-center justify-center rounded-full border-[2.5px] border-teal-600 bg-white'>
                     <div className='relative z-10 h-1.5 w-1.5 rounded-full bg-teal-600' />
                   </div>
                 </div>
-                
-                {/* Espaciador */}
-                <div className='relative z-0 flex items-center justify-center w-2 shrink-0' />
-                
-                <div className='relative flex-1 pl-4'>
-                  <div className='absolute left-[-4px] top-1/2 z-10 -translate-y-1/2 flex h-[50px] w-[50px] items-center justify-center rounded-full bg-[#EAEFE9]'>
-                    <div className='flex h-[36px] w-[36px] items-center justify-center rounded-full bg-teal-400 text-white shadow-sm'>
+
+                <div className='relative flex-1'>
+                  <div className='flex items-center gap-4 min-h-16 rounded-xl border border-teal-100 bg-teal-50 p-2'>
+                    <div className='flex h-9 w-9 items-center justify-center rounded-full bg-teal-400 text-white shadow-sm shrink-0'>
                       <Trophy className='h-4 w-4' strokeWidth={2.2} />
                     </div>
-                  </div>
-                  
-                  <div className='min-h-[64px] rounded-[12px] border border-teal-100 bg-teal-50 py-3 pl-[54px] pr-4'>
-                    <p className='text-[13px] font-bold text-teal-800'>Llegada y Premiación: En 25 de Mayo y Rivadavia.</p>
-                    <p className='mt-0.5 text-[12px] text-teal-700'>Premiación estimada a las 15:00 hs. (sujeta a cambios informados por locución).</p>
+                    <div>
+                      <p className='text-[13px] font-bold text-teal-800'>Llegada y Premiación: En 25 de Mayo y Rivadavia.</p>
+                      <p className='mt-0.5 text-xs text-teal-700'>
+                        Premiación estimada a las 15:00 hs. (sujeta a cambios informados por locución).
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Card 3 */}
               <div className='relative flex items-stretch gap-0'>
                 <div className='relative flex w-12 shrink-0 items-center justify-center'>
-                  {/* Línea horizontal */}
-                  <span className='absolute left-[40px] top-1/2 z-0 h-[2.5px] w-[50px] -translate-y-1/2 bg-teal-400' />
-                  {/* Punto bullseye verde */}
-                  <div className='relative z-10 flex h-4 w-4 items-center justify-center rounded-full border-[2.5px] border-teal-600 bg-transparent'>
+                  <span className='absolute left-5 top-1/2 z-0 h-[2.5px] w-12.5 -translate-y-1/2 bg-teal-400' />
+                  <div className='relative z-10 flex h-4 w-4 items-center justify-center rounded-full border-[2.5px] border-teal-600 bg-white'>
                     <div className='relative z-10 h-1.5 w-1.5 rounded-full bg-teal-600' />
                   </div>
                 </div>
-                
-                {/* Espaciador */}
-                <div className='relative z-0 flex items-center justify-center w-2 shrink-0' />
-                
-                <div className='relative flex-1 pl-4'>
-                  <div className='absolute left-[-4px] top-1/2 z-10 -translate-y-1/2 flex h-[50px] w-[50px] items-center justify-center rounded-full bg-[#EAEFE9]'>
-                    <div className='flex h-[36px] w-[36px] items-center justify-center rounded-full bg-teal-400 text-white shadow-sm'>
+
+                <div className='relative flex-1'>
+                  <div className='flex items-center gap-4 min-h-16 rounded-xl border border-teal-100 bg-teal-50 p-2'>
+                    <div className='flex h-9 w-9 items-center justify-center rounded-full bg-teal-400 text-white shadow-sm shrink-0'>
                       <Music className='h-4 w-4' strokeWidth={2.2} />
                     </div>
-                  </div>
-                  
-                  <div className='min-h-[64px] rounded-[12px] border border-teal-100 bg-teal-50 py-3 pl-[54px] pr-4'>
-                    <p className='text-[13px] font-bold text-teal-800'>Capri Fest: 22:00 hs en VER DISCO CLUB.</p>
-                    <p className='mt-0.5 text-[12px] text-teal-700'>Acceso libre y gratuito para corredores y acompañantes.<br />Menores hasta las 00:00 hs.<br />Corredores deben llevar la pulsera del kit para participar de los sorteos.</p>
+                    <div>
+                      <p className='text-[13px] font-bold text-teal-800'>Capri Fest: 22:00 hs en VER DISCO CLUB.</p>
+                      <p className='mt-0.5 text-xs text-teal-700'>
+                        Acceso libre y gratuito para corredores y acompañantes.
+                        <br />
+                        Menores hasta las 00:00 hs.
+                        <br />
+                        Corredores deben llevar la pulsera del kit para participar de los sorteos.
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -367,17 +354,16 @@ export default function ComingSoon() {
           </div>
         </section>
 
-        <section className='rounded-[12px] bg-white p-4 shadow-sm'>
+        <section className='rounded-xl bg-white p-4 shadow-sm'>
           <div className='mb-3 flex items-center gap-2'>
-            <MapPin className='h-[18px] w-[18px] text-earth-900' />
+            <MapPin className='h-4.5 w-4.5 text-earth-900' />
             <h2 className='text-[15px] font-bold text-earth-900'>Ubicación</h2>
           </div>
 
-          <div className='flex flex-col md:flex-row overflow-hidden rounded-[10px] shadow-md bg-earth-50'>
-            {/* Left Column */}
+          <div className='flex flex-col overflow-hidden rounded-xl bg-earth-50 shadow-md'>
             <div className='flex flex-1 items-center justify-between gap-4 p-4 pl-5'>
               <div className='flex flex-col justify-center'>
-                <p className='text-[14px] font-bold text-earth-900'>EL TAMBO</p>
+                <p className='text-sm font-bold text-earth-900'>EL TAMBO</p>
                 <p className='mt-0.5 text-[13px] text-earth-900'>Largada: 11:00 hs</p>
               </div>
 
@@ -385,17 +371,16 @@ export default function ComingSoon() {
                 href='https://www.google.com/maps/search/?api=1&query=-42.87940096434897,-71.28898438152648'
                 target='_blank'
                 rel='noopener noreferrer'
-                className='flex shrink-0 items-center gap-2 rounded-[20px] shadow-sm px-4 py-[7px] transition-colors bg-earth-200'>
+                className='flex shrink-0 items-center gap-2 rounded-xl bg-earth-200 px-4 py-1.75 shadow-sm transition-colors'>
                 <Navigation className='h-3.5 w-3.5 text-earth-900' />
-                <span className='text-[11px] font-bold text-earth-900 tracking-[0.02em]'>ABRIR EN MAPS</span>
+                <span className='text-[11px] font-bold tracking-[0.02em] text-earth-900'>ABRIR EN MAPS</span>
               </a>
             </div>
 
-            {/* Right Column (Map) */}
-            <div className='relative h-[130px] w-full shrink-0 overflow-hidden border-t border-[#E9F0E9] md:h-auto md:min-h-[130px] md:w-[50%] md:border-l md:border-t-0'>
+            <div className='relative h-32.5 rounded-xl w-full shrink-0 overflow-hidden border-t border-[#E9F0E9] md:h-75 md:border-l md:border-t-0'>
               <iframe
                 src='https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d517.5858036615381!2d-71.28898438152648!3d-42.87940096434897!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e1!3m2!1ses!ar!4v1778593929524!5m2!1ses!ar'
-                className='absolute left-[-2px] top-[-65px] h-[calc(100%+100px)] w-[calc(100%+4px)] pointer-events-none'
+                className='absolute h-full w-[calc(100%+4px)]'
                 style={{ border: 0 }}
                 allowFullScreen={false}
                 loading='lazy'
@@ -405,15 +390,14 @@ export default function ComingSoon() {
           </div>
         </section>
 
-        <section className='rounded-[12px] border border-[#E9F0E9] bg-white px-4 py-4 shadow-sm'>
+        <section className='rounded-xl border border-[#E9F0E9] bg-white px-4 py-4 shadow-sm'>
           <div className='flex items-start gap-2.5'>
-            
             <div>
               <div className='flex items-end gap-2.5'>
-                 <div className='flex items-center gap-2'>
-                  <TriangleAlert className='h-[18px] w-[18px] text-sage-800' />
+                <div className='flex items-center gap-2'>
+                  <TriangleAlert className='h-4.5 w-4.5 text-sage-800' />
                   <h2 className='text-[15px] font-bold text-sage-800'>Guía del Corredor - Ando Tips</h2>
-              </div>              
+                </div>
               </div>
               <p className='mt-1 text-[13px] leading-5 text-sage-800'>
                 La seguridad y el respeto por el entorno son nuestra prioridad. Seguí estas instrucciones para garantizar tu clasificación:
@@ -422,54 +406,54 @@ export default function ComingSoon() {
           </div>
 
           <div className='mt-4 flex flex-col gap-2.5'>
-            {/* Row 1 */}
-            <div className='flex items-center gap-3 rounded-[12px] border border-sage-200/80 bg-sage-400/80 p-3 shadow-sm md:gap-4 md:p-4'>
-              <div className='relative flex h-[54px] w-[54px] shrink-0 items-center justify-center rounded-full border-[2px] border-sage-600/80 bg-sage-800/80'>
+            <div className='flex items-center gap-3 rounded-xl border border-sage-200/80 bg-sage-400/80 p-3 shadow-sm md:gap-4 md:p-4'>
+              <div className='relative flex h-13.5 w-13.5 shrink-0 items-center justify-center rounded-full border-2 border-sage-600/80 bg-sage-800/80'>
                 <Calendar className='h-6 w-6 text-white' strokeWidth={1.8} />
               </div>
               <div className='flex-1'>
-                <p className='text-[14px] font-bold text-sage-900'>Ando Tip | Identidad y Clasificación</p>
-                <p className='mt-0.5 text-[12px] leading-[1.35] text-sage-900'>
-                  El dorsal debe estar siempre al frente y visible sobre cualquier prenda. No lo coloques en la espalda. Perder el dorsal o no llevarlo correctamente implica la descalificación inmediata de la carrera.
+                <p className='text-sm font-bold text-sage-900'>Ando Tip | Identidad y Clasificación</p>
+                <p className='mt-0.5 text-xs leading-[1.35] text-sage-900'>
+                  El dorsal debe estar siempre al frente y visible sobre cualquier prenda. No lo coloques en la espalda. Perder el dorsal o
+                  no llevarlo correctamente implica la descalificación inmediata de la carrera.
                 </p>
               </div>
             </div>
 
-            {/* Row 2 */}
-            <div className='flex items-center gap-3 rounded-[12px] border border-sage-200/70 bg-sage-400/60 p-3 shadow-sm md:gap-4 md:p-4'>
-              <div className='flex h-[54px] w-[54px] shrink-0 items-center justify-center rounded-full border-[2px] border-sage-600/70 bg-sage-800/70'>
-                <Compass className='h-[26px] w-[26px] text-white' strokeWidth={1.8} />
+            <div className='flex items-center gap-3 rounded-xl border border-sage-200/70 bg-sage-400/60 p-3 shadow-sm md:gap-4 md:p-4'>
+              <div className='flex h-13.5 w-13.5 shrink-0 items-center justify-center rounded-full border-2 border-sage-600/70 bg-sage-800/70'>
+                <Compass className='h-6.5 w-6.5 text-white' strokeWidth={1.8} />
               </div>
               <div className='flex-1'>
-                <p className='text-[14px] font-bold text-sage-900'>Ando Tip | Navegación y Seguridad</p>
-                <p className='mt-0.5 text-[12px] leading-[1.35] text-sage-900'>
-                  El circuito está marcado para que siempre puedas ver de una cinta a la otra. Si avanzás unos metros y no visualizás la próxima cinta flúor, detenete y volvé a la anterior para retomar el camino correcto. No improvises senderos.
+                <p className='text-sm font-bold text-sage-900'>Ando Tip | Navegación y Seguridad</p>
+                <p className='mt-0.5 text-xs leading-[1.35] text-sage-900'>
+                  El circuito está marcado para que siempre puedas ver de una cinta a la otra. Si avanzás unos metros y no visualizás la
+                  próxima cinta flúor, detenete y volvé a la anterior para retomar el camino correcto. No improvises senderos.
                 </p>
               </div>
             </div>
 
-            {/* Row 3 */}
-            <div className='flex items-center gap-3 rounded-[12px] border border-sage-200/60 bg-sage-400/40 p-3 shadow-sm md:gap-4 md:p-4'>
-              <div className='flex h-[54px] w-[54px] shrink-0 items-center justify-center rounded-full border-[2px] border-sage-600/60 bg-sage-800/60'>
-                <Leaf className='h-[26px] w-[26px] text-white' strokeWidth={1.8} />
+            <div className='flex items-center gap-3 rounded-xl border border-sage-200/60 bg-sage-400/40 p-3 shadow-sm md:gap-4 md:p-4'>
+              <div className='flex h-13.5 w-13.5 shrink-0 items-center justify-center rounded-full border-2 border-sage-600/60 bg-sage-800/60'>
+                <Leaf className='h-6.5 w-6.5 text-white' strokeWidth={1.8} />
               </div>
               <div className='flex-1'>
-                <p className='text-[14px] font-bold text-sage-900'>Ando Tip | Compromiso Ambiental</p>
-                <p className='mt-0.5 text-[12px] leading-[1.35] text-sage-900'>
-                  Huella cero. Está estrictamente prohibido arrojar envoltorios o geles en el recorrido. Usá los cestos en los Puestos de Abastecimiento. Cuidar el cerro es responsabilidad de todos.
+                <p className='text-sm font-bold text-sage-900'>Ando Tip | Compromiso Ambiental</p>
+                <p className='mt-0.5 text-xs leading-[1.35] text-sage-900'>
+                  Huella cero. Está estrictamente prohibido arrojar envoltorios o geles en el recorrido. Usá los cestos en los Puestos de
+                  Abastecimiento. Cuidar el cerro es responsabilidad de todos.
                 </p>
               </div>
             </div>
 
-            {/* Row 4 */}
-            <div className='flex items-center gap-3 rounded-[12px] border border-sage-200/50 bg-sage-400/20 p-3 shadow-sm md:gap-4 md:p-4'>
-              <div className='flex h-[54px] w-[54px] shrink-0 items-center justify-center rounded-full border-[2px] border-sage-600/50 bg-sage-800/50'>
-                <Droplet className='h-[26px] w-[26px] text-white' strokeWidth={1.8} />
+            <div className='flex items-center gap-3 rounded-xl border border-sage-200/50 bg-sage-400/20 p-3 shadow-sm md:gap-4 md:p-4'>
+              <div className='flex h-13.5 w-13.5 shrink-0 items-center justify-center rounded-full border-2 border-sage-600/50 bg-sage-800/50'>
+                <Droplet className='h-6.5 w-6.5 text-white' strokeWidth={1.8} />
               </div>
               <div className='flex-1'>
-                <p className='text-[14px] font-bold text-sage-900'>Ando Tip | Hidratación Responsable</p>
-                <p className='mt-0.5 text-[12px] leading-[1.35] text-sage-900'>
-                  Sé autosuficiente. No habrá vasos descartables en los puestos. Asegurate de llevar tu propio recipiente (soft flask, mochila o botellita) para recargar.
+                <p className='text-sm font-bold text-sage-900'>Ando Tip | Hidratación Responsable</p>
+                <p className='mt-0.5 text-xs leading-[1.35] text-sage-900'>
+                  Sé autosuficiente. No habrá vasos descartables en los puestos. Asegurate de llevar tu propio recipiente (soft flask,
+                  mochila o botellita) para recargar.
                 </p>
               </div>
             </div>
@@ -478,19 +462,21 @@ export default function ComingSoon() {
         </section>
         
 
-        <section className='relative overflow-hidden rounded-[22px] border border-teal-100/60 bg-teal-50 px-4 py-4 shadow-sm'>
-          <img src={'./logos/LogoAndo.png'} alt='' className='pointer-events-none absolute -right-2 -bottom-1 h-50 opacity-16' />
+        <section className='relative overflow-hidden rounded-xl border border-teal-100/60 bg-teal-50 px-4 py-4 shadow-sm'>
+          <img src={'./logos/logo_ando.png'} alt='' className='pointer-events-none absolute -bottom-1 -right-2 h-50 opacity-16' />
           <h2 className='text-[17px] font-semibold text-teal-800/90'>Explorá con confianza. Explorá con Ando.</h2>
           <p className='mt-3 text-[13px] leading-6 text-teal-700'>
-            Ando es mucho más que una plataforma: es nuestra insignia de seguridad, compromiso ambiental y calidad en cada aventura. Nacimos en Esquel para ser el puente entre quienes buscan descubrir la inmensidad de la Patagonia y los prestadores locales que mejor conocen sus secretos.
+            Ando es mucho más que una plataforma: es nuestra insignia de seguridad, compromiso ambiental y calidad en cada aventura. Nacimos
+            en Esquel para ser el puente entre quienes buscan descubrir la inmensidad de la Patagonia y los prestadores locales que mejor
+            conocen sus secretos.
           </p>
           <p className='mt-3 text-[13px] leading-6 text-teal-800/90'>
-            Creemos en un turismo que cuida lo que amamos. Por eso, cada experiencia conectada por Ando garantiza estándares de seguridad profesional y un respeto absoluto por nuestro entorno natural.
+            Creemos en un turismo que cuida lo que amamos. Por eso, cada experiencia conectada por Ando garantiza estándares de seguridad
+            profesional y un respeto absoluto por nuestro entorno natural.
           </p>
           <p className='mt-3 text-[13px] leading-6 text-teal-800/90'>
             Hoy te acompañamos en el Desafío Capri. Mañana, te acompañamos a descubrir tu próxima meta.
           </p>
-
         </section>
       </section>
     </main>
