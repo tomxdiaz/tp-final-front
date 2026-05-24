@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import { PlusCircle as PlusCircleIcon } from 'lucide-react';
 import { useAuth } from '../../auth/useAuth';
 
@@ -17,15 +17,15 @@ const navItems = [
 const Header = () => {
   const { appUser } = useAuth();
 
-  console.log(appUser);
+  const userInitials = appUser?.email.slice(0, 2).toUpperCase();
 
   return (
     <header className='h-20 bg-teal-800 text-sage-200'>
       <div className='mx-auto flex h-full max-w-7xl items-center justify-between px-6'>
         <div className='flex items-center gap-10'>
-          <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-white'>
+          <Link to='/' className='flex h-8 w-8 items-center justify-center rounded-lg bg-white'>
             <img className='h-[80%] w-[80%]' src='/logos/logo_ando.png' alt='Ando logo' />
-          </div>
+          </Link>
 
           <nav className='flex gap-8'>
             {navItems.map((item) => (
@@ -51,9 +51,20 @@ const Header = () => {
             Publicar
           </button>
 
-          <div className='flex h-10 w-10 items-center justify-center rounded-full bg-teal-700 font-sans font-bold text-white'>
-            {appUser.email.slice(0, 2).toUpperCase()}
-          </div>
+          {appUser ? (
+            <Link
+              to='/dashboard'
+              className='flex h-10 w-10 items-center justify-center rounded-full bg-teal-700 font-sans font-bold text-white transition hover:bg-teal-600'
+              title={appUser.email}>
+              {userInitials}
+            </Link>
+          ) : (
+            <Link
+              to='/login'
+              className='rounded-xl border border-sage-200 px-5 py-3 font-sans text-sm font-bold text-sage-50 transition hover:bg-teal-700'>
+              Iniciar sesión
+            </Link>
+          )}
         </div>
       </div>
     </header>

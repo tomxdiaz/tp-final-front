@@ -4,6 +4,7 @@ import HomePage from '../pages/HomePage';
 import ComingSoonPage from '../pages/ComingSoonPage';
 import LoginPage from '../pages/LoginPage';
 import DashboardPage from '../pages/DashboardPage';
+import Register from '../components/Auth/Register';
 
 export const router = createBrowserRouter([
   {
@@ -23,7 +24,7 @@ export const router = createBrowserRouter([
       },
       {
         path: '/register',
-        element: <div>Register here</div>,
+        element: <Register />,
       },
 
       {
