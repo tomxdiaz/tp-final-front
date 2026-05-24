@@ -1,40 +1,70 @@
-import { env } from '../config/env';
+import { supabase } from './supabaseClient';
 
-type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 
-type ApiRequestOptions = {
-  method?: HttpMethod;
+if (!API_URL) {
+  throw new Error('Missing VITE_API_BASE_URL environment variable');
+}
+
+type RequestMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+
+type ApiClientOptions = {
+  method?: RequestMethod;
   body?: unknown;
-  token?: string | null;
-  headers?: HeadersInit;
+  headers?: Record<string, string>;
+  requireAuth?: boolean;
 };
 
-export async function apiClient<T>(endpoint: string, options: ApiRequestOptions = {}): Promise<T> {
-  const { method = 'GET', body, token, headers } = options;
+export class ApiError extends Error {
+  status: number;
+  data: unknown;
 
-  const response = await fetch(`${env.apiBaseUrl}${endpoint}`, {
+  constructor(message: string, status: number, data: unknown) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+    this.data = data;
+  }
+}
+
+async function getAccessToken(): Promise<string | null> {
+  const { data, error } = await supabase.auth.getSession();
+
+  if (error) {
+    console.error('Error getting Supabase session:', error);
+    return null;
+  }
+
+  return data.session?.access_token ?? null;
+}
+
+export async function apiClient<T>(endpoint: string, options: ApiClientOptions = {}): Promise<T> {
+  const { method = 'GET', body, headers = {}, requireAuth = true } = options;
+
+  const token = requireAuth ? await getAccessToken() : null;
+
+  if (requireAuth && !token) {
+    throw new Error('User is not authenticated');
+  }
+
+  const response = await fetch(`${API_URL}${endpoint}`, {
     method,
     headers: {
-      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      ...(body ? { 'Content-Type': 'application/json' } : {}),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...headers,
     },
     body: body ? JSON.stringify(body) : undefined,
   });
 
+  const contentType = response.headers.get('content-type');
+
+  const data: unknown = contentType?.includes('application/json') ? await response.json() : await response.text();
+
   if (!response.ok) {
-    const errorBody = await response.json().catch(() => null);
-
-    throw {
-      status: response.status,
-      message: errorBody?.message ?? 'Unexpected API error',
-      details: errorBody,
-    };
+    throw new ApiError(`API request failed with status ${response.status}`, response.status, data);
   }
 
-  if (response.status === 204) {
-    return undefined as T;
-  }
-
-  return response.json();
+  return data as T;
 }
