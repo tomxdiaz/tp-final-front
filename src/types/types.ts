@@ -1,4 +1,4 @@
-export type AppRole = 'USER' | 'PROVIDER' | 'SUPER_USER';
+export type AppRole = 'USER' | 'SUPER_USER';
 
 export type AppUser = {
   id: string;
