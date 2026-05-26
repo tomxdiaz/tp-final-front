@@ -3,42 +3,14 @@ import {
   MapPin as MapPinIcon,
   Clock as ClockIcon,
   Star as StarIcon,
-  Mountain as MountainIcon,
-  Snowflake as SnowflakeIcon,
   Wind as WindIcon,
-  Waves as WavesIcon,
-  Bike as BikeIcon,
-  Leaf as LeafIcon,
+  // Bike as BikeIcon,
+  // Leaf as LeafIcon,
   SlidersHorizontal as SlidersHorizontalIcon,
 } from 'lucide-react';
-import { useState } from 'react';
-
-const categories = [
-  {
-    name: 'Montaña',
-    icon: MountainIcon,
-  },
-  {
-    name: 'Nieve',
-    icon: SnowflakeIcon,
-  },
-  {
-    name: 'Aire',
-    icon: WindIcon,
-  },
-  {
-    name: 'Agua',
-    icon: WavesIcon,
-  },
-  {
-    name: 'Ruedas',
-    icon: BikeIcon,
-  },
-  {
-    name: 'Fauna',
-    icon: LeafIcon,
-  },
-];
+import { useEffect, useState } from 'react';
+import { categoryService } from '../../services/category.service';
+import type { Category } from '../../types/types';
 
 const difficulties = ['Baja', 'Media', 'Alta', 'Extrema'];
 
@@ -47,7 +19,6 @@ const mockActivities = [
     title: 'Trekking Fitz Roy',
     category: 'Montaña',
     difficulty: 'Alta',
-    icon: MountainIcon,
     location: 'Chaltén',
     duration: '8 hs',
     price: '$12.500',
@@ -59,7 +30,6 @@ const mockActivities = [
     title: 'Kayak Nahuel Huapi',
     category: 'Agua',
     difficulty: 'Media',
-    icon: WavesIcon,
     location: 'Bariloche',
     duration: '4 hs',
     price: '$8.900',
@@ -71,7 +41,6 @@ const mockActivities = [
     title: 'Ski Cerro Catedral',
     category: 'Nieve',
     difficulty: 'Media',
-    icon: SnowflakeIcon,
     location: 'Bariloche',
     duration: '1 día',
     price: '$18.000',
@@ -95,6 +64,7 @@ const mockActivities = [
 
 export default function Home() {
   const [searchText, setSearchText] = useState('');
+  const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>([]);
 
@@ -156,6 +126,20 @@ export default function Home() {
     return matchesText && matchesCategory && matchesDifficulty;
   });
 
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const allCategories = await categoryService.getAllCategories();
+        setCategories(allCategories);
+      } catch (error) {
+        console.error('Error fetching all categories:', error);
+        setCategories([]);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
   return (
     <div className='min-h-screen bg-sage-50 font-sans text-teal-900'>
       {/* Hero */}
@@ -204,15 +188,6 @@ export default function Home() {
                 <h2 className='font-display text-[2.5rem] uppercase leading-none tracking-[0.04em] text-teal-900 md:text-[3rem]'>
                   Categorías
                 </h2>
-
-                {hasActiveFilters && (
-                  <button
-                    type='button'
-                    onClick={clearAllFilters}
-                    className='font-sans text-sm font-bold text-sage-600 transition hover:text-teal-800'>
-                    Limpiar filtros
-                  </button>
-                )}
               </div>
 
               <div className='flex flex-wrap gap-3'>
@@ -226,7 +201,6 @@ export default function Home() {
                 </button>
 
                 {categories.map((category) => {
-                  const Icon = category.icon;
                   const isSelected = selectedCategories.includes(category.name);
 
                   return (
@@ -237,7 +211,6 @@ export default function Home() {
                       className={`flex items-center gap-3 rounded-xl px-7 py-4 font-sans text-body font-bold transition hover:scale-[1.02] ${
                         isSelected ? 'bg-teal-800 text-white shadow-md' : 'bg-teal-50 text-teal-700 hover:bg-teal-100'
                       }`}>
-                      <Icon size={18} />
                       {category.name}
                     </button>
                   );
@@ -291,8 +264,6 @@ export default function Home() {
             {activities.length > 0 ? (
               <div className='grid grid-cols-1 gap-7 sm:grid-cols-2 xl:grid-cols-3'>
                 {activities.map((experience) => {
-                  const Icon = experience.icon;
-
                   return (
                     <article
                       key={experience.title}
@@ -303,7 +274,6 @@ export default function Home() {
                         <div className='absolute inset-0 bg-linear-to-b from-teal-900/35 to-transparent' />
 
                         <div className='absolute left-4 top-4 flex items-center gap-2 rounded-xl bg-teal-700/80 px-4 py-2 font-sans text-sm font-bold text-white backdrop-blur'>
-                          <Icon size={14} />
                           {experience.category}
                         </div>
 
@@ -362,7 +332,15 @@ export default function Home() {
           <aside className='hidden pt-16 xl:block'>
             <div className='sticky top-8 space-y-10 font-sans text-body font-bold text-sage-600'>
               <div>
-                <p className='mb-10'>{activities.length} resultados</p>
+                <p>{activities.length} resultados</p>
+                {hasActiveFilters && (
+                  <button
+                    type='button'
+                    onClick={clearAllFilters}
+                    className='font-sans text-sm font-bold text-sage-600 transition hover:text-teal-800 mb-10'>
+                    Limpiar filtros
+                  </button>
+                )}
 
                 {hasSelectedCategories && (
                   <div className='mb-8 space-y-2'>

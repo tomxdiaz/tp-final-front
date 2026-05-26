@@ -78,7 +78,7 @@ export default function Login() {
 
         <p className='mt-5 text-center font-sans text-sm text-sage-800'>
           ¿Todavía no tenés cuenta?{' '}
-          <Link to='/login' className='font-bold text-teal-800 hover:text-teal-700'>
+          <Link to='/register' className='font-bold text-teal-800 hover:text-teal-700'>
             Registrarse
           </Link>
         </p>
