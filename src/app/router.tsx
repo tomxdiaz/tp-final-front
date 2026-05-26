@@ -2,6 +2,9 @@ import { createBrowserRouter } from 'react-router-dom';
 import Layout from '../components/Layout/Layout';
 import HomePage from '../pages/HomePage';
 import ComingSoonPage from '../pages/ComingSoonPage';
+import LoginPage from '../pages/LoginPage';
+import DashboardPage from '../pages/DashboardPage';
+import Register from '../components/Auth/Register';
 
 export const router = createBrowserRouter([
   {
@@ -14,6 +17,19 @@ export const router = createBrowserRouter([
       {
         path: '/ando_desafio_capri',
         element: <ComingSoonPage />,
+      },
+      {
+        path: '/login',
+        element: <LoginPage />,
+      },
+      {
+        path: '/register',
+        element: <Register />,
+      },
+
+      {
+        path: '/dashboard',
+        element: <DashboardPage />,
       },
     ],
   },

@@ -1,8 +1,45 @@
 /* src/index.css */
 
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700&display=swap');
+
 @import 'tailwindcss';
 
 @theme {
+  /* Fonts */
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-sans: 'Nunito', sans-serif;
+
+  /* Typography scale */
+  --text-hero-title: 6rem;
+  --text-hero-title--line-height: 1;
+  --text-hero-title--letter-spacing: 0.04em;
+  --text-hero-title--font-weight: 400;
+
+  --text-section-title: 4.5rem;
+  --text-section-title--line-height: 1;
+  --text-section-title--letter-spacing: 0.04em;
+  --text-section-title--font-weight: 400;
+
+  --text-heading-1: 3rem;
+  --text-heading-1--line-height: 1.1;
+  --text-heading-1--font-weight: 700;
+
+  --text-heading-2: 2.25rem;
+  --text-heading-2--line-height: 1.15;
+  --text-heading-2--font-weight: 600;
+
+  --text-heading-3: 1.5rem;
+  --text-heading-3--line-height: 1.25;
+  --text-heading-3--font-weight: 600;
+
+  --text-body-large: 1.125rem;
+  --text-body-large--line-height: 1.65;
+  --text-body-large--font-weight: 400;
+
+  --text-body: 1rem;
+  --text-body--line-height: 1.6;
+  --text-body--font-weight: 400;
+
   /* Teal */
   --color-teal-50: #e8f2f2;
   --color-teal-100: #c2dedd;
@@ -38,4 +75,5 @@
 
 body {
   margin: 0;
+  font-family: var(--font-sans);
 }
