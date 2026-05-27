@@ -24,6 +24,7 @@ export type Activity = {
   title: string;
   description: string | null;
   category_id: number;
+  category?: Category;
   starting_hour: string;
   meeting_point: string | null;
   latitude: number | null;

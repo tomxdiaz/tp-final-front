@@ -1,69 +1,14 @@
-import {
-  Search as SearchIcon,
-  MapPin as MapPinIcon,
-  Clock as ClockIcon,
-  Star as StarIcon,
-  Wind as WindIcon,
-  // Bike as BikeIcon,
-  // Leaf as LeafIcon,
-  SlidersHorizontal as SlidersHorizontalIcon,
-} from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { Search as SearchIcon, Clock as ClockIcon, SlidersHorizontal as SlidersHorizontalIcon } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
 import { categoryService } from '../../services/category.service';
-import type { Category } from '../../types/types';
+import type { Activity, Category } from '../../types/types';
+import { activityService } from '../../services/activity.service';
 
 const difficulties = ['Baja', 'Media', 'Alta', 'Extrema'];
 
-const mockActivities = [
-  {
-    title: 'Trekking Fitz Roy',
-    category: 'Montaña',
-    difficulty: 'Alta',
-    location: 'Chaltén',
-    duration: '8 hs',
-    price: '$12.500',
-    rating: '4.9',
-    reviews: '128',
-    image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80',
-  },
-  {
-    title: 'Kayak Nahuel Huapi',
-    category: 'Agua',
-    difficulty: 'Media',
-    location: 'Bariloche',
-    duration: '4 hs',
-    price: '$8.900',
-    rating: '4.8',
-    reviews: '96',
-    image: 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=900&q=80',
-  },
-  {
-    title: 'Ski Cerro Catedral',
-    category: 'Nieve',
-    difficulty: 'Media',
-    location: 'Bariloche',
-    duration: '1 día',
-    price: '$18.000',
-    rating: '4.7',
-    reviews: '214',
-    image: 'https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?auto=format&fit=crop&w=900&q=80',
-  },
-  {
-    title: 'Parapente Bariloche',
-    category: 'Aire',
-    difficulty: 'Baja',
-    icon: WindIcon,
-    location: 'Bariloche',
-    duration: '2 hs',
-    price: '$15.000',
-    rating: '5',
-    reviews: '67',
-    image: 'https://images.unsplash.com/photo-1470770903676-69b98201ea1c?auto=format&fit=crop&w=900&q=80',
-  },
-];
-
 export default function Home() {
   const [searchText, setSearchText] = useState('');
+  const [activities, setActivities] = useState<Activity[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>([]);
@@ -111,33 +56,56 @@ export default function Home() {
 
   const normalizedSearchText = searchText.trim().toLowerCase();
 
-  const activities = mockActivities.filter((activity) => {
-    const matchesText =
-      normalizedSearchText.length === 0 ||
-      activity.title.toLowerCase().includes(normalizedSearchText) ||
-      activity.category.toLowerCase().includes(normalizedSearchText) ||
-      activity.difficulty.toLowerCase().includes(normalizedSearchText) ||
-      activity.location.toLowerCase().includes(normalizedSearchText);
+  const filteredActivities = useMemo(() => {
+    return activities.filter((activity) => {
+      const normalizedTitle = activity.title?.toLowerCase() ?? '';
 
-    const matchesCategory = !hasSelectedCategories || selectedCategories.includes(activity.category);
+      const normalizedDifficulty = activity.difficulty?.toLowerCase() ?? '';
 
-    const matchesDifficulty = !hasSelectedDifficulties || selectedDifficulties.includes(activity.difficulty);
+      const normalizedCategory = activity.category?.name?.toLowerCase() ?? '';
 
-    return matchesText && matchesCategory && matchesDifficulty;
-  });
+      const matchesText =
+        normalizedSearchText.length === 0 ||
+        normalizedTitle.includes(normalizedSearchText) ||
+        normalizedDifficulty.includes(normalizedSearchText);
+
+      const matchesCategory =
+        !hasSelectedCategories || selectedCategories.some((category) => category.toLowerCase() === normalizedCategory);
+
+      const matchesDifficulty =
+        !hasSelectedDifficulties || selectedDifficulties.some((difficulty) => difficulty.toLowerCase() === normalizedDifficulty);
+
+      return matchesText && matchesCategory && matchesDifficulty;
+    });
+  }, [activities, normalizedSearchText, hasSelectedCategories, hasSelectedDifficulties, selectedCategories, selectedDifficulties]);
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const allCategories = await categoryService.getAllCategories();
+
         setCategories(allCategories);
       } catch (error) {
         console.error('Error fetching all categories:', error);
+
         setCategories([]);
       }
     };
 
+    const fetchActivities = async () => {
+      try {
+        const allActivities = await activityService.getActivities();
+
+        setActivities(allActivities);
+      } catch (error) {
+        console.error('Error fetching activities:', error);
+
+        setActivities([]);
+      }
+    };
+
     fetchCategories();
+    fetchActivities();
   }, []);
 
   return (
@@ -194,7 +162,7 @@ export default function Home() {
                 <button
                   type='button'
                   onClick={clearCategories}
-                  className={`flex items-center gap-3 rounded-xl px-7 py-4 font-sans text-body font-bold transition hover:scale-[1.02] ${
+                  className={`flex items-center gap-3 rounded-xl px-7 py-4 font-sans text-body font-bold transition hover:scale-[1.02] hover:cursor-pointer ${
                     !hasSelectedCategories ? 'bg-teal-800 text-white shadow-md' : 'bg-white text-teal-800 shadow-sm hover:bg-teal-50'
                   }`}>
                   Todas
@@ -208,7 +176,7 @@ export default function Home() {
                       key={category.name}
                       type='button'
                       onClick={() => toggleCategory(category.name)}
-                      className={`flex items-center gap-3 rounded-xl px-7 py-4 font-sans text-body font-bold transition hover:scale-[1.02] ${
+                      className={`flex items-center gap-3 rounded-xl px-7 py-4 font-sans text-body font-bold transition hover:scale-[1.02] hover:cursor-pointer ${
                         isSelected ? 'bg-teal-800 text-white shadow-md' : 'bg-teal-50 text-teal-700 hover:bg-teal-100'
                       }`}>
                       {category.name}
@@ -228,7 +196,7 @@ export default function Home() {
               <button
                 type='button'
                 onClick={clearDifficulties}
-                className={`rounded-full border px-5 py-2 font-sans text-sm font-bold shadow-sm transition ${
+                className={`rounded-full border px-5 py-2 font-sans text-sm font-bold shadow-sm transition hover:cursor-pointer ${
                   !hasSelectedDifficulties
                     ? 'border-teal-800 bg-teal-800 text-white'
                     : 'border-sage-100 bg-white text-sage-900 hover:bg-sage-50'
@@ -244,7 +212,7 @@ export default function Home() {
                     key={level}
                     type='button'
                     onClick={() => toggleDifficulty(level)}
-                    className={`rounded-full border px-5 py-2 font-sans text-sm font-bold shadow-sm transition ${
+                    className={`rounded-full border px-5 py-2 font-sans text-sm font-bold shadow-sm transition hover:cursor-pointer ${
                       isSelected ? 'border-teal-800 bg-teal-800 text-white' : 'border-sage-100 bg-white text-sage-900 hover:bg-sage-50'
                     }`}>
                     {level}
@@ -261,57 +229,46 @@ export default function Home() {
             </div>
 
             {/* Experience cards / Empty state */}
-            {activities.length > 0 ? (
+            {filteredActivities.length > 0 ? (
               <div className='grid grid-cols-1 gap-7 sm:grid-cols-2 xl:grid-cols-3'>
-                {activities.map((experience) => {
+                {filteredActivities.map((activity) => {
                   return (
                     <article
-                      key={experience.title}
-                      className='overflow-hidden rounded-2xl bg-white shadow-md transition hover:-translate-y-1 hover:shadow-xl'>
+                      key={activity.id}
+                      className='overflow-hidden rounded-2xl bg-white shadow-md transition hover:-translate-y-1 hover:shadow-xl hover:cursor-pointer'>
                       <div className='relative h-44'>
-                        <img src={experience.image} alt={experience.title} className='h-full w-full object-cover' />
+                        <img src='' alt={activity.title} className='h-full w-full object-cover' />
 
                         <div className='absolute inset-0 bg-linear-to-b from-teal-900/35 to-transparent' />
 
-                        <div className='absolute left-4 top-4 flex items-center gap-2 rounded-xl bg-teal-700/80 px-4 py-2 font-sans text-sm font-bold text-white backdrop-blur'>
-                          {experience.category}
-                        </div>
+                        {activity.category && (
+                          <div className='absolute left-4 top-4 flex items-center gap-2 rounded-xl bg-teal-700/80 px-4 py-2 font-sans text-sm font-bold text-white backdrop-blur'>
+                            {activity.category.name}
+                          </div>
+                        )}
 
                         <div className='absolute bottom-4 left-4 rounded-xl bg-white/90 px-4 py-2 font-sans text-sm font-bold text-teal-900 backdrop-blur'>
-                          {experience.difficulty}
+                          {activity.difficulty}
                         </div>
                       </div>
 
                       <div className='p-5'>
                         <h3 className='mb-3 font-display text-[1.5rem] uppercase leading-[1.05] tracking-[0.04em] text-teal-900'>
-                          {experience.title}
+                          {activity.title}
                         </h3>
 
                         <div className='mb-5 flex items-center gap-4 font-sans text-sm font-normal text-sage-600'>
                           <span className='flex items-center gap-1'>
-                            <MapPinIcon size={14} />
-                            {experience.location}
-                          </span>
-
-                          <span className='flex items-center gap-1'>
                             <ClockIcon size={14} />
-                            {experience.duration}
+                            {activity.duration_minutes} min
                           </span>
                         </div>
 
                         <div className='flex items-end justify-between'>
                           <div>
-                            <span className='font-sans text-[1.35rem] font-bold tracking-wide text-teal-900'>{experience.price}</span>
+                            <span className='font-sans text-[1.35rem] font-bold tracking-wide text-teal-900'>{activity.base_price}</span>
 
-                            <span className='ml-2 font-sans text-sm text-sage-600'>ARS</span>
-                          </div>
-
-                          <div className='flex items-center gap-1 font-sans text-body font-bold text-teal-900'>
-                            <StarIcon size={16} className='fill-earth-600 text-earth-600' />
-
-                            {experience.rating}
-
-                            <span className='text-sm font-normal text-sage-600'>({experience.reviews})</span>
+                            <span className='ml-1 font-sans text-sm text-sage-600'>ARS</span>
                           </div>
                         </div>
                       </div>
@@ -332,12 +289,13 @@ export default function Home() {
           <aside className='hidden pt-16 xl:block'>
             <div className='sticky top-8 space-y-10 font-sans text-body font-bold text-sage-600'>
               <div>
-                <p>{activities.length} resultados</p>
+                <p>{filteredActivities.length} resultados</p>
+
                 {hasActiveFilters && (
                   <button
                     type='button'
                     onClick={clearAllFilters}
-                    className='font-sans text-sm font-bold text-sage-600 transition hover:text-teal-800 mb-10'>
+                    className='mb-10 font-sans text-sm font-bold text-sage-600 transition hover:text-teal-800'>
                     Limpiar filtros
                   </button>
                 )}
