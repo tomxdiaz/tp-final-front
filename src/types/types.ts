@@ -26,10 +26,12 @@ export type Activity = {
   category_id: number;
   category?: Category;
   starting_hour: string;
+  location: string | null;
+  images: string[];
   meeting_point: string | null;
   latitude: number | null;
   longitude: number | null;
-  difficulty: ActivityDifficulty | null;
+  difficulty: 'BAJA' | 'MEDIA' | 'ALTA' | 'EXTREMA' | null;
   duration_minutes: number | null;
   base_price: number;
   currency: string;
