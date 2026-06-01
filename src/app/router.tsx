@@ -5,6 +5,7 @@ import ComingSoonPage from '../pages/ComingSoonPage';
 import LoginPage from '../pages/LoginPage';
 import DashboardPage from '../pages/DashboardPage';
 import Register from '../components/Auth/Register';
+import ActivityDetailPage from '../pages/ActivityDetailPage';
 
 export const router = createBrowserRouter([
   {
@@ -26,10 +27,13 @@ export const router = createBrowserRouter([
         path: '/register',
         element: <Register />,
       },
-
       {
         path: '/dashboard',
         element: <DashboardPage />,
+      },
+      {
+        path: '/activity/:id',
+        element: <ActivityDetailPage />,
       },
     ],
   },
