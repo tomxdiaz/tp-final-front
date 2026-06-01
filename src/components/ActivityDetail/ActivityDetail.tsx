@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { MapPin, Clock, Users, ArrowLeft, ShieldCheck } from 'lucide-react';
+import { MapPin, Clock, Timer, Users, ArrowLeft, ShieldCheck } from 'lucide-react';
 import { activityService } from '../../services/activity.service';
 import type { Activity } from '../../types/types';
 
@@ -69,13 +69,13 @@ export default function ActivityDetail() {
     );
   }
 
-  const heroImage = activity.images?.[0];
+  const heroImage = activity.images[0];
   const hasDaysOfWeek = activity.days_of_week && activity.days_of_week.length > 0;
   const hasAdditionalInfo = hasDaysOfWeek || activity.min_age !== null;
 
   return (
     <div className='min-h-screen bg-sage-50 font-sans text-teal-900'>
-      <main className='mx-auto max-w-7xl px-6 py-8'>
+      <div className='mx-auto max-w-7xl px-6 py-8'>
         <Link to='/' className='mb-6 flex items-center gap-2 font-sans text-body font-bold text-sage-600 transition hover:text-teal-800'>
           <ArrowLeft size={18} />
           Explorar actividades
@@ -142,7 +142,7 @@ export default function ActivityDetail() {
               </div>
 
               <div className='flex flex-col items-center gap-2 rounded-2xl bg-white p-5 shadow-sm'>
-                <Clock size={20} className='text-sage-600' />
+                <Timer size={20} className='text-sage-600' />
                 <span className='font-sans text-xs font-bold uppercase tracking-wide text-sage-600'>Horario</span>
                 <span className='font-sans text-sm font-bold text-teal-900'>{activity.starting_hour ?? '—'}</span>
               </div>
@@ -171,7 +171,7 @@ export default function ActivityDetail() {
                       <div className='flex flex-wrap gap-2'>
                         {activity.days_of_week.map((day) => (
                           <span key={day} className='rounded-full bg-teal-50 px-3 py-1 font-sans text-sm font-bold text-teal-800'>
-                            {DAY_NAMES[day]}
+                            {DAY_NAMES[day] ?? String(day)}
                           </span>
                         ))}
                       </div>
@@ -216,14 +216,14 @@ export default function ActivityDetail() {
                 Reservar esta experiencia
               </Link>
 
-              <p className='mt-3 flex items-center justify-center gap-2 font-sans text-xs text-teal-300'>
+              <p className='mt-3 flex items-center justify-center gap-2 font-sans text-xs text-teal-200'>
                 <ShieldCheck size={14} />
                 Pago seguro · Cancelación flexible
               </p>
             </div>
           </aside>
         </div>
-      </main>
+      </div>
     </div>
   );
 }
