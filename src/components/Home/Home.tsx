@@ -237,10 +237,9 @@ export default function Home() {
                     <Link
                       key={activity.id}
                       to={`/activity/${activity.id}`}
-                      className='block overflow-hidden rounded-2xl bg-white shadow-md transition hover:-translate-y-1 hover:shadow-xl'>
-                      <article>
-                        <div className='relative h-44'>
-                          <img src='' alt={activity.title} className='h-full w-full object-cover' />
+                      className='block overflow-hidden rounded-2xl bg-white shadow-md transition hover:-translate-y-1 hover:shadow-xl cursor-pointer'>
+                      <div className='relative h-44'>
+                          <img src={activity.images[0] ?? ''} alt={activity.title} className='h-full w-full object-cover' />
 
                           <div className='absolute inset-0 bg-linear-to-b from-teal-900/35 to-transparent' />
 
@@ -274,7 +273,7 @@ export default function Home() {
                             </div>
                           </div>
                         </div>
-                      </article>
+                      </div>
                     </Link>
                   );
                 })}

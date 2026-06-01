@@ -70,7 +70,7 @@ export default function ActivityDetail() {
   }
 
   const heroImage = activity.images[0];
-  const hasDaysOfWeek = activity.days_of_week && activity.days_of_week.length > 0;
+  const hasDaysOfWeek = activity.days_of_week.length > 0;
   const hasAdditionalInfo = hasDaysOfWeek || activity.min_age !== null;
 
   return (
@@ -144,7 +144,7 @@ export default function ActivityDetail() {
               <div className='flex flex-col items-center gap-2 rounded-2xl bg-white p-5 shadow-sm'>
                 <Timer size={20} className='text-sage-600' />
                 <span className='font-sans text-xs font-bold uppercase tracking-wide text-sage-600'>Horario</span>
-                <span className='font-sans text-sm font-bold text-teal-900'>{activity.starting_hour ?? '—'}</span>
+                <span className='font-sans text-sm font-bold text-teal-900'>{activity.starting_hour?.slice(0, 5) ?? '—'}</span>
               </div>
             </div>
 
