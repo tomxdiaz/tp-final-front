@@ -7,4 +7,10 @@ export const activityService = {
       requireAuth: false,
     });
   },
+
+  getActivityById: async (id: number) => {
+    return apiClient<Activity>(`/activity/${id}`, {
+      requireAuth: false,
+    });
+  },
 };
