@@ -28,15 +28,11 @@ function formatPrice(price: number): string {
 export default function ActivityDetail() {
   const { id } = useParams<{ id: string }>();
   const [activity, setActivity] = useState<Activity | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(!!id);
+  const [error, setError] = useState(!id);
 
   useEffect(() => {
-    if (!id) {
-      setError(true);
-      setLoading(false);
-      return;
-    }
+    if (!id) return;
 
     activityService
       .getActivityById(Number(id))
