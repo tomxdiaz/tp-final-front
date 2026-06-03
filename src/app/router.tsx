@@ -4,6 +4,7 @@ import HomePage from '../pages/HomePage';
 import ComingSoonPage from '../pages/ComingSoonPage';
 import LoginPage from '../pages/LoginPage';
 import DashboardPage from '../pages/DashboardPage';
+import ProfilePage from '../pages/ProfilePage';
 import Register from '../components/Auth/Register';
 import ActivityDetailPage from '../pages/ActivityDetailPage';
 
@@ -26,6 +27,10 @@ export const router = createBrowserRouter([
       {
         path: '/register',
         element: <Register />,
+      },
+      {
+        path: '/profile',
+        element: <ProfilePage />,
       },
       {
         path: '/dashboard',

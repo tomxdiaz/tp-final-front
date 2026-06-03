@@ -53,7 +53,7 @@ const Header = () => {
 
           {appUser ? (
             <Link
-              to='/dashboard'
+              to='/profile'
               className='flex h-10 w-10 items-center justify-center rounded-full bg-teal-700 font-sans font-bold text-white transition hover:bg-teal-600'
               title={appUser.email}>
               {userInitials}
