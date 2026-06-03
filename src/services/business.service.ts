@@ -8,7 +8,7 @@ export const businessService = {
     });
   },
 
-  
+
 
   createBusiness: async (business: CreateBusinessPayload) => {
     return apiClient<Business>('/business', {

@@ -96,18 +96,6 @@ export type CreateActivityPayload = {
   max_participants?: number;
 };
 
-export type Business = {
-  id: number;
-  app_user_id: string;
-  business_name: string;
-  description: string | null;
-  contact_email: string | null;
-  contact_phone: string | null;
-  verified: boolean;
-  created_at: string;
-  updated_at: string;
-};
-
 export type CreateBusinessPayload = {
   business_name: string;
   description?: string;

@@ -13,7 +13,7 @@ import {
   Users,
 } from 'lucide-react';
 import { useAuth } from '../../auth/useAuth';
-import { businessService, type BusinessProfileSummary } from '../../services/business.service';
+import { businessService} from '../../services/business.service';
 import type { Business } from '../../types/types';
 import { activityService } from '../../services/activity.service';
 import type { Activity } from '../../types/types';
@@ -51,7 +51,7 @@ export default function Profile() {
   const { appUser, session, loading } = useAuth();
   const location = useLocation();
 
-  const [summary, setSummary] = useState<BusinessProfileSummary | null>(null);
+
   const [business, setBusiness] = useState<Business | null>(null);
   const [activities, setActivities] = useState<Activity[]>([]);
   const [pageLoading, setPageLoading] = useState(true);
@@ -62,7 +62,6 @@ export default function Profile() {
     }
 
     if (!session || !appUser) {
-      setSummary(null);
       setBusiness(null);
       setActivities([]);
       setPageLoading(false);
@@ -75,8 +74,8 @@ export default function Profile() {
       setPageLoading(true);
 
       try {
-        const [summaryData, businessData, myActivities] = await Promise.all([
-          businessService.getMyProfileSummary().catch(() => null),
+        const [businessData, myActivities] = await Promise.all([
+        
           businessService.getMyBusiness().catch(() => null),
           activityService.getMyBusinessActivities().catch(() => [] as Activity[]),
         ]);
@@ -85,7 +84,6 @@ export default function Profile() {
           return;
         }
 
-        setSummary(summaryData);
         setBusiness(businessData);
         setActivities(myActivities);
       } finally {
@@ -115,18 +113,17 @@ export default function Profile() {
   }
 
   const userEmail = appUser?.email ?? session?.user.email ?? 'Tu cuenta';
-  const displayName = summary?.business.business_name
+  const displayName = business?.business_name
     ?? [appUser?.first_name, appUser?.last_name].filter(Boolean).join(' ').trim()
     ?? userEmail;
   const initials = getInitials(displayName || userEmail);
-  const businessData = business ?? summary?.business ?? null;
+  const businessData = business;
   const contactEmail = businessData?.contact_email ?? userEmail;
   const contactPhone = businessData?.contact_phone ?? appUser?.phone ?? null;
-  const memberSince = formatSince(summary?.business.created_at ?? appUser?.created_at ?? session?.user.created_at ?? new Date().toISOString());
+  const memberSince = formatSince(business?.created_at ?? appUser?.created_at ?? session?.user.created_at ?? new Date().toISOString());
   const accountRole = appUser?.global_role ?? 'USER';
   const accountCreatedAt = appUser?.created_at ?? session?.user.created_at ?? null;
   const activeActivities = activities.filter((activity) => activity.is_active);
-  const yearsOfExperience = summary?.years_of_experience ?? 0;
 
   const sobreMi = (
     <div className='rounded-3xl bg-white p-6 shadow-md shadow-black/5'>
@@ -209,12 +206,7 @@ export default function Profile() {
                 </div>
               </div>
 
-              <a
-                href={`mailto:${contactEmail}`}
-                className='inline-flex items-center justify-center gap-2 rounded-2xl bg-sage-200 px-5 py-3 font-sans text-sm font-bold text-teal-900 transition hover:bg-sage-100'>
-                <MessageCircle size={16} />
-                Contactar
-              </a>
+
             </div>
           </div>
         </div>
@@ -223,19 +215,9 @@ export default function Profile() {
           <div className='grid gap-8 xl:grid-cols-[380px_1fr]'>
             <aside className='space-y-6'>
               <div className='rounded-3xl bg-white p-5 shadow-md shadow-black/5'>
-                <div className='grid grid-cols-3 gap-3 text-center'>
-                  <div className='rounded-2xl border border-sage-100 p-4'>
-                    <div className='font-display text-[2.4rem] leading-none text-teal-900'>{activities.length}</div>
-                    <div className='mt-1 font-sans text-sm text-sage-700'>Actividades</div>
-                  </div>
-                  <div className='rounded-2xl border border-sage-100 p-4'>
-                    <div className='font-display text-[2.4rem] leading-none text-teal-900'>{yearsOfExperience}</div>
-                    <div className='mt-1 font-sans text-sm text-sage-700'>Años exp.</div>
-                  </div>
-                  <div className='rounded-2xl border border-sage-100 p-4'>
-                    <div className='font-display text-[2.4rem] leading-none text-teal-900'>{summary?.review_summary.total_reviews ?? 0}</div>
-                    <div className='mt-1 font-sans text-sm text-sage-700'>Reseñas</div>
-                  </div>
+                <div className='text-center'>
+                  <div className='font-display text-[2.4rem] leading-none text-teal-900'>{activities.length}</div>
+                  <div className='mt-1 font-sans text-sm text-sage-700'>Actividades</div>
                 </div>
               </div>
 
