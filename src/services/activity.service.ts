@@ -8,6 +8,12 @@ export const activityService = {
     });
   },
 
+  getActivityById: async (id: number) => {
+    return apiClient<Activity>(`/activity/${id}`, {
+      requireAuth: false,
+    });
+  },
+
   createActivity: async (activity: CreateActivityPayload) => {
     return apiClient<Activity[]>('/activity', {
       method: 'POST',

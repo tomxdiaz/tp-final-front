@@ -1,5 +1,6 @@
 import { Search as SearchIcon, Clock as ClockIcon, SlidersHorizontal as SlidersHorizontalIcon } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { categoryService } from '../../services/category.service';
 import type { Activity, Category } from '../../types/types';
 import { activityService } from '../../services/activity.service';
@@ -233,46 +234,46 @@ export default function Home() {
               <div className='grid grid-cols-1 gap-7 sm:grid-cols-2 xl:grid-cols-3'>
                 {filteredActivities.map((activity) => {
                   return (
-                    <article
+                    <Link
                       key={activity.id}
-                      className='overflow-hidden rounded-2xl bg-white shadow-md transition hover:-translate-y-1 hover:shadow-xl hover:cursor-pointer'>
+                      to={`/activity/${activity.id}`}
+                      className='block overflow-hidden rounded-2xl bg-white shadow-md transition hover:-translate-y-1 hover:shadow-xl cursor-pointer'>
                       <div className='relative h-44'>
-                        <img src='' alt={activity.title} className='h-full w-full object-cover' />
+                          <img src={activity.images[0] ?? ''} alt={activity.title} className='h-full w-full object-cover' />
 
-                        <div className='absolute inset-0 bg-linear-to-b from-teal-900/35 to-transparent' />
+                          <div className='absolute inset-0 bg-linear-to-b from-teal-900/35 to-transparent' />
 
-                        {activity.category && (
-                          <div className='absolute left-4 top-4 flex items-center gap-2 rounded-xl bg-teal-700/80 px-4 py-2 font-sans text-sm font-bold text-white backdrop-blur'>
-                            {activity.category.name}
-                          </div>
-                        )}
+                          {activity.category && (
+                            <div className='absolute left-4 top-4 flex items-center gap-2 rounded-xl bg-teal-700/80 px-4 py-2 font-sans text-sm font-bold text-white backdrop-blur'>
+                              {activity.category.name}
+                            </div>
+                          )}
 
-                        <div className='absolute bottom-4 left-4 rounded-xl bg-white/90 px-4 py-2 font-sans text-sm font-bold text-teal-900 backdrop-blur'>
-                          {activity.difficulty}
-                        </div>
-                      </div>
-
-                      <div className='p-5'>
-                        <h3 className='mb-3 font-display text-[1.5rem] uppercase leading-[1.05] tracking-[0.04em] text-teal-900'>
-                          {activity.title}
-                        </h3>
-
-                        <div className='mb-5 flex items-center gap-4 font-sans text-sm font-normal text-sage-600'>
-                          <span className='flex items-center gap-1'>
-                            <ClockIcon size={14} />
-                            {activity.duration_minutes} min
-                          </span>
-                        </div>
-
-                        <div className='flex items-end justify-between'>
-                          <div>
-                            <span className='font-sans text-[1.35rem] font-bold tracking-wide text-teal-900'>{activity.base_price}</span>
-
-                            <span className='ml-1 font-sans text-sm text-sage-600'>ARS</span>
+                          <div className='absolute bottom-4 left-4 rounded-xl bg-white/90 px-4 py-2 font-sans text-sm font-bold text-teal-900 backdrop-blur'>
+                            {activity.difficulty}
                           </div>
                         </div>
-                      </div>
-                    </article>
+
+                        <div className='p-5'>
+                          <h3 className='mb-3 font-display text-[1.5rem] uppercase leading-[1.05] tracking-[0.04em] text-teal-900'>
+                            {activity.title}
+                          </h3>
+
+                          <div className='mb-5 flex items-center gap-4 font-sans text-sm font-normal text-sage-600'>
+                            <span className='flex items-center gap-1'>
+                              <ClockIcon size={14} />
+                              {activity.duration_minutes} min
+                            </span>
+                          </div>
+
+                          <div className='flex items-end justify-between'>
+                            <div>
+                              <span className='font-sans text-[1.35rem] font-bold tracking-wide text-teal-900'>{activity.base_price}</span>
+                              <span className='ml-1 font-sans text-sm text-sage-600'>ARS</span>
+                            </div>
+                          </div>
+                        </div>
+                    </Link>
                   );
                 })}
               </div>
