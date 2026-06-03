@@ -1,5 +1,5 @@
-import { NavLink, Link } from 'react-router-dom';
-import { PlusCircle as PlusCircleIcon } from 'lucide-react';
+import { NavLink, Link, useNavigate } from 'react-router-dom';
+import { LogOut, PlusCircle as PlusCircleIcon } from 'lucide-react';
 import { useAuth } from '../../auth/useAuth';
 
 const navItems = [
@@ -15,9 +15,15 @@ const navItems = [
 ];
 
 const Header = () => {
-  const { appUser } = useAuth();
+  const { appUser, signOut } = useAuth();
+  const navigate = useNavigate();
 
   const userInitials = appUser?.email.slice(0, 2).toUpperCase();
+
+  const handleLogout = async () => {
+    await signOut();
+    navigate('/');
+  };
 
   return (
     <header className='h-20 bg-teal-800 text-sage-200'>
@@ -52,12 +58,20 @@ const Header = () => {
           </button>
 
           {appUser ? (
-            <Link
-              to='/profile'
-              className='flex h-10 w-10 items-center justify-center rounded-full bg-teal-700 font-sans font-bold text-white transition hover:bg-teal-600'
-              title={appUser.email}>
-              {userInitials}
-            </Link>
+            <>
+              <Link
+                to='/profile'
+                className='flex h-10 w-10 items-center justify-center rounded-full bg-teal-700 font-sans font-bold text-white transition hover:bg-teal-600'
+                title={appUser.email}>
+                {userInitials}
+              </Link>
+              <button
+                onClick={handleLogout}
+                className='flex h-10 w-10 items-center justify-center rounded-xl bg-teal-700 text-sage-200 transition hover:bg-teal-600 hover:text-white'
+                title='Cerrar sesión'>
+                <LogOut size={18} />
+              </button>
+            </>
           ) : (
             <Link
               to='/login'
