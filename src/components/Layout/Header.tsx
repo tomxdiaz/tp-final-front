@@ -1,6 +1,9 @@
 import { NavLink, Link } from 'react-router-dom';
 import { PlusCircle as PlusCircleIcon } from 'lucide-react';
 import { useAuth } from '../../auth/useAuth';
+import type { Business } from '../../types/types';
+import { useEffect, useState } from 'react';
+import { businessService } from '../../services/business.service';
 
 const navItems = [
   {
@@ -16,8 +19,25 @@ const navItems = [
 
 const Header = () => {
   const { appUser } = useAuth();
+  const [business, setBusiness] = useState<Business | null>(null);
 
   const userInitials = appUser?.email.slice(0, 2).toUpperCase();
+
+  useEffect(() => {
+    const fetchBusiness = async () => {
+      try {
+        const business = await businessService.getMyBusiness();
+
+        setBusiness(business);
+      } catch (error) {
+        console.error('Error fetching business:', error.data?.message);
+
+        setBusiness(null);
+      }
+    };
+
+    fetchBusiness();
+  }, []);
 
   return (
     <header className='h-20 bg-teal-800 text-sage-200'>
@@ -46,10 +66,14 @@ const Header = () => {
         </div>
 
         <div className='flex items-center gap-3'>
-          <button className='flex items-center gap-2 rounded-xl bg-sage-200 px-5 py-3 font-sans text-sm font-bold text-teal-800 transition hover:bg-sage-100'>
-            <PlusCircleIcon size={16} />
-            Publicar
-          </button>
+          {business && business.verified && (
+            <Link
+              to={'/create-activity'}
+              className='flex items-center gap-2 rounded-xl bg-sage-200 px-5 py-3 font-sans text-sm font-bold text-teal-800 transition hover:bg-sage-100'>
+              <PlusCircleIcon size={16} />
+              Publicar
+            </Link>
+          )}
 
           {appUser ? (
             <Link

@@ -5,6 +5,8 @@ import ComingSoonPage from '../pages/ComingSoonPage';
 import LoginPage from '../pages/LoginPage';
 import DashboardPage from '../pages/DashboardPage';
 import Register from '../components/Auth/Register';
+import CreateBusinessPage from '../pages/CreateBusinessPage';
+import CreateActivityPage from '../pages/CreateActivityPage';
 
 export const router = createBrowserRouter([
   {
@@ -26,10 +28,17 @@ export const router = createBrowserRouter([
         path: '/register',
         element: <Register />,
       },
-
       {
         path: '/dashboard',
         element: <DashboardPage />,
+      },
+      {
+        path: '/create-business',
+        element: <CreateBusinessPage />,
+      },
+      {
+        path: '/create-activity',
+        element: <CreateActivityPage />,
       },
     ],
   },

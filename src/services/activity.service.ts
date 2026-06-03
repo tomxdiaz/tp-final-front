@@ -1,10 +1,18 @@
 import { apiClient } from '../lib/apiClient';
-import type { Activity } from '../types/types';
+import type { Activity, CreateActivityPayload } from '../types/types';
 
 export const activityService = {
   getActivities: async () => {
     return apiClient<Activity[]>('/activity', {
       requireAuth: false,
+    });
+  },
+
+  createActivity: async (activity: CreateActivityPayload) => {
+    return apiClient<Activity[]>('/activity', {
+      method: 'POST',
+      body: activity,
+      requireAuth: true,
     });
   },
 };

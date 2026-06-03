@@ -65,7 +65,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         await loadAppUser(initialSession);
       } catch (error) {
-        console.error('Error loading app user:', error);
+        console.error('Error loading app user:', error.data?.message);
         setAppUser(null);
       } finally {
         if (mounted) {
