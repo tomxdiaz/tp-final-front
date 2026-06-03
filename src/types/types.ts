@@ -54,3 +54,63 @@ export type Activity = {
   created_at: string;
   updated_at: string;
 };
+
+export type CreateActivityPayload = {
+  title: string;
+  description?: string;
+
+  category_id: number;
+
+  /**
+   * Format: HH:MM
+   * Example: "09:00"
+   */
+  starting_hour: string;
+
+  location?: string;
+
+  images?: string[];
+
+  meeting_point?: string;
+
+  latitude?: number;
+
+  longitude?: number;
+
+  difficulty?: ActivityDifficulty;
+
+  duration_minutes?: number;
+
+  base_price: number;
+
+  currency?: string;
+
+  /**
+   * 0 = Sunday, 6 = Saturday
+   * Example: [1, 3, 5]
+   */
+  days_of_week: number[];
+
+  min_age?: number;
+
+  max_participants?: number;
+};
+
+export type Business = {
+  id: number;
+  app_user_id: string;
+  business_name: string;
+  description: string | null;
+  contact_email: string | null;
+  contact_phone: string | null;
+  verified: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+export type CreateBusinessPayload = {
+  business_name: string;
+  description?: string;
+  contact_email?: string;
+  contact_phone?: string;
+};

@@ -6,6 +6,8 @@ import LoginPage from '../pages/LoginPage';
 import DashboardPage from '../pages/DashboardPage';
 import ProfilePage from '../pages/ProfilePage';
 import Register from '../components/Auth/Register';
+import CreateBusinessPage from '../pages/CreateBusinessPage';
+import CreateActivityPage from '../pages/CreateActivityPage';
 import ActivityDetailPage from '../pages/ActivityDetailPage';
 
 export const router = createBrowserRouter([
@@ -35,6 +37,14 @@ export const router = createBrowserRouter([
       {
         path: '/dashboard',
         element: <DashboardPage />,
+      },
+      {
+        path: '/create-business',
+        element: <CreateBusinessPage />,
+      },
+      {
+        path: '/create-activity',
+        element: <CreateActivityPage />,
       },
       {
         path: '/activity/:id',
