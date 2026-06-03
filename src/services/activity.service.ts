@@ -8,6 +8,12 @@ export const activityService = {
     });
   },
 
+  getMyBusinessActivities: async () => {
+    return apiClient<Activity[]>('/activity/business/me', {
+      requireAuth: true,
+    });
+  },
+
   getActivityById: async (id: number) => {
     return apiClient<Activity>(`/activity/${id}`, {
       requireAuth: false,
