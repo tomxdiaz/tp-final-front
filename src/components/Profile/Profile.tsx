@@ -113,9 +113,6 @@ export default function Profile() {
   const initials = getInitials(displayName || userEmail);
   const business = summary?.business ?? null;
   const activities = summary?.activities ?? [];
-  const heroImage = summary?.latest_reviews[0]
-    ? 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=2200&q=80'
-    : 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=2200&q=80';
   const contactEmail = business?.contact_email ?? userEmail;
   const contactPhone = business?.contact_phone ?? appUser?.phone ?? null;
   const memberSince = formatSince(summary?.business.created_at ?? appUser?.created_at ?? session?.user.created_at ?? new Date().toISOString());
@@ -130,10 +127,67 @@ export default function Profile() {
   return (
     <div className='min-h-screen bg-sage-50 font-sans text-teal-900'>
       <section className='mx-auto max-w-7xl px-6 py-8'>
-        <Link to='/' className='mb-6 inline-flex items-center gap-2 font-sans text-sm font-bold text-sage-700 transition hover:text-teal-800'>
+        <Link
+          to='/'
+          className='mb-6 inline-flex items-center gap-2 font-sans text-sm font-bold text-sage-700 transition hover:text-teal-800'>
           <ArrowLeft size={18} />
           Volver
         </Link>
+
+        <div className='mb-8 overflow-hidden rounded-[2rem] bg-white shadow-lg shadow-black/5'>
+          <div
+            className='relative h-[320px] bg-cover bg-center sm:h-[400px]'
+            style={{ backgroundImage: 'url(\'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=2200&q=80\')' }}>
+            <div className='absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent' />
+
+            <div className='absolute left-6 top-6 flex flex-wrap gap-3'>
+              {business?.verified ? (
+                <span className='inline-flex items-center gap-2 rounded-full bg-sage-200 px-4 py-2 font-sans text-sm font-bold text-teal-900'>
+                  <ShieldCheck size={16} />
+                  Negocio verificado
+                </span>
+              ) : (
+                <span className='inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 font-sans text-sm font-bold text-white backdrop-blur-sm'>
+                  <ShieldCheck size={16} />
+                  Cuenta activa
+                </span>
+              )}
+            </div>
+
+            <div className='absolute bottom-6 left-6 right-6 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between'>
+              <div className='flex items-end gap-5'>
+                <div className='flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-3xl border-4 border-white bg-teal-700 shadow-xl'>
+                  <span className='font-display text-[2.4rem] uppercase tracking-[0.08em] text-white'>{initials || 'AA'}</span>
+                </div>
+                <div className='text-white'>
+                  <h1 className='font-display text-[2.8rem] uppercase leading-[0.9] tracking-[0.04em] sm:text-[3.8rem]'>
+                    {displayName}
+                  </h1>
+                  <div className='mt-2 flex flex-wrap items-center gap-4 text-sage-100'>
+                    <span className='inline-flex items-center gap-2 font-sans text-sm font-bold sm:text-body'>
+                      <MapPin size={16} />
+                      {business?.business_name ? 'El Chaltén, Santa Cruz' : userEmail}
+                    </span>
+                    <span className='inline-flex items-center gap-2 font-sans text-sm font-bold sm:text-body'>
+                      <Star size={16} className='fill-earth-200 text-earth-200' />
+                      {formatRating(averageRating)} · {totalReviews} reseñas
+                    </span>
+                    <span className='inline-flex items-center gap-2 rounded-full bg-sage-200 px-3 py-1 font-sans text-xs font-bold text-teal-900 sm:text-sm'>
+                      En Ando desde {memberSince}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <a
+                href={`mailto:${contactEmail}`}
+                className='inline-flex items-center justify-center gap-2 rounded-2xl bg-sage-200 px-5 py-3 font-sans text-sm font-bold text-teal-900 transition hover:bg-sage-100'>
+                <MessageCircle size={16} />
+                Contactar
+              </a>
+            </div>
+          </div>
+        </div>
 
         <div className='grid gap-8 xl:grid-cols-[380px_1fr]'>
           <aside className='space-y-6'>
@@ -181,20 +235,8 @@ export default function Profile() {
                 )}
                 <div className='flex items-center gap-3 font-sans text-sm text-sage-800'>
                   <ShieldCheck size={16} className='text-sage-600' />
-                  <span>{accountRole}</span>
+                  <span>{accountRole === 'SUPER_USER' ? 'Administrador' : 'Usuario'}</span>
                 </div>
-              </div>
-            </div>
-
-            <div className='rounded-3xl bg-white p-6 shadow-md shadow-black/5'>
-              <h2 className='font-display text-[2.2rem] uppercase leading-none tracking-[0.04em] text-teal-900'>
-                Certificaciones
-              </h2>
-              <p className='mt-4 font-sans text-sm text-sage-700'>
-                El backend todavía no modela certificaciones como entidad. Cuando exista esa tabla, esta sección podrá mostrar datos reales.
-              </p>
-              <div className='mt-4 rounded-2xl border border-dashed border-sage-200 bg-sage-50 px-4 py-5 text-center font-sans text-sm text-sage-700'>
-                Sin certificaciones registradas todavía.
               </div>
             </div>
 
@@ -261,61 +303,6 @@ export default function Profile() {
           </aside>
 
           <section>
-            <div className='mb-6 overflow-hidden rounded-[2rem] bg-white shadow-lg shadow-black/5'>
-              <div
-                className='relative h-[360px] bg-cover bg-center sm:h-[420px]'
-                style={{ backgroundImage: `url('${heroImage}')` }}>
-                <div className='absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent' />
-
-                <div className='absolute left-6 top-6 flex flex-wrap gap-3'>
-                  {business?.verified ? (
-                    <span className='inline-flex items-center gap-2 rounded-full bg-sage-200 px-4 py-2 font-sans text-sm font-bold text-teal-900'>
-                      <ShieldCheck size={16} />
-                      Negocio verificado
-                    </span>
-                  ) : (
-                    <span className='inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 font-sans text-sm font-bold text-white backdrop-blur'>
-                      <ShieldCheck size={16} />
-                      Cuenta activa
-                    </span>
-                  )}
-                </div>
-
-                <div className='absolute bottom-6 left-6 right-6 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between'>
-                  <div className='flex items-end gap-5'>
-                    <div className='flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-3xl border-4 border-white bg-teal-700 shadow-xl'>
-                      <span className='font-display text-[2.4rem] uppercase tracking-[0.08em] text-white'>{initials || 'AA'}</span>
-                    </div>
-                    <div className='text-white'>
-                      <h1 className='font-display text-[2.8rem] uppercase leading-[0.9] tracking-[0.04em] sm:text-[3.8rem]'>
-                        {displayName}
-                      </h1>
-                      <div className='mt-2 flex flex-wrap items-center gap-4 text-sage-100'>
-                        <span className='inline-flex items-center gap-2 font-sans text-sm font-bold sm:text-body'>
-                          <MapPin size={16} />
-                          {business?.business_name ? 'El Chaltén, Santa Cruz' : userEmail}
-                        </span>
-                        <span className='inline-flex items-center gap-2 font-sans text-sm font-bold sm:text-body'>
-                          <Star size={16} className='fill-earth-200 text-earth-200' />
-                          {formatRating(averageRating)} · {totalReviews} reseñas
-                        </span>
-                        <span className='inline-flex items-center gap-2 rounded-full bg-sage-200 px-3 py-1 font-sans text-xs font-bold text-teal-900 sm:text-sm'>
-                          En Ando desde {memberSince}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <a
-                    href={`mailto:${contactEmail}`}
-                    className='inline-flex items-center justify-center gap-2 rounded-2xl bg-sage-200 px-5 py-3 font-sans text-sm font-bold text-teal-900 transition hover:bg-sage-100'>
-                    <MessageCircle size={16} />
-                    Contactar
-                  </a>
-                </div>
-              </div>
-            </div>
-
             <div className='mb-5 flex items-end justify-between gap-4'>
               <div>
                 <p className='font-sans text-xs font-bold uppercase tracking-[0.26em] text-sage-600'>Catálogo propio</p>
@@ -323,56 +310,58 @@ export default function Profile() {
                   Actividades de {displayName}
                 </h2>
               </div>
-              <div className='rounded-full bg-white px-4 py-2 font-sans text-sm font-bold text-sage-700 shadow-sm'>
-                {activeActivities.length} activas de {activities.length}
-              </div>
+              {activities.length > 0 && (
+                <div className='shrink-0 rounded-full bg-white px-4 py-2 font-sans text-sm font-bold text-sage-700 shadow-sm'>
+                  {activeActivities.length} activas de {activities.length}
+                </div>
+              )}
             </div>
 
             <div className='space-y-5'>
               {activities.length > 0 ? (
-                activities.map((activity) => {
-                  const image = 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80';
+                activities.map((activity) => (
+                  <Link
+                    key={activity.id}
+                    to={`/activity/${activity.id}`}
+                    className='grid overflow-hidden rounded-3xl bg-white shadow-md shadow-black/5 transition hover:-translate-y-1 hover:shadow-xl lg:grid-cols-[220px_1fr]'>
+                    <div className='relative min-h-52'>
+                      <img
+                        src='https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80'
+                        alt={activity.title}
+                        className='h-full w-full object-cover'
+                      />
+                      <div className='absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/40' />
+                    </div>
 
-                  return (
-                    <Link
-                      key={activity.id}
-                      to={`/activity/${activity.id}`}
-                      className='grid overflow-hidden rounded-3xl bg-white shadow-md shadow-black/5 transition hover:-translate-y-1 hover:shadow-xl lg:grid-cols-[220px_1fr]'>
-                      <div className='relative min-h-52'>
-                        <img src={image} alt={activity.title} className='h-full w-full object-cover' />
-                        <div className='absolute inset-0 bg-linear-to-b from-black/10 via-transparent to-black/40' />
-                      </div>
-
-                      <div className='flex flex-col gap-4 p-6 lg:flex-row lg:items-center lg:justify-between'>
-                        <div className='max-w-2xl'>
-                          <div className='mb-3 flex flex-wrap items-center gap-3'>
-                            <span className='inline-flex items-center gap-2 rounded-full bg-teal-50 px-3 py-1 font-sans text-xs font-bold uppercase tracking-[0.18em] text-teal-700'>
-                              <Users size={14} />
-                              {activity.review_count} reseñas
-                            </span>
-                            <span className='inline-flex items-center gap-2 rounded-full bg-earth-50 px-3 py-1 font-sans text-xs font-bold uppercase tracking-[0.18em] text-earth-800'>
-                              <Clock3 size={14} />
-                              Prom. {formatRating(activity.average_rating)}
-                            </span>
-                          </div>
-
-                          <h3 className='font-display text-[1.9rem] uppercase leading-none tracking-[0.04em] text-teal-900'>
-                            {activity.title}
-                          </h3>
+                    <div className='flex flex-col gap-4 p-6 lg:flex-row lg:items-center lg:justify-between'>
+                      <div className='max-w-2xl'>
+                        <div className='mb-3 flex flex-wrap items-center gap-3'>
+                          <span className='inline-flex items-center gap-2 rounded-full bg-teal-50 px-3 py-1 font-sans text-xs font-bold uppercase tracking-[0.18em] text-teal-700'>
+                            <Users size={14} />
+                            {activity.review_count} reseñas
+                          </span>
+                          <span className='inline-flex items-center gap-2 rounded-full bg-earth-50 px-3 py-1 font-sans text-xs font-bold uppercase tracking-[0.18em] text-earth-800'>
+                            <Clock3 size={14} />
+                            Prom. {formatRating(activity.average_rating)}
+                          </span>
                         </div>
 
-                        <div className='flex flex-col items-start gap-4 lg:items-end'>
-                          <div className='font-display text-[2.2rem] leading-none text-teal-900'>
-                            {activity.is_active ? 'Activa' : 'Pausada'}
-                          </div>
-                          <div className='rounded-full bg-sage-50 px-4 py-2 font-sans text-sm font-bold text-sage-700'>
-                            Ver detalle
-                          </div>
+                        <h3 className='font-display text-[1.9rem] uppercase leading-none tracking-[0.04em] text-teal-900'>
+                          {activity.title}
+                        </h3>
+                      </div>
+
+                      <div className='flex flex-col items-start gap-4 lg:items-end'>
+                        <div className='font-display text-[2.2rem] leading-none text-teal-900'>
+                          {activity.is_active ? 'Activa' : 'Pausada'}
+                        </div>
+                        <div className='rounded-full bg-sage-50 px-4 py-2 font-sans text-sm font-bold text-sage-700'>
+                          Ver detalle
                         </div>
                       </div>
-                    </Link>
-                  );
-                })
+                    </div>
+                  </Link>
+                ))
               ) : (
                 <div className='rounded-3xl border border-dashed border-sage-200 bg-white p-10 shadow-sm'>
                   <div className='mx-auto max-w-xl text-center'>
