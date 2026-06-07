@@ -1,4 +1,4 @@
-import { NavLink, Link, useNavigate, useLocation } from 'react-router-dom';
+import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { LogOut, Menu, X } from 'lucide-react';
 import { useAuth } from '../../auth/useAuth';
 import type { Business } from '../../types/types';
@@ -16,7 +16,6 @@ const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const location = useLocation();
 
   const handleLogout = async () => {
     setMenuOpen(false);
@@ -25,10 +24,6 @@ const Header = () => {
   };
 
   const canPublish = business?.verified;
-
-  useEffect(() => {
-    setMenuOpen(false);
-  }, [location.pathname]);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -96,6 +91,7 @@ const Header = () => {
                         <Link
                           key={item.to}
                           to={item.to}
+                          onClick={() => setMenuOpen(false)}
                           className='block px-4 py-2.5 font-sans text-sm font-bold text-sage-200 transition hover:bg-teal-700 hover:text-white'>
                           {item.label}
                         </Link>
@@ -105,6 +101,7 @@ const Header = () => {
 
                     <Link
                       to='/profile'
+                      onClick={() => setMenuOpen(false)}
                       className='block px-4 py-2.5 font-sans text-sm font-bold text-sage-200 transition hover:bg-teal-700 hover:text-white'>
                       Mi Perfil
                     </Link>
@@ -112,6 +109,7 @@ const Header = () => {
                     {canPublish && (
                       <Link
                         to='/create-activity'
+                        onClick={() => setMenuOpen(false)}
                         className='block px-4 py-2.5 font-sans text-sm font-bold text-sage-200 transition hover:bg-teal-700 hover:text-white'>
                         Publicar
                       </Link>
@@ -119,6 +117,7 @@ const Header = () => {
 
                     <Link
                       to='/my-bookings'
+                      onClick={() => setMenuOpen(false)}
                       className='block px-4 py-2.5 font-sans text-sm font-bold text-sage-200 transition hover:bg-teal-700 hover:text-white'>
                       Mis Reservas
                     </Link>
