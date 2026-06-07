@@ -1,5 +1,5 @@
 import { apiClient } from '../lib/apiClient';
-import type { Activity, CreateActivityPayload } from '../types/types';
+import type { Activity, CreateActivityPayload, UpdateActivityPayload } from '../types/types';
 
 export const activityService = {
   getActivities: async () => {
@@ -17,6 +17,34 @@ export const activityService = {
   getActivityById: async (id: number) => {
     return apiClient<Activity>(`/activity/${id}`, {
       requireAuth: false,
+    });
+  },
+
+  getMyActivityById: async (id: number) => {
+    return apiClient<Activity>(`/activity/me/${id}`, {
+      requireAuth: true,
+    });
+  },
+
+  renewActivitySessions: async (id: number) => {
+    return apiClient<Activity>(`/activity/${id}/renew`, {
+      method: 'POST',
+      requireAuth: true,
+    });
+  },
+
+  updateActivity: async (id: number, payload: UpdateActivityPayload) => {
+    return apiClient<Activity>(`/activity/${id}`, {
+      method: 'PATCH',
+      body: payload,
+      requireAuth: true,
+    });
+  },
+
+  deleteActivity: async (id: number) => {
+    return apiClient<Activity>(`/activity/${id}`, {
+      method: 'DELETE',
+      requireAuth: true,
     });
   },
 

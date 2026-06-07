@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { MapPin, Clock, Timer, Users, ArrowLeft, ShieldCheck } from 'lucide-react';
+import { MapPin, Clock, Timer, Users, ArrowLeft, Phone, Mail, Building2, CalendarDays, RefreshCw } from 'lucide-react';
 import { activityService } from '../../services/activity.service';
 import type { Activity } from '../../types/types';
+import { useAuth } from '../../auth/useAuth';
 
 const DAY_NAMES = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 
@@ -25,11 +26,20 @@ function formatPrice(price: number): string {
   return price.toLocaleString('es-AR');
 }
 
+function formatSessionDatetime(datetime: string): { date: string; time: string } {
+  const d = new Date(datetime);
+  const date = d.toLocaleDateString('es-AR', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+  const time = d.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+  return { date, time };
+}
+
 export default function ActivityDetail() {
   const { id } = useParams<{ id: string }>();
+  const { appUser } = useAuth();
   const [activity, setActivity] = useState<Activity | null>(null);
   const [loading, setLoading] = useState(!!id);
   const [error, setError] = useState(!id);
+  const [renewing, setRenewing] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -65,9 +75,21 @@ export default function ActivityDetail() {
     );
   }
 
+  const handleRenew = async () => {
+    if (!activity) return;
+    setRenewing(true);
+    try {
+      const updated = await activityService.renewActivitySessions(activity.id);
+      setActivity(updated);
+    } finally {
+      setRenewing(false);
+    }
+  };
+
   const heroImage = activity.images[0];
   const hasDaysOfWeek = activity.days_of_week.length > 0;
   const hasAdditionalInfo = hasDaysOfWeek || activity.min_age !== null;
+  const isOwner = appUser != null && activity.business != null && appUser.id === activity.business.app_user_id;
 
   return (
     <div className='min-h-screen bg-sage-50 font-sans text-teal-900'>
@@ -85,10 +107,10 @@ export default function ActivityDetail() {
               {heroImage ? (
                 <img src={heroImage} alt={activity.title} className='h-full w-full object-cover' />
               ) : (
-                <div className='h-full w-full bg-gradient-to-b from-teal-800 to-teal-600' />
+                <div className='h-full w-full bg-linear-to-b from-teal-800 to-teal-600' />
               )}
 
-              <div className='absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent' />
+              <div className='absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent' />
 
               <div className='absolute left-4 top-4 flex items-center gap-2'>
                 {activity.category && (
@@ -104,12 +126,8 @@ export default function ActivityDetail() {
               </div>
 
               <div className='absolute bottom-6 left-6 right-6'>
-                <h1 className='font-display text-3xl uppercase leading-tight tracking-[0.04em] text-white lg:text-5xl'>
-                  {activity.title}
-                </h1>
-                {activity.location && (
-                  <p className='mt-2 font-sans text-sm text-white/80'>{activity.location}</p>
-                )}
+                <h1 className='font-display text-3xl uppercase leading-tight tracking-[0.04em] text-white lg:text-5xl'>{activity.title}</h1>
+                {activity.location && <p className='mt-2 font-sans text-sm text-white/80'>{activity.location}</p>}
               </div>
             </div>
 
@@ -147,9 +165,7 @@ export default function ActivityDetail() {
             {/* Descripción */}
             {activity.description && (
               <div className='rounded-2xl bg-white p-6 shadow-sm'>
-                <h2 className='mb-4 font-display text-2xl uppercase tracking-[0.04em] text-teal-900'>
-                  Sobre esta experiencia
-                </h2>
+                <h2 className='mb-4 font-display text-2xl uppercase tracking-[0.04em] text-teal-900'>Sobre esta experiencia</h2>
                 <p className='font-sans text-body leading-relaxed text-sage-800'>{activity.description}</p>
               </div>
             )}
@@ -157,9 +173,7 @@ export default function ActivityDetail() {
             {/* Info adicional */}
             {hasAdditionalInfo && (
               <div className='rounded-2xl bg-white p-6 shadow-sm'>
-                <h2 className='mb-4 font-display text-2xl uppercase tracking-[0.04em] text-teal-900'>
-                  Información adicional
-                </h2>
+                <h2 className='mb-4 font-display text-2xl uppercase tracking-[0.04em] text-teal-900'>Información adicional</h2>
                 <div className='space-y-4'>
                   {hasDaysOfWeek && (
                     <div>
@@ -182,6 +196,89 @@ export default function ActivityDetail() {
               </div>
             )}
 
+            {/* Business info */}
+            {activity.business && (
+              <div className='rounded-2xl bg-white p-6 shadow-sm'>
+                <h2 className='mb-4 font-display text-2xl uppercase tracking-[0.04em] text-teal-900'>Organizador</h2>
+                <div className='space-y-3'>
+                  <div className='flex items-center gap-3'>
+                    <Building2 size={18} className='shrink-0 text-sage-600' />
+                    <span className='font-sans text-body font-bold text-teal-900'>{activity.business.business_name}</span>
+                    {activity.business.verified && (
+                      <span className='rounded-full bg-teal-50 px-2 py-0.5 font-sans text-xs font-bold text-teal-700'>Verificado</span>
+                    )}
+                  </div>
+                  {activity.business.description && (
+                    <p className='font-sans text-sm leading-relaxed text-sage-800'>{activity.business.description}</p>
+                  )}
+                  {activity.business.contact_phone && (
+                    <div className='flex items-center gap-3'>
+                      <Phone size={16} className='shrink-0 text-sage-600' />
+                      <span className='font-sans text-sm text-teal-900'>{activity.business.contact_phone}</span>
+                    </div>
+                  )}
+                  {activity.business.contact_email && (
+                    <div className='flex items-center gap-3'>
+                      <Mail size={16} className='shrink-0 text-sage-600' />
+                      <span className='font-sans text-sm text-teal-900'>{activity.business.contact_email}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Owner-only: sessions */}
+            {isOwner && activity.sessions && activity.sessions.length > 0 && (
+              <div className='rounded-2xl bg-white p-6 shadow-sm'>
+                <div className='mb-4 flex items-center justify-between'>
+                  <h2 className='font-display text-2xl uppercase tracking-[0.04em] text-teal-900'>Sesiones programadas</h2>
+                  <button
+                    onClick={handleRenew}
+                    disabled={renewing}
+                    className='flex items-center gap-2 rounded-xl bg-teal-700 px-4 py-2 font-sans text-sm font-bold text-white transition hover:bg-teal-800 disabled:opacity-60'
+                    title='Renovar sesiones'>
+                    <RefreshCw size={15} className={renewing ? 'animate-spin' : ''} />
+                    {renewing ? 'Renovando...' : 'Renovar sesiones'}
+                  </button>
+                </div>
+                <div className='space-y-3'>
+                  {activity.sessions.map((session) => {
+                    const { date, time } = formatSessionDatetime(session.datetime);
+                    const availableSpots =
+                      activity.max_participants != null ? activity.max_participants - session.booked_spots : null;
+                    return (
+                      <div
+                        key={session.id}
+                        className='flex items-center justify-between rounded-xl border border-sage-100 bg-sage-50 px-4 py-3'>
+                        <div className='flex items-center gap-3'>
+                          <CalendarDays size={18} className='shrink-0 text-teal-700' />
+                          <div>
+                            <p className='font-sans text-sm font-bold capitalize text-teal-900'>{date}</p>
+                            <p className='font-sans text-xs text-sage-600'>{time} hs</p>
+                          </div>
+                        </div>
+                        <div className='text-right'>
+                          <p className='font-sans text-sm font-bold text-teal-900'>
+                            {availableSpots != null ? `${availableSpots} lugar${availableSpots !== 1 ? 'es' : ''} disponible${availableSpots !== 1 ? 's' : ''}` : `${session.booked_spots} reservados`}
+                          </p>
+                          <p
+                            className={`font-sans text-xs font-bold ${
+                              session.status === 'AVAILABLE'
+                                ? 'text-teal-600'
+                                : session.status === 'CANCELLED'
+                                  ? 'text-red-500'
+                                  : 'text-sage-500'
+                            }`}>
+                            {session.status === 'AVAILABLE' ? 'Disponible' : session.status === 'CANCELLED' ? 'Cancelada' : 'Completada'}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
             {/* Botón reserva mobile */}
             <div className='lg:hidden'>
               <Link
@@ -189,10 +286,6 @@ export default function ActivityDetail() {
                 className='block w-full rounded-2xl bg-teal-800 px-6 py-4 text-center font-sans text-body font-bold text-white shadow-md transition hover:bg-teal-900'>
                 Reservar esta experiencia
               </Link>
-              <p className='mt-2 flex items-center justify-center gap-2 font-sans text-xs text-sage-600'>
-                <ShieldCheck size={14} />
-                Pago seguro · Cancelación flexible
-              </p>
             </div>
           </div>
 
@@ -200,9 +293,7 @@ export default function ActivityDetail() {
           <aside className='hidden lg:block'>
             <div className='sticky top-8 rounded-2xl bg-teal-900 p-6 text-white shadow-xl'>
               <div className='mb-4'>
-                <span className='font-display text-4xl font-bold tracking-wide'>
-                  ${formatPrice(activity.base_price)}
-                </span>
+                <span className='font-display text-4xl font-bold tracking-wide'>${formatPrice(activity.base_price)}</span>
                 <span className='ml-2 font-sans text-sm text-teal-200'>{activity.currency} / persona</span>
               </div>
 
@@ -211,11 +302,6 @@ export default function ActivityDetail() {
                 className='block w-full rounded-2xl bg-white px-6 py-4 text-center font-sans text-body font-bold text-teal-900 shadow-md transition hover:bg-teal-50'>
                 Reservar esta experiencia
               </Link>
-
-              <p className='mt-3 flex items-center justify-center gap-2 font-sans text-xs text-teal-200'>
-                <ShieldCheck size={14} />
-                Pago seguro · Cancelación flexible
-              </p>
             </div>
           </aside>
         </div>

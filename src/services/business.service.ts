@@ -1,5 +1,5 @@
 import { apiClient } from '../lib/apiClient';
-import type { Business, CreateBusinessPayload } from '../types/types';
+import type { Booking, Business, CreateBusinessPayload } from '../types/types';
 
 export const businessService = {
   getMyBusiness: async () => {
@@ -8,7 +8,11 @@ export const businessService = {
     });
   },
 
-
+  getMyBusinessBookings: async () => {
+    return apiClient<Booking[]>('/business/me/bookings', {
+      requireAuth: true,
+    });
+  },
 
   createBusiness: async (business: CreateBusinessPayload) => {
     return apiClient<Business>('/business', {
