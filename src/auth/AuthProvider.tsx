@@ -3,6 +3,7 @@ import type { Session } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabaseClient';
 import { supabaseService } from '../services/supabase.service';
 import { appUserService } from '../services/app_user.service';
+import { ApiError } from '../lib/apiClient';
 import type { AppUser } from '../types/types';
 import { AuthContext } from './AuthContext';
 
@@ -65,8 +66,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         await loadAppUser(initialSession);
       } catch (error) {
-        console.error('Error loading app user:', error);
+        console.error('Error loading app user:', error instanceof ApiError ? error.data : error);
         setAppUser(null);
+        if (error instanceof ApiError && error.status === 401) {
+          await supabase.auth.signOut();
+          if (mounted) setSession(null);
+        }
       } finally {
         if (mounted) {
           setLoading(false);
@@ -89,8 +94,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         try {
           await loadAppUser(newSession);
         } catch (error) {
-          console.error('Error loading app user:', error);
+          console.error('Error loading app user:', error instanceof ApiError ? error.data : error);
           setAppUser(null);
+          if (error instanceof ApiError && error.status === 401) {
+            await supabase.auth.signOut();
+            if (mounted) setSession(null);
+          }
         } finally {
           if (mounted) {
             setLoading(false);

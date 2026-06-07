@@ -13,7 +13,7 @@ export default function Register() {
   const [successMessage, setSuccessMessage] = useState('');
 
   if (!loading && session) {
-    return <Navigate to='/dashboard' replace />;
+    return <Navigate to='/profile' replace />;
   }
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -32,9 +32,8 @@ export default function Register() {
         navigate('/login', { replace: true });
       }, 1200);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'No se pudo crear la cuenta';
-
-      setErrorMessage(message);
+      console.error(error);
+      setErrorMessage('Error al crear la cuenta');
     } finally {
       setFormLoading(false);
     }

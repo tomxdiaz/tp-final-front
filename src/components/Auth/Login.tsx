@@ -3,11 +3,11 @@ import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/useAuth';
 
 export default function Login() {
-  const { signIn, session, loading } = useAuth();
+  const { signIn, loading, session } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const from = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname || '/dashboard';
+  const from = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname || '/profile';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
