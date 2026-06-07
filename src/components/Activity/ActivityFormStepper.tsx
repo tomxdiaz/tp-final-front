@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Check, ChevronRight, ChevronLeft, MapPin, Clock, DollarSign, Users, ImagePlus, X } from 'lucide-react';
-import type { DifficultyLevel, Category } from '../../types/types';
+import type { Category, DifficultyLevel } from '../../types/types';
 import { categoryService } from '../../services/category.service';
+import { type FormState, emptyForm } from './activityForm.types';
 
 const STEPS = [
   { number: 1, label: 'Categoría' },
@@ -44,46 +45,6 @@ const difficultyStyle = (value: DifficultyLevel, selected: boolean): string => {
   }
 };
 
-export interface FormState {
-  category_id: number;
-  title: string;
-  description: string;
-  starting_hour: string;
-  days_of_week: number[];
-  location: string;
-  meeting_point: string;
-  latitude: string;
-  longitude: string;
-  duration_minutes: string;
-  difficulty: DifficultyLevel | '';
-  base_price: string;
-  currency: string;
-  max_participants: string;
-  min_age: string;
-  images: File[];
-  existingImageUrls: string[];
-}
-
-export const emptyForm: FormState = {
-  category_id: 0,
-  title: '',
-  description: '',
-  starting_hour: '',
-  days_of_week: [],
-  location: '',
-  meeting_point: '',
-  latitude: '',
-  longitude: '',
-  duration_minutes: '',
-  difficulty: '',
-  base_price: '',
-  currency: 'ARS',
-  max_participants: '',
-  min_age: '',
-  images: [],
-  existingImageUrls: [],
-};
-
 const inputClass =
   'w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm outline-none focus:border-teal-400 focus:ring-2 focus:ring-teal-100 transition-colors bg-white';
 
@@ -99,7 +60,15 @@ interface Props {
   disabledFields?: Array<keyof FormState>;
 }
 
-const ActivityFormStepper = ({ pageTitle, submitLabel, initialValues, onSubmit, isSubmitting, externalError, disabledFields = [] }: Props) => {
+const ActivityFormStepper = ({
+  pageTitle,
+  submitLabel,
+  initialValues,
+  onSubmit,
+  isSubmitting,
+  externalError,
+  disabledFields = [],
+}: Props) => {
   const navigate = useNavigate();
   const [categories, setCategories] = useState<Category[]>([]);
   const [currentStep, setCurrentStep] = useState(1);
@@ -114,12 +83,6 @@ const ActivityFormStepper = ({ pageTitle, submitLabel, initialValues, onSubmit, 
       .then(setCategories)
       .catch(() => setCategories([]));
   }, []);
-
-  useEffect(() => {
-    if (initialValues) {
-      setForm({ ...emptyForm, ...initialValues });
-    }
-  }, [initialValues]);
 
   const update = (field: keyof FormState, value: FormState[keyof FormState]) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -142,7 +105,7 @@ const ActivityFormStepper = ({ pageTitle, submitLabel, initialValues, onSubmit, 
     setImagePreviews((prev) => {
       const toRevoke = prev.slice(merged.length);
       toRevoke.forEach(URL.revokeObjectURL);
-      return merged.map((f, i) => prev[i] && form.images[i] === f ? prev[i] : URL.createObjectURL(f));
+      return merged.map((f, i) => (prev[i] && form.images[i] === f ? prev[i] : URL.createObjectURL(f)));
     });
     update('images', merged);
     if (fileInputRef.current) fileInputRef.current.value = '';
@@ -156,7 +119,10 @@ const ActivityFormStepper = ({ pageTitle, submitLabel, initialValues, onSubmit, 
   };
 
   const removeExistingImage = (index: number) => {
-    update('existingImageUrls', form.existingImageUrls.filter((_, i) => i !== index));
+    update(
+      'existingImageUrls',
+      form.existingImageUrls.filter((_, i) => i !== index),
+    );
   };
 
   const validateStep = (): string | null => {
@@ -518,9 +484,7 @@ const ActivityFormStepper = ({ pageTitle, submitLabel, initialValues, onSubmit, 
                   </div>
                 )}
                 <p className='text-xs text-gray-400 mt-2'>
-                  {total > 0
-                    ? `${total} de 5 imágenes. La primera es la principal.`
-                    : 'La primera imagen será la principal.'}
+                  {total > 0 ? `${total} de 5 imágenes. La primera es la principal.` : 'La primera imagen será la principal.'}
                 </p>
               </div>
             </div>

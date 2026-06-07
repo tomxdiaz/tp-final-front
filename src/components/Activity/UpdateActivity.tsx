@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { activityService } from '../../services/activity.service';
 import type { Activity, DifficultyLevel, UpdateActivityPayload } from '../../types/types';
-import ActivityFormStepper, { type FormState } from './ActivityFormStepper';
+import ActivityFormStepper from './ActivityFormStepper';
+import type { FormState } from './activityForm.types';
 
 const activityToFormValues = (activity: Activity): Partial<FormState> => ({
   category_id: activity.category_id,
@@ -28,17 +29,13 @@ const UpdateActivity = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [activity, setActivity] = useState<Activity | null>(null);
-  const [loadError, setLoadError] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState(!id);
+  const [isLoading, setIsLoading] = useState(!!id);
   const [errorMessage, setErrorMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    if (!id) {
-      setLoadError(true);
-      setIsLoading(false);
-      return;
-    }
+    if (!id) return;
     activityService
       .getMyActivityById(Number(id))
       .then((data) => {

@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { activityService } from '../../services/activity.service';
 import type { CreateActivityPayload, DifficultyLevel } from '../../types/types';
-import ActivityFormStepper, { type FormState } from './ActivityFormStepper';
+import ActivityFormStepper from './ActivityFormStepper';
+import type { FormState } from './activityForm.types';
 
 const CreateActivity = () => {
   const navigate = useNavigate();
