@@ -40,6 +40,19 @@ export const router = createBrowserRouter([
           { path: '/my-bookings/:id', element: <BookingDetailPage /> },
         ],
       },
+      {
+        path: '/login',
+        element: <LoginPage />,
+      },
+      {
+        path: '/register',
+        element: <Register />,
+      },
+
+      {
+        path: '/dashboard',
+        element: <DashboardPage />,
+      },
     ],
   },
 ]);

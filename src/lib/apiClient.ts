@@ -39,7 +39,6 @@ async function getAccessToken(): Promise<string | null> {
 
   if (error) {
     console.error('Error getting Supabase session:', error);
-
     return null;
   }
 
