@@ -14,6 +14,12 @@ export const businessService = {
     });
   },
 
+  getBusinessById: async (id: number) => {
+    return apiClient<Business>(`/business/${id}`, {
+      requireAuth: false,
+    });
+  },
+
   createBusiness: async (business: CreateBusinessPayload) => {
     return apiClient<Business>('/business', {
       method: 'POST',

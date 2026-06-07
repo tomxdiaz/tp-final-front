@@ -1,4 +1,4 @@
-import BookingDetail from '../components/Bookings/BookingDetail';
+import BookingDetail from '../components/Booking/BookingDetail';
 
 const BookingDetailPage = () => {
   return <BookingDetail />;

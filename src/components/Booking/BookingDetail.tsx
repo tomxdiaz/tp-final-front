@@ -232,7 +232,14 @@ const BookingDetail = () => {
         {/* Activity details */}
         {activity && (
           <section className='bg-white rounded-2xl border border-gray-100 shadow-sm shadow-black/5 p-6'>
-            <h2 className='text-xs font-sans font-bold text-gray-400 uppercase tracking-widest mb-4'>Actividad</h2>
+            <div className='flex items-center justify-between mb-4'>
+              <h2 className='text-xs font-sans font-bold text-gray-400 uppercase tracking-widest'>Actividad</h2>
+              <button
+                onClick={() => navigate(`/activity/${activity.id}`)}
+                className='text-xs font-semibold text-teal-600 hover:text-teal-800 hover:underline transition'>
+                Ver actividad →
+              </button>
+            </div>
 
             {activity.description && (
               <p className='text-sm text-gray-600 leading-relaxed mb-4'>{activity.description}</p>
@@ -321,7 +328,14 @@ const BookingDetail = () => {
         {/* Business details */}
         {business && (
           <section className='bg-white rounded-2xl border border-gray-100 shadow-sm shadow-black/5 p-6'>
-            <h2 className='text-xs font-sans font-bold text-gray-400 uppercase tracking-widest mb-4'>Empresa</h2>
+            <div className='flex items-center justify-between mb-4'>
+              <h2 className='text-xs font-sans font-bold text-gray-400 uppercase tracking-widest'>Empresa</h2>
+              <button
+                onClick={() => navigate(`/business/${business.id}`)}
+                className='text-xs font-semibold text-teal-600 hover:text-teal-800 hover:underline transition'>
+                Ver empresa →
+              </button>
+            </div>
             <div className='flex items-start gap-3 mb-4'>
               <Building2 size={18} className='text-teal-600 shrink-0 mt-0.5' />
               <div>

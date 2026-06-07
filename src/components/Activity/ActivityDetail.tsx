@@ -223,6 +223,11 @@ export default function ActivityDetail() {
                       <span className='font-sans text-sm text-teal-900'>{activity.business.contact_email}</span>
                     </div>
                   )}
+                  <Link
+                    to={`/business/${activity.business.id}`}
+                    className='mt-1 inline-block rounded-xl border border-teal-700 px-4 py-2 font-sans text-sm font-bold text-teal-700 transition hover:bg-teal-50'>
+                    Ver perfil del organizador
+                  </Link>
                 </div>
               </div>
             )}
@@ -259,17 +264,27 @@ export default function ActivityDetail() {
                         </div>
                         <div className='text-right'>
                           <p className='font-sans text-sm font-bold text-teal-900'>
-                            {availableSpots != null ? `${availableSpots} lugar${availableSpots !== 1 ? 'es' : ''} disponible${availableSpots !== 1 ? 's' : ''}` : `${session.booked_spots} reservados`}
+                            {availableSpots != null
+                              ? availableSpots > 0
+                                ? `${availableSpots} lugar${availableSpots !== 1 ? 'es' : ''} disponible${availableSpots !== 1 ? 's' : ''}`
+                                : 'Sin cupos disponibles'
+                              : `${session.booked_spots} reservados`}
                           </p>
                           <p
                             className={`font-sans text-xs font-bold ${
-                              session.status === 'AVAILABLE'
-                                ? 'text-teal-600'
-                                : session.status === 'CANCELLED'
-                                  ? 'text-red-500'
-                                  : 'text-sage-500'
+                              session.status === 'CANCELLED'
+                                ? 'text-red-500'
+                                : session.status === 'COMPLETED' || availableSpots === 0
+                                  ? 'text-sage-500'
+                                  : 'text-teal-600'
                             }`}>
-                            {session.status === 'AVAILABLE' ? 'Disponible' : session.status === 'CANCELLED' ? 'Cancelada' : 'Completada'}
+                            {session.status === 'CANCELLED'
+                              ? 'Cancelada'
+                              : session.status === 'COMPLETED'
+                                ? 'Completada'
+                                : availableSpots === 0
+                                  ? 'Agotada'
+                                  : 'Disponible'}
                           </p>
                         </div>
                       </div>

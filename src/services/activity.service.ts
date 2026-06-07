@@ -26,6 +26,12 @@ export const activityService = {
     });
   },
 
+  getActivitiesByBusinessId: async (id: number) => {
+    return apiClient<Activity>(`/activity/business/${id}`, {
+      requireAuth: false,
+    });
+  },
+
   renewActivitySessions: async (id: number) => {
     return apiClient<Activity>(`/activity/${id}/renew`, {
       method: 'POST',
