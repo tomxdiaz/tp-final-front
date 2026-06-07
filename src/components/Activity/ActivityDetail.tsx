@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { MapPin, Clock, Timer, Users, ArrowLeft, Phone, Mail, Building2, CalendarDays, RefreshCw } from 'lucide-react';
+import { MapPin, Clock, Timer, Users, ArrowLeft, Phone, Mail, Building2, CalendarDays, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react';
 import { activityService } from '../../services/activity.service';
 import type { Activity } from '../../types/types';
 import { useAuth } from '../../auth/useAuth';
@@ -40,6 +40,7 @@ export default function ActivityDetail() {
   const [loading, setLoading] = useState(!!id);
   const [error, setError] = useState(!id);
   const [renewing, setRenewing] = useState(false);
+  const [activeImage, setActiveImage] = useState(0);
 
   useEffect(() => {
     if (!id) return;
@@ -86,7 +87,7 @@ export default function ActivityDetail() {
     }
   };
 
-  const heroImage = activity.images[0];
+  const images = activity.images;
   const hasDaysOfWeek = activity.days_of_week.length > 0;
   const hasAdditionalInfo = hasDaysOfWeek || activity.min_age !== null;
   const isOwner = appUser != null && activity.business != null && appUser.id === activity.business.app_user_id;
@@ -102,15 +103,33 @@ export default function ActivityDetail() {
         <div className='grid grid-cols-1 gap-8 lg:grid-cols-[1fr_360px]'>
           {/* Columna principal */}
           <div className='space-y-6'>
-            {/* Hero */}
+            {/* Hero / carousel */}
             <div className='relative h-[280px] overflow-hidden rounded-2xl lg:h-[420px]'>
-              {heroImage ? (
-                <img src={heroImage} alt={activity.title} className='h-full w-full object-cover' />
+              {images.length > 0 ? (
+                <img src={images[activeImage]} alt={`${activity.title} — imagen ${activeImage + 1}`} className='h-full w-full object-cover' />
               ) : (
                 <div className='h-full w-full bg-linear-to-b from-teal-800 to-teal-600' />
               )}
 
               <div className='absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent' />
+
+              {/* Prev / next arrows */}
+              {images.length > 1 && (
+                <>
+                  <button
+                    type='button'
+                    onClick={() => setActiveImage((i) => (i - 1 + images.length) % images.length)}
+                    className='absolute left-3 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur hover:bg-black/60 transition-colors'>
+                    <ChevronLeft size={20} />
+                  </button>
+                  <button
+                    type='button'
+                    onClick={() => setActiveImage((i) => (i + 1) % images.length)}
+                    className='absolute right-3 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur hover:bg-black/60 transition-colors'>
+                    <ChevronRight size={20} />
+                  </button>
+                </>
+              )}
 
               <div className='absolute left-4 top-4 flex items-center gap-2'>
                 {activity.category && (
@@ -128,6 +147,20 @@ export default function ActivityDetail() {
               <div className='absolute bottom-6 left-6 right-6'>
                 <h1 className='font-display text-3xl uppercase leading-tight tracking-[0.04em] text-white lg:text-5xl'>{activity.title}</h1>
                 {activity.location && <p className='mt-2 font-sans text-sm text-white/80'>{activity.location}</p>}
+
+                {/* Dots */}
+                {images.length > 1 && (
+                  <div className='mt-3 flex items-center gap-1.5'>
+                    {images.map((_, i) => (
+                      <button
+                        key={i}
+                        type='button'
+                        onClick={() => setActiveImage(i)}
+                        className={`h-1.5 rounded-full transition-all ${i === activeImage ? 'w-5 bg-white' : 'w-1.5 bg-white/50 hover:bg-white/75'}`}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 

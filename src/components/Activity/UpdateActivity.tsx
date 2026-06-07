@@ -20,7 +20,8 @@ const activityToFormValues = (activity: Activity): Partial<FormState> => ({
   currency: activity.currency,
   max_participants: activity.max_participants != null ? String(activity.max_participants) : '',
   min_age: activity.min_age != null ? String(activity.min_age) : '',
-  images: activity.images.join(', '),
+  images: [],
+  existingImageUrls: activity.images,
 });
 
 const UpdateActivity = () => {
@@ -59,12 +60,6 @@ const UpdateActivity = () => {
       category_id: form.category_id || undefined,
       starting_hour: form.starting_hour || undefined,
       location: form.location || undefined,
-      images: form.images
-        ? form.images
-            .split(',')
-            .map((s) => s.trim())
-            .filter(Boolean)
-        : undefined,
       meeting_point: form.meeting_point || undefined,
       latitude: form.latitude ? Number(form.latitude) : undefined,
       longitude: form.longitude ? Number(form.longitude) : undefined,
@@ -74,6 +69,8 @@ const UpdateActivity = () => {
       currency: form.currency || undefined,
       days_of_week: form.days_of_week.length ? form.days_of_week : undefined,
       min_age: form.min_age ? Number(form.min_age) : undefined,
+      existingImages: form.existingImageUrls,
+      images: form.images.length ? form.images : undefined,
     };
 
     setIsSubmitting(true);

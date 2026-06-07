@@ -16,12 +16,6 @@ const CreateActivity = () => {
       category_id: form.category_id,
       starting_hour: form.starting_hour,
       location: form.location || undefined,
-      images: form.images
-        ? form.images
-            .split(',')
-            .map((s) => s.trim())
-            .filter(Boolean)
-        : undefined,
       meeting_point: form.meeting_point || undefined,
       latitude: form.latitude ? Number(form.latitude) : undefined,
       longitude: form.longitude ? Number(form.longitude) : undefined,
@@ -32,6 +26,7 @@ const CreateActivity = () => {
       days_of_week: form.days_of_week,
       min_age: form.min_age ? Number(form.min_age) : undefined,
       max_participants: form.max_participants ? Number(form.max_participants) : undefined,
+      images: form.images.length ? form.images : undefined,
     };
 
     setIsSubmitting(true);

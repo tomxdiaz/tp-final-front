@@ -154,7 +154,7 @@ export interface CreateActivityPayload {
   /** Format HH:MM */
   starting_hour: string;
   location?: string;
-  images?: string[];
+  images?: File[];
   meeting_point?: string;
   latitude?: number;
   longitude?: number;
@@ -173,7 +173,9 @@ export interface UpdateActivityPayload {
   category_id?: number;
   starting_hour?: string;
   location?: string;
-  images?: string[];
+  images?: File[];
+  /** URLs of existing images to keep */
+  existingImages?: string[];
   meeting_point?: string;
   latitude?: number;
   longitude?: number;
