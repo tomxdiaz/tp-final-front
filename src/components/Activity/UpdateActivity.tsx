@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { activityService } from '../../services/activity.service';
 import type { Activity, DifficultyLevel, UpdateActivityPayload } from '../../types/types';
-import ActivityFormStepper, { type FormState } from './ActivityFormStepper';
+import ActivityFormStepper from './ActivityFormStepper';
+import type { FormState } from './activityForm.types';
 
 const activityToFormValues = (activity: Activity): Partial<FormState> => ({
   category_id: activity.category_id,
@@ -20,24 +21,21 @@ const activityToFormValues = (activity: Activity): Partial<FormState> => ({
   currency: activity.currency,
   max_participants: activity.max_participants != null ? String(activity.max_participants) : '',
   min_age: activity.min_age != null ? String(activity.min_age) : '',
-  images: activity.images.join(', '),
+  images: [],
+  existingImageUrls: activity.images,
 });
 
 const UpdateActivity = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [activity, setActivity] = useState<Activity | null>(null);
-  const [loadError, setLoadError] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState(!id);
+  const [isLoading, setIsLoading] = useState(!!id);
   const [errorMessage, setErrorMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    if (!id) {
-      setLoadError(true);
-      setIsLoading(false);
-      return;
-    }
+    if (!id) return;
     activityService
       .getMyActivityById(Number(id))
       .then((data) => {
@@ -59,12 +57,6 @@ const UpdateActivity = () => {
       category_id: form.category_id || undefined,
       starting_hour: form.starting_hour || undefined,
       location: form.location || undefined,
-      images: form.images
-        ? form.images
-            .split(',')
-            .map((s) => s.trim())
-            .filter(Boolean)
-        : undefined,
       meeting_point: form.meeting_point || undefined,
       latitude: form.latitude ? Number(form.latitude) : undefined,
       longitude: form.longitude ? Number(form.longitude) : undefined,
@@ -74,6 +66,8 @@ const UpdateActivity = () => {
       currency: form.currency || undefined,
       days_of_week: form.days_of_week.length ? form.days_of_week : undefined,
       min_age: form.min_age ? Number(form.min_age) : undefined,
+      existingImages: form.existingImageUrls,
+      images: form.images.length ? form.images : undefined,
     };
 
     setIsSubmitting(true);

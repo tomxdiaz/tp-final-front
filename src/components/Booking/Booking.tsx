@@ -7,7 +7,7 @@ import {
   Check,
   ChevronLeft,
   ChevronRight,
-  CreditCard,
+  /*CreditCard,*/
   Minus,
   Plus,
   QrCode,
@@ -21,7 +21,20 @@ import { useAuth } from '../../auth/useAuth';
 import type { Activity, ActivitySession, Booking as BookingType } from '../../types/types';
 
 const WEEKDAYS = ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'];
-const MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+const MONTHS = [
+  'Enero',
+  'Febrero',
+  'Marzo',
+  'Abril',
+  'Mayo',
+  'Junio',
+  'Julio',
+  'Agosto',
+  'Septiembre',
+  'Octubre',
+  'Noviembre',
+  'Diciembre',
+];
 
 const BOOKING_STATUS_LABELS: Record<string, string> = {
   PENDING: 'Pendiente',
@@ -143,9 +156,9 @@ export default function Booking() {
   const [selectedSessionId, setSelectedSessionId] = useState<number | null>(null);
   const [numberOfPeople, setNumberOfPeople] = useState(1);
   const [customerNotes, setCustomerNotes] = useState('');
-  const [cardNumber, setCardNumber] = useState('');
-  const [cardExpiry, setCardExpiry] = useState('');
-  const [cardCvv, setCardCvv] = useState('');
+  // const [cardNumber, setCardNumber] = useState('');
+  // const [cardExpiry, setCardExpiry] = useState('');
+  // const [cardCvv, setCardCvv] = useState('');
 
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -204,10 +217,7 @@ export default function Booking() {
     return sessionsByDate.get(dateKey(selectedDate)) ?? [];
   }, [selectedDate, sessionsByDate]);
 
-  const selectedSession = useMemo(
-    () => activity?.sessions?.find((s) => s.id === selectedSessionId) ?? null,
-    [activity, selectedSessionId],
-  );
+  const selectedSession = useMemo(() => activity?.sessions?.find((s) => s.id === selectedSessionId) ?? null, [activity, selectedSessionId]);
 
   const maxPeople = useMemo(() => {
     if (!selectedSession) return maxParticipants ?? 1;
@@ -396,9 +406,7 @@ export default function Booking() {
                                 isChosen ? 'border-teal-800 bg-teal-50' : 'border-sage-200 hover:border-teal-400'
                               } ${single ? 'cursor-default' : ''}`}>
                               <span className='block font-sans text-body font-bold text-teal-900'>{formatTime(s.datetime)}</span>
-                              {Number.isFinite(spots) && (
-                                <span className='block font-sans text-xs text-sage-600'>{spots} lugares</span>
-                              )}
+                              {Number.isFinite(spots) && <span className='block font-sans text-xs text-sage-600'>{spots} lugares</span>}
                             </button>
                           );
                         })}
@@ -515,7 +523,7 @@ export default function Booking() {
             </div>
 
             {/* visual-only payment mock */}
-            <div className='rounded-2xl bg-white p-6 shadow-sm'>
+            {/* <div className='rounded-2xl bg-white p-6 shadow-sm'>
               <h3 className='mb-4 font-sans text-body font-bold text-teal-900'>Datos de pago</h3>
               <div className='space-y-4'>
                 <div>
@@ -562,18 +570,16 @@ export default function Booking() {
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
 
-            {submitError && (
-              <div className='rounded-2xl bg-red-50 px-5 py-4 font-sans text-sm font-bold text-red-700'>{submitError}</div>
-            )}
+            {submitError && <div className='rounded-2xl bg-red-50 px-5 py-4 font-sans text-sm font-bold text-red-700'>{submitError}</div>}
 
             <button
               disabled={submitting}
               onClick={handleConfirm}
               className='flex w-full items-center justify-center gap-2 rounded-2xl bg-teal-800 px-6 py-4 font-sans text-body font-bold text-white shadow-md transition hover:bg-teal-900 disabled:cursor-not-allowed disabled:bg-sage-400'>
               <ShieldCheck size={18} />
-              {submitting ? 'Procesando…' : `Pagar $${formatPrice(totalPrice)} ${activity.currency}`}
+              {submitting ? 'Procesando…' : `Confirmar $${formatPrice(totalPrice)} ${activity.currency}`}
             </button>
           </div>
         )}
@@ -608,7 +614,9 @@ function Ticket({ booking }: { booking: BookingType }) {
         <div className='flex h-16 w-16 items-center justify-center rounded-full bg-sage-600 text-white'>
           <Check size={32} />
         </div>
-        <h1 className='mt-4 font-display text-4xl uppercase tracking-[0.04em] text-teal-900'>¡Reserva {BOOKING_STATUS_LABELS[booking.status] ?? booking.status}!</h1>
+        <h1 className='mt-4 font-display text-4xl uppercase tracking-[0.04em] text-teal-900'>
+          ¡Reserva {BOOKING_STATUS_LABELS[booking.status] ?? booking.status}!
+        </h1>
         <p className='mt-2 font-sans text-sm text-earth-600'>Ya podés disfrutar tu próxima aventura en Patagonia</p>
       </div>
 
@@ -622,9 +630,7 @@ function Ticket({ booking }: { booking: BookingType }) {
 
         {/* body — only fields from the Booking response */}
         <div className='grid grid-cols-2 gap-y-5 p-6'>
-          {session && (
-            <TicketField label='Fecha' value={formatLongDate(session.datetime)} />
-          )}
+          {session && <TicketField label='Fecha' value={formatLongDate(session.datetime)} />}
           {session && <TicketField label='Horario' value={formatTime(session.datetime)} />}
           <TicketField label='Personas' value={`${booking.number_of_people} persona${booking.number_of_people === 1 ? '' : 's'}`} />
           <TicketField label='Total pagado' value={`$${formatPrice(booking.total_price)}`} />

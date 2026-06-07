@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Check, ChevronRight, ChevronLeft, MapPin, Clock, DollarSign, Users, Image } from 'lucide-react';
-import type { DifficultyLevel, Category } from '../../types/types';
+import { Check, ChevronRight, ChevronLeft, MapPin, Clock, DollarSign, Users, ImagePlus, X } from 'lucide-react';
+import type { Category, DifficultyLevel } from '../../types/types';
 import { categoryService } from '../../services/category.service';
+import { type FormState, emptyForm } from './activityForm.types';
 
 const STEPS = [
   { number: 1, label: 'Categoría' },
@@ -44,44 +45,6 @@ const difficultyStyle = (value: DifficultyLevel, selected: boolean): string => {
   }
 };
 
-export interface FormState {
-  category_id: number;
-  title: string;
-  description: string;
-  starting_hour: string;
-  days_of_week: number[];
-  location: string;
-  meeting_point: string;
-  latitude: string;
-  longitude: string;
-  duration_minutes: string;
-  difficulty: DifficultyLevel | '';
-  base_price: string;
-  currency: string;
-  max_participants: string;
-  min_age: string;
-  images: string;
-}
-
-export const emptyForm: FormState = {
-  category_id: 0,
-  title: '',
-  description: '',
-  starting_hour: '',
-  days_of_week: [],
-  location: '',
-  meeting_point: '',
-  latitude: '',
-  longitude: '',
-  duration_minutes: '',
-  difficulty: '',
-  base_price: '',
-  currency: 'ARS',
-  max_participants: '',
-  min_age: '',
-  images: '',
-};
-
 const inputClass =
   'w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm outline-none focus:border-teal-400 focus:ring-2 focus:ring-teal-100 transition-colors bg-white';
 
@@ -97,12 +60,22 @@ interface Props {
   disabledFields?: Array<keyof FormState>;
 }
 
-const ActivityFormStepper = ({ pageTitle, submitLabel, initialValues, onSubmit, isSubmitting, externalError, disabledFields = [] }: Props) => {
+const ActivityFormStepper = ({
+  pageTitle,
+  submitLabel,
+  initialValues,
+  onSubmit,
+  isSubmitting,
+  externalError,
+  disabledFields = [],
+}: Props) => {
   const navigate = useNavigate();
   const [categories, setCategories] = useState<Category[]>([]);
   const [currentStep, setCurrentStep] = useState(1);
   const [form, setForm] = useState<FormState>({ ...emptyForm, ...initialValues });
   const [errorMessage, setErrorMessage] = useState('');
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     categoryService
@@ -110,12 +83,6 @@ const ActivityFormStepper = ({ pageTitle, submitLabel, initialValues, onSubmit, 
       .then(setCategories)
       .catch(() => setCategories([]));
   }, []);
-
-  useEffect(() => {
-    if (initialValues) {
-      setForm({ ...emptyForm, ...initialValues });
-    }
-  }, [initialValues]);
 
   const update = (field: keyof FormState, value: FormState[keyof FormState]) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -128,6 +95,34 @@ const ActivityFormStepper = ({ pageTitle, submitLabel, initialValues, onSubmit, 
       days_of_week: prev.days_of_week.includes(day) ? prev.days_of_week.filter((d) => d !== day) : [...prev.days_of_week, day],
     }));
     setErrorMessage('');
+  };
+
+  const totalImageCount = () => form.existingImageUrls.length + form.images.length;
+
+  const handleImageFiles = (incoming: File[]) => {
+    const slots = 5 - form.existingImageUrls.length;
+    const merged = [...form.images, ...incoming].slice(0, slots);
+    setImagePreviews((prev) => {
+      const toRevoke = prev.slice(merged.length);
+      toRevoke.forEach(URL.revokeObjectURL);
+      return merged.map((f, i) => (prev[i] && form.images[i] === f ? prev[i] : URL.createObjectURL(f)));
+    });
+    update('images', merged);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const removeImage = (index: number) => {
+    URL.revokeObjectURL(imagePreviews[index]);
+    const newFiles = form.images.filter((_, i) => i !== index);
+    setImagePreviews((prev) => prev.filter((_, i) => i !== index));
+    update('images', newFiles);
+  };
+
+  const removeExistingImage = (index: number) => {
+    update(
+      'existingImageUrls',
+      form.existingImageUrls.filter((_, i) => i !== index),
+    );
   };
 
   const validateStep = (): string | null => {
@@ -422,28 +417,80 @@ const ActivityFormStepper = ({ pageTitle, submitLabel, initialValues, onSubmit, 
           </div>
         );
 
-      case 4:
+      case 4: {
+        const total = totalImageCount();
         return (
           <div>
             <h2 className='font-display text-4xl text-teal-800 mb-1'>IMÁGENES</h2>
             <p className='text-sm text-sage-600 mb-6'>Las fotos son el primer gancho. Usá imágenes de alta calidad.</p>
             <div className='bg-white rounded-xl border border-gray-200 p-5 flex flex-col gap-4'>
               <div>
-                <label className={labelClass}>URLs de imágenes</label>
-                <div className='relative'>
-                  <Image size={15} className='absolute left-3 top-3.5 text-gray-400' />
-                  <textarea
-                    className={`${inputClass} pl-9 min-h-24 resize-none`}
-                    placeholder='https://ejemplo.com/foto1.jpg, https://ejemplo.com/foto2.jpg'
-                    value={form.images}
-                    onChange={(e) => update('images', e.target.value)}
-                  />
-                </div>
-                <p className='text-xs text-gray-400 mt-1.5'>Separalas con comas. La primera imagen será la principal.</p>
+                <label className={labelClass}>Imágenes de la actividad (máx. 5)</label>
+                <input
+                  ref={fileInputRef}
+                  type='file'
+                  accept='image/*'
+                  multiple
+                  className='hidden'
+                  onChange={(e) => {
+                    const files = Array.from(e.target.files ?? []);
+                    if (files.length) handleImageFiles(files);
+                  }}
+                />
+                {total < 5 && (
+                  <button
+                    type='button'
+                    onClick={() => fileInputRef.current?.click()}
+                    className='w-full flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-300 p-8 text-gray-400 hover:border-teal-400 hover:text-teal-500 transition-colors cursor-pointer'>
+                    <ImagePlus size={28} />
+                    <span className='text-sm font-medium'>Hacé clic para seleccionar imágenes</span>
+                    <span className='text-xs'>JPG, PNG, WEBP · máx. {5 - total} más</span>
+                  </button>
+                )}
+                {(form.existingImageUrls.length > 0 || imagePreviews.length > 0) && (
+                  <div className='grid grid-cols-2 sm:grid-cols-3 gap-3 mt-3'>
+                    {form.existingImageUrls.map((url, i) => (
+                      <div key={`existing-${i}`} className='relative rounded-lg overflow-hidden aspect-video bg-gray-100'>
+                        <img src={url} alt={`Imagen ${i + 1}`} className='w-full h-full object-cover' />
+                        {i === 0 && (
+                          <span className='absolute bottom-1 left-1 bg-teal-800/80 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded'>
+                            Principal
+                          </span>
+                        )}
+                        <button
+                          type='button'
+                          onClick={() => removeExistingImage(i)}
+                          className='absolute top-1 right-1 w-6 h-6 rounded-full bg-black/50 flex items-center justify-center text-white hover:bg-black/70 transition-colors'>
+                          <X size={12} />
+                        </button>
+                      </div>
+                    ))}
+                    {imagePreviews.map((src, i) => (
+                      <div key={`new-${i}`} className='relative rounded-lg overflow-hidden aspect-video bg-gray-100'>
+                        <img src={src} alt={`Nueva imagen ${i + 1}`} className='w-full h-full object-cover' />
+                        {form.existingImageUrls.length === 0 && i === 0 && (
+                          <span className='absolute bottom-1 left-1 bg-teal-800/80 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded'>
+                            Principal
+                          </span>
+                        )}
+                        <button
+                          type='button'
+                          onClick={() => removeImage(i)}
+                          className='absolute top-1 right-1 w-6 h-6 rounded-full bg-black/50 flex items-center justify-center text-white hover:bg-black/70 transition-colors'>
+                          <X size={12} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <p className='text-xs text-gray-400 mt-2'>
+                  {total > 0 ? `${total} de 5 imágenes. La primera es la principal.` : 'La primera imagen será la principal.'}
+                </p>
               </div>
             </div>
           </div>
         );
+      }
 
       case 5: {
         const selectedDays = DAYS.filter((d) => form.days_of_week.includes(d.value))
@@ -483,6 +530,7 @@ const ActivityFormStepper = ({ pageTitle, submitLabel, initialValues, onSubmit, 
               {reviewRow('Capacidad máxima', form.max_participants ? `${form.max_participants} personas` : '')}
               {reviewRow('Precio', form.base_price ? `$${form.base_price} ${form.currency}` : '')}
               {reviewRow('Edad mínima', form.min_age ? `${form.min_age} años` : '')}
+              {reviewRow('Imágenes', totalImageCount() ? `${totalImageCount()} imagen${totalImageCount() > 1 ? 'es' : ''}` : '')}
             </div>
           </div>
         );

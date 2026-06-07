@@ -2,6 +2,7 @@ import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { LogOut, Menu, X } from 'lucide-react';
 import { useAuth } from '../../auth/useAuth';
 import type { Business } from '../../types/types';
+import { GlobalRole } from '../../types/types';
 import { useEffect, useRef, useState } from 'react';
 import { businessService } from '../../services/business.service';
 
@@ -24,6 +25,7 @@ const Header = () => {
   };
 
   const canPublish = business?.verified;
+  const isSuperUser = appUser?.global_role === GlobalRole.SUPER_USER;
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -121,6 +123,18 @@ const Header = () => {
                       className='block px-4 py-2.5 font-sans text-sm font-bold text-sage-200 transition hover:bg-teal-700 hover:text-white'>
                       Mis Reservas
                     </Link>
+
+                    {isSuperUser && (
+                      <>
+                        <div className='my-1.5 border-t border-teal-700/60' />
+                        <Link
+                          to='/admin/negocios'
+                          onClick={() => setMenuOpen(false)}
+                          className='block px-4 py-2.5 font-sans text-sm font-bold text-sage-200 transition hover:bg-teal-700 hover:text-white'>
+                          Negocios
+                        </Link>
+                      </>
+                    )}
                   </div>
                 )}
               </div>

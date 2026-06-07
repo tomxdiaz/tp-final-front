@@ -1,4 +1,4 @@
-import ActivityDetail from '../components/ActivityDetail/ActivityDetail';
+import ActivityDetail from '../components/Activity/ActivityDetail';
 
 const ActivityDetailPage = () => {
   return <ActivityDetail />;

@@ -9,11 +9,14 @@ import Register from '../components/Auth/Register';
 import CreateBusinessPage from '../pages/CreateBusinessPage';
 import CreateActivityPage from '../pages/CreateActivityPage';
 import ActivityDetailPage from '../pages/ActivityDetailPage';
+import BusinessDetailPage from '../pages/BusinessDetailPage';
 import BookingPage from '../pages/BookingPage';
 import MyBusinessPage from '../pages/MyBusinessPage';
 import MyBookingsPage from '../pages/MyBookingsPage';
 import BookingDetailPage from '../pages/BookingDetailPage';
 import UpdateActivityPage from '../pages/UpdateActivityPage';
+import AdminNegociosPage from '../pages/AdminNegociosPage';
+import RequireSuperUser from '../components/Auth/RequireSuperUser';
 
 export const router = createBrowserRouter([
   {
@@ -25,6 +28,7 @@ export const router = createBrowserRouter([
       { path: '/login', element: <LoginPage /> },
       { path: '/register', element: <Register /> },
       { path: '/activity/:id', element: <ActivityDetailPage /> },
+      { path: '/business/:id', element: <BusinessDetailPage /> },
 
       // Protected routes
       {
@@ -39,6 +43,10 @@ export const router = createBrowserRouter([
           { path: '/my-bookings', element: <MyBookingsPage /> },
           { path: '/my-bookings/:id', element: <BookingDetailPage /> },
         ],
+      },
+      {
+        element: <RequireSuperUser />,
+        children: [{ path: '/admin/negocios', element: <AdminNegociosPage /> }],
       },
       {
         path: '/login',

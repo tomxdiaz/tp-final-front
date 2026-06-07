@@ -1,5 +1,6 @@
 import { CalendarDays, Mail, Phone, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../../auth/useAuth';
+import { GlobalRole } from '../../types/types';
 
 function formatDate(value: string): string {
   return new Intl.DateTimeFormat('es-AR', {
@@ -79,7 +80,7 @@ export default function Profile() {
         )}
         <div className='flex items-center gap-3 font-sans text-sm text-sage-800'>
           <ShieldCheck size={16} className='text-sage-600' />
-          <span>{accountRole === 'SUPER_USER' ? 'Super Usuario' : 'Usuario'}</span>
+          <span>{accountRole === GlobalRole.SUPER_USER ? 'Super Usuario' : 'Usuario'}</span>
         </div>
       </div>
     </div>

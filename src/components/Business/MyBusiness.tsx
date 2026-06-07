@@ -497,12 +497,20 @@ const Dashboard = ({
                 <h1 className='font-display text-2xl sm:text-4xl text-white leading-none mt-0.5'>HOLA, {firstName.toUpperCase()} 👋</h1>
               </div>
             </div>
-            <Link
-              to='/create-activity'
-              className='flex items-center justify-center gap-2 rounded-xl border border-teal-600 bg-teal-700/40 px-5 py-3 font-sans text-sm font-bold text-white hover:bg-teal-700 transition sm:w-auto'>
-              <PlusCircle size={16} />
-              Nueva actividad
-            </Link>
+            <div className='flex items-center gap-2'>
+              <Link
+                to={`/business/${business.id}`}
+                className='flex items-center justify-center gap-2 rounded-xl border border-teal-600 px-5 py-3 font-sans text-sm font-bold text-teal-200 hover:bg-teal-700/40 transition sm:w-auto'>
+                <Eye size={16} />
+                Ver perfil público
+              </Link>
+              <Link
+                to='/create-activity'
+                className='flex items-center justify-center gap-2 rounded-xl border border-teal-600 bg-teal-700/40 px-5 py-3 font-sans text-sm font-bold text-white hover:bg-teal-700 transition sm:w-auto'>
+                <PlusCircle size={16} />
+                Nueva actividad
+              </Link>
+            </div>
           </div>
 
           <div className='flex w-full gap-1'>
