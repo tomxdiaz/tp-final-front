@@ -32,7 +32,8 @@ export default function Register() {
         navigate('/login', { replace: true });
       }, 1200);
     } catch (error) {
-      setErrorMessage(error.data?.message || 'Error al crear la cuenta');
+      console.error(error);
+      setErrorMessage('Error al crear la cuenta');
     } finally {
       setFormLoading(false);
     }

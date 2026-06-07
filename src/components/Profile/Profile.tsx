@@ -31,7 +31,7 @@ function getInitials(displayName: string) {
 }
 
 export default function Profile() {
-  const { appUser, loading } = useAuth();
+  const { appUser, loading, session } = useAuth();
 
   if (loading) {
     return (

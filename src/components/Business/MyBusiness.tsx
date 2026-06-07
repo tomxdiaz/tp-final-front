@@ -125,7 +125,7 @@ const ResumenTab = ({ business, activities, bookings }: { business: Business; ac
   const monthlyIncome = bookings
     .filter((b) => {
       if (b.status !== 'CONFIRMED') return false;
-      const d = new Date(b.activity_session.datetime);
+      const d = new Date(b.activity_session!.datetime);
       return d.getMonth() === month && d.getFullYear() === year;
     })
     .reduce((sum, b) => sum + b.total_price, 0);
@@ -134,7 +134,7 @@ const ResumenTab = ({ business, activities, bookings }: { business: Business; ac
 
   const upcomingCount = bookings.filter((b) => {
     if (b.status === 'CANCELLED') return false;
-    const d = new Date(b.activity_session.datetime);
+    const d = new Date(b.activity_session!.datetime);
     return d >= now && d <= nextWeek;
   }).length;
 
@@ -147,7 +147,7 @@ const ResumenTab = ({ business, activities, bookings }: { business: Business; ac
     .map((a) => ({
       title: a.title,
       count: bookings
-        .filter((b) => b.activity_session.activity.id === a.id && b.status !== 'CANCELLED')
+        .filter((b) => b.activity_session!.activity.id === a.id && b.status !== 'CANCELLED')
         .reduce((sum, b) => sum + b.number_of_people, 0),
     }))
     .sort((a, b) => b.count - a.count);
@@ -431,9 +431,9 @@ const ReservasTab = ({ bookings }: { bookings: Booking[] }) => (
               return (
                 <tr key={b.id} className='hover:bg-gray-50/50 transition'>
                   <td className='px-5 py-3.5 font-sans text-xs text-teal-600 font-semibold'>{b.id}</td>
-                  <td className='px-4 py-3.5 font-semibold text-gray-800'>{b.activity_session.activity.title}</td>
+                  <td className='px-4 py-3.5 font-semibold text-gray-800'>{b.activity_session!.activity.title}</td>
                   <td className='px-4 py-3.5 text-teal-600 font-semibold'>{userName}</td>
-                  <td className='px-4 py-3.5 text-gray-600 whitespace-nowrap'>{shortDate(b.activity_session.datetime)}</td>
+                  <td className='px-4 py-3.5 text-gray-600 whitespace-nowrap'>{shortDate(b.activity_session!.datetime)}</td>
                   <td className='px-4 py-3.5 text-gray-800 font-semibold'>{b.number_of_people}</td>
                   <td className='px-4 py-3.5 font-bold text-gray-800'>{currency(b.total_price)}</td>
                   <td className='px-4 py-3.5'>

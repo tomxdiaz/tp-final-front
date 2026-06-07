@@ -87,7 +87,7 @@ export default function Home() {
 
         setCategories(allCategories);
       } catch (error) {
-        console.error('Error fetching all categories:', error.data?.message);
+        console.error('Error fetching all categories:', (error as any)?.data?.message);
 
         setCategories([]);
       }
@@ -99,7 +99,7 @@ export default function Home() {
 
         setActivities(allActivities);
       } catch (error) {
-        console.error('Error fetching activities:', error.data?.message);
+        console.error('Error fetching activities:', (error as any)?.data?.message);
 
         setActivities([]);
       }
