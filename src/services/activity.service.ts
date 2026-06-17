@@ -103,4 +103,18 @@ export const activityService = {
       requireAuth: true,
     });
   },
+
+  deactivateActivity: async (id: number) => {
+    return apiClient<Activity>(`/activity/${id}/deactivate`, {
+      method: 'POST',
+      requireAuth: true,
+    });
+  },
+
+  activateActivity: async (id: number) => {
+    return apiClient<Activity>(`/activity/${id}/activate`, {
+      method: 'POST',
+      requireAuth: true,
+    });
+  },
 };

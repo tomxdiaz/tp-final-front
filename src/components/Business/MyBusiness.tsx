@@ -11,6 +11,7 @@ import {
   Pencil,
   Phone,
   PlusCircle,
+  Power,
   RefreshCw,
   Star,
   Trash2,
@@ -265,14 +266,17 @@ const ActividadesTab = ({
   activities,
   onDeleteActivity,
   onRenewActivity,
+  onToggleActivity,
 }: {
   activities: Activity[];
   onDeleteActivity: (id: number) => Promise<void>;
   onRenewActivity: (id: number) => Promise<void>;
+  onToggleActivity: (id: number, currentlyActive: boolean) => Promise<void>;
 }) => {
   const [confirmId, setConfirmId] = useState<number | null>(null);
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [renewingId, setRenewingId] = useState<number | null>(null);
+  const [togglingId, setTogglingId] = useState<number | null>(null);
 
   const handleDelete = async (id: number) => {
     setDeletingId(id);
@@ -285,6 +289,12 @@ const ActividadesTab = ({
     setRenewingId(id);
     await onRenewActivity(id);
     setRenewingId(null);
+  };
+
+  const handleToggle = async (id: number, currentlyActive: boolean) => {
+    setTogglingId(id);
+    await onToggleActivity(id, currentlyActive);
+    setTogglingId(null);
   };
 
   return (
@@ -316,6 +326,7 @@ const ActividadesTab = ({
               const isConfirming = confirmId === a.id;
               const isDeleting = deletingId === a.id;
               const isRenewing = renewingId === a.id;
+              const isToggling = togglingId === a.id;
 
               return (
                 <div key={a.id} className='flex items-center gap-4 px-5 py-4'>
@@ -377,6 +388,18 @@ const ActividadesTab = ({
                           className='w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-teal-600 hover:bg-teal-50 transition disabled:opacity-50'
                           title='Renovar sesiones'>
                           <RefreshCw size={16} className={isRenewing ? 'animate-spin' : ''} />
+                        </button>
+                        <button
+                          onClick={() => handleToggle(a.id, a.is_active)}
+                          disabled={isToggling}
+                          className={[
+                            'w-8 h-8 flex items-center justify-center rounded-lg transition disabled:opacity-50',
+                            a.is_active
+                              ? 'text-emerald-500 hover:text-red-500 hover:bg-red-50'
+                              : 'text-gray-300 hover:text-emerald-500 hover:bg-emerald-50',
+                          ].join(' ')}
+                          title={a.is_active ? 'Desactivar' : 'Activar'}>
+                          <Power size={16} />
                         </button>
                         <button
                           onClick={() => setConfirmId(a.id)}
@@ -461,6 +484,7 @@ const Dashboard = ({
   firstName,
   onDeleteActivity,
   onRenewActivity,
+  onToggleActivity,
 }: {
   business: Business;
   activities: Activity[];
@@ -468,6 +492,7 @@ const Dashboard = ({
   firstName: string;
   onDeleteActivity: (id: number) => Promise<void>;
   onRenewActivity: (id: number) => Promise<void>;
+  onToggleActivity: (id: number, currentlyActive: boolean) => Promise<void>;
 }) => {
   const [tab, setTab] = useState<Tab>('resumen');
 
@@ -531,7 +556,7 @@ const Dashboard = ({
 
       <div className='mx-auto max-w-7xl px-6 py-8'>
         {tab === 'resumen' && <ResumenTab business={business} activities={activities} bookings={bookings} />}
-        {tab === 'actividades' && <ActividadesTab activities={activities} onDeleteActivity={onDeleteActivity} onRenewActivity={onRenewActivity} />}
+        {tab === 'actividades' && <ActividadesTab activities={activities} onDeleteActivity={onDeleteActivity} onRenewActivity={onRenewActivity} onToggleActivity={onToggleActivity} />}
         {tab === 'reservas' && <ReservasTab bookings={bookings} />}
       </div>
     </div>
@@ -598,6 +623,13 @@ const MyBusiness = () => {
     await activityService.renewActivitySessions(id);
   };
 
+  const handleToggleActivity = async (id: number, currentlyActive: boolean) => {
+    const updated = currentlyActive
+      ? await activityService.deactivateActivity(id)
+      : await activityService.activateActivity(id);
+    setActivities((prev) => prev.map((a) => (a.id === id ? { ...a, is_active: updated.is_active } : a)));
+  };
+
   return (
     <Dashboard
       business={business}
@@ -606,6 +638,7 @@ const MyBusiness = () => {
       firstName={firstName}
       onDeleteActivity={handleDeleteActivity}
       onRenewActivity={handleRenewActivity}
+      onToggleActivity={handleToggleActivity}
     />
   );
 };
