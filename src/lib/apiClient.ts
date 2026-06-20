@@ -79,7 +79,7 @@ function getErrorMessage(data: unknown, status: number): string {
 export async function apiClient<T>(endpoint: string, options: ApiClientOptions = {}): Promise<T> {
   const { method = 'GET', body, headers = {}, requireAuth = true } = options;
 
-  const token = requireAuth ? await getAccessToken() : null;
+  const token = await getAccessToken();
 
   if (requireAuth && !token) {
     throw new Error('User is not authenticated');
