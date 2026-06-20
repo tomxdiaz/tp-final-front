@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, Check, Mail, Phone } from 'lucide-react';
 import { businessService } from '../../services/business.service';
+import { useAuth } from '../../auth/useAuth';
 import type { CreateBusinessPayload } from '../../types/types';
 
 const inputClass =
@@ -11,6 +12,7 @@ const labelClass = 'block text-sm font-semibold text-gray-700 mb-1';
 
 const CreateBusiness = () => {
   const navigate = useNavigate();
+  const { reloadBusiness } = useAuth();
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -54,6 +56,7 @@ const CreateBusiness = () => {
     businessService
       .createBusiness(payload)
       .then(() => {
+        reloadBusiness();
         navigate('/my-business', { replace: true });
       })
       .catch((error) => {
