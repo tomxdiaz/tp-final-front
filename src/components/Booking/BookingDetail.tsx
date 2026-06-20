@@ -201,6 +201,23 @@ const BookingDetail = () => {
           </dl>
         </section>
 
+        {/* Participants */}
+        {booking.participants && booking.participants.length > 0 && (
+          <section className='bg-white rounded-2xl border border-gray-100 shadow-sm shadow-black/5 p-6'>
+            <h2 className='text-xs font-sans font-bold text-gray-400 uppercase tracking-widest mb-4'>Participantes</h2>
+            <ul className='divide-y divide-gray-100'>
+              {booking.participants.map((p, i) => (
+                <li key={i} className='flex items-center justify-between py-2.5 first:pt-0 last:pb-0'>
+                  <span className='text-sm text-gray-500'>Persona {i + 1}</span>
+                  <span className='text-sm font-semibold text-gray-800'>
+                    {p.name} <span className='text-gray-400 font-normal'>·</span> DNI {p.dni}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
         {/* Session details */}
         {session ? (
           <section className='bg-white rounded-2xl border border-gray-100 shadow-sm shadow-black/5 p-6'>

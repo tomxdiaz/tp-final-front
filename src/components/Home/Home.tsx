@@ -7,6 +7,22 @@ import { activityService } from '../../services/activity.service';
 
 const difficulties = ['Baja', 'Media', 'Alta', 'Extrema'];
 
+const getErrorMessage = (error: unknown): string => {
+  if (typeof error === 'object' && error !== null && 'data' in error) {
+    const data = error.data;
+
+    if (typeof data === 'object' && data !== null && 'message' in data) {
+      return String(data.message);
+    }
+  }
+
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return 'Unknown error';
+};
+
 export default function Home() {
   const [searchText, setSearchText] = useState('');
   const [activities, setActivities] = useState<Activity[]>([]);
@@ -87,7 +103,7 @@ export default function Home() {
 
         setCategories(allCategories);
       } catch (error) {
-        console.error('Error fetching all categories:', (error as any)?.data?.message);
+        console.error('Error fetching all categories:', getErrorMessage(error));
 
         setCategories([]);
       }
@@ -99,7 +115,7 @@ export default function Home() {
 
         setActivities(allActivities);
       } catch (error) {
-        console.error('Error fetching activities:', (error as any)?.data?.message);
+        console.error('Error fetching all activities:', getErrorMessage(error));
 
         setActivities([]);
       }
@@ -113,7 +129,7 @@ export default function Home() {
     <div className='min-h-screen bg-sage-50 font-sans text-teal-900'>
       {/* Hero */}
       <section
-        className='relative h-[560px] bg-cover bg-center'
+        className='relative h-140 bg-cover bg-center'
         style={{
           backgroundImage: "url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=2200&q=80')",
         }}>
@@ -239,40 +255,40 @@ export default function Home() {
                       to={`/activity/${activity.id}`}
                       className='block overflow-hidden rounded-2xl bg-white shadow-md transition hover:-translate-y-1 hover:shadow-xl cursor-pointer'>
                       <div className='relative h-44'>
-                          <img src={activity.images[0] ?? ''} alt={activity.title} className='h-full w-full object-cover' />
+                        <img src={activity.images[0] ?? ''} alt={activity.title} className='h-full w-full object-cover' />
 
-                          <div className='absolute inset-0 bg-linear-to-b from-teal-900/35 to-transparent' />
+                        <div className='absolute inset-0 bg-linear-to-b from-teal-900/35 to-transparent' />
 
-                          {activity.category && (
-                            <div className='absolute left-4 top-4 flex items-center gap-2 rounded-xl bg-teal-700/80 px-4 py-2 font-sans text-sm font-bold text-white backdrop-blur'>
-                              {activity.category.name}
-                            </div>
-                          )}
-
-                          <div className='absolute bottom-4 left-4 rounded-xl bg-white/90 px-4 py-2 font-sans text-sm font-bold text-teal-900 backdrop-blur'>
-                            {activity.difficulty}
+                        {activity.category && (
+                          <div className='absolute left-4 top-4 flex items-center gap-2 rounded-xl bg-teal-700/80 px-4 py-2 font-sans text-sm font-bold text-white backdrop-blur'>
+                            {activity.category.name}
                           </div>
+                        )}
+
+                        <div className='absolute bottom-4 left-4 rounded-xl bg-white/90 px-4 py-2 font-sans text-sm font-bold text-teal-900 backdrop-blur'>
+                          {activity.difficulty}
+                        </div>
+                      </div>
+
+                      <div className='p-5'>
+                        <h3 className='mb-3 font-display text-[1.5rem] uppercase leading-[1.05] tracking-[0.04em] text-teal-900'>
+                          {activity.title}
+                        </h3>
+
+                        <div className='mb-5 flex items-center gap-4 font-sans text-sm font-normal text-sage-600'>
+                          <span className='flex items-center gap-1'>
+                            <ClockIcon size={14} />
+                            {activity.duration_minutes} min
+                          </span>
                         </div>
 
-                        <div className='p-5'>
-                          <h3 className='mb-3 font-display text-[1.5rem] uppercase leading-[1.05] tracking-[0.04em] text-teal-900'>
-                            {activity.title}
-                          </h3>
-
-                          <div className='mb-5 flex items-center gap-4 font-sans text-sm font-normal text-sage-600'>
-                            <span className='flex items-center gap-1'>
-                              <ClockIcon size={14} />
-                              {activity.duration_minutes} min
-                            </span>
-                          </div>
-
-                          <div className='flex items-end justify-between'>
-                            <div>
-                              <span className='font-sans text-[1.35rem] font-bold tracking-wide text-teal-900'>{activity.base_price}</span>
-                              <span className='ml-1 font-sans text-sm text-sage-600'>ARS</span>
-                            </div>
+                        <div className='flex items-end justify-between'>
+                          <div>
+                            <span className='font-sans text-[1.35rem] font-bold tracking-wide text-teal-900'>{activity.base_price}</span>
+                            <span className='ml-1 font-sans text-sm text-sage-600'>ARS</span>
                           </div>
                         </div>
+                      </div>
                     </Link>
                   );
                 })}

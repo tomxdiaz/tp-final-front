@@ -1,5 +1,5 @@
 import { apiClient } from '../lib/apiClient';
-import type { Activity, CreateActivityPayload, UpdateActivityPayload } from '../types/types';
+import type { Activity, CreateActivityPayload, SessionDetail, UpdateActivityPayload } from '../types/types';
 
 function buildCreateFormData(payload: CreateActivityPayload): FormData {
   const fd = new FormData();
@@ -100,6 +100,26 @@ export const activityService = {
   deleteActivity: async (id: number) => {
     return apiClient<Activity>(`/activity/${id}`, {
       method: 'DELETE',
+      requireAuth: true,
+    });
+  },
+
+  deactivateActivity: async (id: number) => {
+    return apiClient<Activity>(`/activity/${id}/deactivate`, {
+      method: 'POST',
+      requireAuth: true,
+    });
+  },
+
+  activateActivity: async (id: number) => {
+    return apiClient<Activity>(`/activity/${id}/activate`, {
+      method: 'POST',
+      requireAuth: true,
+    });
+  },
+
+  getSessionDetail: async (activityId: number, sessionId: number) => {
+    return apiClient<SessionDetail>(`/activity/${activityId}/session/${sessionId}`, {
       requireAuth: true,
     });
   },

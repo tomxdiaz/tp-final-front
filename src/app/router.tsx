@@ -17,6 +17,7 @@ import BookingDetailPage from '../pages/BookingDetailPage';
 import UpdateActivityPage from '../pages/UpdateActivityPage';
 import AdminNegociosPage from '../pages/AdminNegociosPage';
 import RequireSuperUser from '../components/Auth/RequireSuperUser';
+import SessionDetailPage from '../pages/SessionDetailPage';
 
 export const router = createBrowserRouter([
   {
@@ -42,6 +43,7 @@ export const router = createBrowserRouter([
           { path: '/booking/:id', element: <BookingPage /> },
           { path: '/my-bookings', element: <MyBookingsPage /> },
           { path: '/my-bookings/:id', element: <BookingDetailPage /> },
+          { path: '/activity/:id/session/:sessionId', element: <SessionDetailPage /> },
         ],
       },
       {
