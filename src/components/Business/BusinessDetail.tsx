@@ -3,7 +3,6 @@ import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Building2, Clock, Mail, Phone, Star } from 'lucide-react';
 import { businessService } from '../../services/business.service';
 import { activityService } from '../../services/activity.service';
-import { reviewService } from '../../services/review.service';
 import { useAuth } from '../../auth/useAuth';
 import type { Activity, Business } from '../../types/types';
 
@@ -16,28 +15,6 @@ function StarRating({ rating }: { rating: number }) {
           size={14}
           className={star <= rating ? 'fill-amber-400 text-amber-400' : 'fill-sage-200 text-sage-200'}
         />
-      ))}
-    </div>
-  );
-}
-
-function InteractiveStars({ value, onChange }: { value: number; onChange: (v: number) => void }) {
-  const [hovered, setHovered] = useState(0);
-  return (
-    <div className='flex items-center gap-1'>
-      {[1, 2, 3, 4, 5].map((star) => (
-        <button
-          key={star}
-          type='button'
-          onClick={() => onChange(star)}
-          onMouseEnter={() => setHovered(star)}
-          onMouseLeave={() => setHovered(0)}
-          className='transition'>
-          <Star
-            size={24}
-            className={(hovered || value) >= star ? 'fill-amber-400 text-amber-400' : 'fill-sage-100 text-sage-300'}
-          />
-        </button>
       ))}
     </div>
   );
@@ -59,11 +36,6 @@ export default function BusinessDetail() {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(!!id);
   const [error, setError] = useState(!id);
-
-  const [rating, setRating] = useState(0);
-  const [comment, setComment] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState('');
 
   useEffect(() => {
     if (!id) return;
@@ -103,34 +75,6 @@ export default function BusinessDetail() {
   }
 
   const avg = averageRating(business.reviews);
-  const isOwner = appUser?.id === business.app_user_id;
-  const existingReview = appUser ? business.reviews.find((r) => r.app_user_id === appUser.id) : undefined;
-  const canReview = !!appUser && !isOwner && !existingReview;
-
-  const handleSubmitReview = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (rating === 0) {
-      setSubmitError('Seleccioná una puntuación.');
-      return;
-    }
-    setSubmitting(true);
-    setSubmitError('');
-    try {
-      const newReview = await reviewService.createReview({
-        business_id: business.id,
-        rating,
-        comment: comment.trim() || undefined,
-      });
-      setBusiness((prev) => prev && { ...prev, reviews: [newReview, ...prev.reviews] });
-      setRating(0);
-      setComment('');
-    } catch {
-      setSubmitError('No se pudo enviar la reseña. Intentá de nuevo.');
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
   return (
     <div className='min-h-screen bg-sage-50 font-sans text-teal-900'>
       <div className='mx-auto max-w-4xl px-6 py-8'>
@@ -252,67 +196,60 @@ export default function BusinessDetail() {
             Reseñas{business.reviews.length > 0 && <span className='ml-2 text-sage-500'>({business.reviews.length})</span>}
           </h2>
 
-          {/* Leave a review */}
-          {canReview && (
-            <form onSubmit={handleSubmitReview} className='mb-6 rounded-xl border border-sage-100 bg-sage-50 p-5'>
-              <p className='mb-3 font-sans text-sm font-bold text-teal-900'>Dejá tu reseña</p>
-              <InteractiveStars value={rating} onChange={setRating} />
-              <textarea
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                placeholder='Contá tu experiencia (opcional)'
-                rows={3}
-                className='mt-3 w-full resize-none rounded-xl border border-sage-200 bg-white px-4 py-3 font-sans text-sm text-teal-900 outline-none placeholder:text-sage-400 focus:border-teal-400'
-              />
-              {submitError && <p className='mt-2 font-sans text-xs text-red-500'>{submitError}</p>}
-              <button
-                type='submit'
-                disabled={submitting}
-                className='mt-3 rounded-xl bg-teal-800 px-5 py-2.5 font-sans text-sm font-bold text-white transition hover:bg-teal-900 disabled:opacity-60'>
-                {submitting ? 'Enviando...' : 'Publicar reseña'}
-              </button>
-            </form>
-          )}
-
-          {/* Reason why review is blocked */}
-          {!appUser && (
-            <p className='mb-5 font-sans text-sm text-sage-600'>
-              <Link to='/login' className='font-bold text-teal-700 underline'>Iniciá sesión</Link> para dejar una reseña.
-            </p>
-          )}
-          {appUser && isOwner && (
-            <p className='mb-5 rounded-xl bg-sage-50 px-4 py-3 font-sans text-sm text-sage-600'>
-              No podés reseñar tu propio negocio.
-            </p>
-          )}
-          {appUser && existingReview && (
-            <div className='mb-5 rounded-xl border border-teal-100 bg-teal-50 px-4 py-3'>
-              <p className='font-sans text-sm font-bold text-teal-800'>Ya dejaste una reseña para este negocio.</p>
-            </div>
-          )}
-
           {business.reviews.length === 0 ? (
             <p className='font-sans text-sm text-sage-600'>Este negocio aún no tiene reseñas.</p>
           ) : (
-            <div className='space-y-4'>
-              {business.reviews.map((review) => (
-                <div
-                  key={review.id}
-                  className={`rounded-xl border p-4 ${review.app_user_id === appUser?.id ? 'border-teal-200 bg-teal-50' : 'border-sage-100 bg-sage-50'}`}>
-                  <div className='mb-2 flex items-center justify-between gap-2'>
-                    <div className='flex items-center gap-2'>
-                      <StarRating rating={review.rating} />
-                      {review.app_user_id === appUser?.id && (
-                        <span className='rounded-full bg-teal-100 px-2 py-0.5 font-sans text-xs font-bold text-teal-700'>Tu reseña</span>
-                      )}
+            <div className='space-y-6'>
+              {Object.entries(
+                business.reviews.reduce<Record<number, { title: string; reviews: typeof business.reviews }>>((groups, review) => {
+                  const actId = review.activity_id;
+                  if (!groups[actId]) {
+                    groups[actId] = {
+                      title: review.activity?.title ?? `Actividad #${actId}`,
+                      reviews: [],
+                    };
+                  }
+                  groups[actId].reviews.push(review);
+                  return groups;
+                }, {}),
+              ).map(([actId, group]) => {
+                const groupAvg = group.reviews.reduce((sum, r) => sum + r.rating, 0) / group.reviews.length;
+                return (
+                  <div key={actId}>
+                    <div className='mb-3 flex items-center gap-3'>
+                      <Link
+                        to={`/activity/${actId}`}
+                        className='font-sans text-sm font-bold text-teal-700 underline hover:text-teal-900'>
+                        {group.title}
+                      </Link>
+                      <StarRating rating={Math.round(groupAvg)} />
+                      <span className='font-sans text-xs text-sage-600'>
+                        {groupAvg.toFixed(1)} ({group.reviews.length})
+                      </span>
                     </div>
-                    <span className='font-sans text-xs text-sage-500'>{formatDate(review.created_at)}</span>
+                    <div className='space-y-3'>
+                      {group.reviews.map((review) => (
+                        <div
+                          key={review.id}
+                          className={`rounded-xl border p-4 ${review.app_user_id === appUser?.id ? 'border-teal-200 bg-teal-50' : 'border-sage-100 bg-sage-50'}`}>
+                          <div className='mb-2 flex items-center justify-between gap-2'>
+                            <div className='flex items-center gap-2'>
+                              <StarRating rating={review.rating} />
+                              {review.app_user_id === appUser?.id && (
+                                <span className='rounded-full bg-teal-100 px-2 py-0.5 font-sans text-xs font-bold text-teal-700'>Tu reseña</span>
+                              )}
+                            </div>
+                            <span className='font-sans text-xs text-sage-500'>{formatDate(review.created_at)}</span>
+                          </div>
+                          {review.comment && (
+                            <p className='font-sans text-sm leading-relaxed text-teal-900'>{review.comment}</p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                  {review.comment && (
-                    <p className='font-sans text-sm leading-relaxed text-teal-900'>{review.comment}</p>
-                  )}
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
