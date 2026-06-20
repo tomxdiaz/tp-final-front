@@ -1,19 +1,11 @@
 import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { LogOut, Menu, X } from 'lucide-react';
 import { useAuth } from '../../auth/useAuth';
-import type { Business } from '../../types/types';
 import { GlobalRole } from '../../types/types';
 import { useEffect, useRef, useState } from 'react';
-import { businessService } from '../../services/business.service';
-
-const navItems = [
-  { label: 'Explorar', to: '/', end: true },
-  { label: 'Mi Negocio', to: '/my-business' },
-];
 
 const Header = () => {
-  const { appUser, signOut } = useAuth();
-  const [business, setBusiness] = useState<Business | null>(null);
+  const { appUser, business, signOut } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -27,6 +19,11 @@ const Header = () => {
   const canPublish = business?.verified;
   const isSuperUser = appUser?.global_role === GlobalRole.SUPER_USER;
 
+  const navItems = [
+    { label: 'Soy turista', to: '/', end: true },
+    { label: appUser && business ? 'Mi negocio' : 'Soy prestador', to: '/my-business' },
+  ];
+
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
@@ -36,14 +33,6 @@ const Header = () => {
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, []);
-
-  useEffect(() => {
-    if (!appUser) return;
-    businessService
-      .getMyBusiness()
-      .then(setBusiness)
-      .catch(() => setBusiness(null));
-  }, [appUser]);
 
   return (
     <header className='h-20 bg-teal-800 text-sage-200'>
@@ -87,19 +76,25 @@ const Header = () => {
 
                 {menuOpen && (
                   <div className='absolute right-0 top-12 z-50 w-52 rounded-2xl border border-teal-700/40 bg-teal-800 py-2 shadow-xl shadow-black/20'>
-                    {/* Explorar + Mi Negocio only on small screens */}
+                    {/* Soy turista only on small screens (it's in the top nav on desktop) */}
                     <div className='md:hidden'>
-                      {navItems.map((item) => (
-                        <Link
-                          key={item.to}
-                          to={item.to}
-                          onClick={() => setMenuOpen(false)}
-                          className='block px-4 py-2.5 font-sans text-sm font-bold text-sage-200 transition hover:bg-teal-700 hover:text-white'>
-                          {item.label}
-                        </Link>
-                      ))}
-                      <div className='my-1.5 border-t border-teal-700/60' />
+                      <Link
+                        to='/'
+                        onClick={() => setMenuOpen(false)}
+                        className='block px-4 py-2.5 font-sans text-sm font-bold text-sage-200 transition hover:bg-teal-700 hover:text-white'>
+                        Soy turista
+                      </Link>
                     </div>
+
+                    {/* Mi negocio / Soy prestador — always visible in the dropdown */}
+                    <Link
+                      to='/my-business'
+                      onClick={() => setMenuOpen(false)}
+                      className='block px-4 py-2.5 font-sans text-sm font-bold text-sage-200 transition hover:bg-teal-700 hover:text-white'>
+                      {business ? 'Mi negocio' : 'Soy prestador'}
+                    </Link>
+
+                    <div className='my-1.5 border-t border-teal-700/60' />
 
                     <Link
                       to='/profile'

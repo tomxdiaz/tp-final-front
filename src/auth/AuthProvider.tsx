@@ -3,23 +3,27 @@ import type { Session } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabaseClient';
 import { supabaseService } from '../services/supabase.service';
 import { appUserService } from '../services/app_user.service';
+import { businessService } from '../services/business.service';
 import { ApiError } from '../lib/apiClient';
-import type { AppUser } from '../types/types';
+import type { AppUser, Business } from '../types/types';
 import { AuthContext } from './AuthContext';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [appUser, setAppUser] = useState<AppUser | null>(null);
+  const [business, setBusiness] = useState<Business | null>(null);
   const [loading, setLoading] = useState(true);
 
   const loadAppUser = async (currentSession: Session | null) => {
     if (!currentSession) {
       setAppUser(null);
+      setBusiness(null);
       return;
     }
 
     const currentAppUser = await appUserService.getMyAppUser();
     setAppUser(currentAppUser);
+    businessService.getMyBusiness().then(setBusiness).catch(() => setBusiness(null));
   };
 
   const reloadAppUser = async () => {
@@ -28,6 +32,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } = await supabase.auth.getSession();
 
     await loadAppUser(currentSession);
+  };
+
+  const reloadBusiness = async () => {
+    businessService.getMyBusiness().then(setBusiness).catch(() => setBusiness(null));
   };
 
   const signIn = async (email: string, password: string) => {
@@ -42,6 +50,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await supabaseService.signOut();
     setSession(null);
     setAppUser(null);
+    setBusiness(null);
   };
 
   useEffect(() => {
@@ -119,12 +128,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       value={{
         session,
         appUser,
+        business,
         loading,
         isAuthenticated: Boolean(session),
         signIn,
         signUp,
         signOut,
         reloadAppUser,
+        reloadBusiness,
       }}>
       {children}
     </AuthContext.Provider>
