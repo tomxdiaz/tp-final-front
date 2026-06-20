@@ -28,4 +28,11 @@ export const bookingService = {
       requireAuth: true,
     });
   },
+
+  confirmBooking: async (id: number) => {
+    return apiClient<Booking>(`/booking/${id}/confirm`, {
+      method: 'POST',
+      requireAuth: true,
+    });
+  },
 };

@@ -247,6 +247,11 @@ export interface BookingActivitySession {
 
 // ─── Booking (POST /booking, POST /booking/:id/cancel) ────────────────────────
 
+export interface BookingPerson {
+  name: string;
+  dni: string;
+}
+
 export interface Booking {
   id: number;
   app_user: BookingAppUser;
@@ -256,6 +261,7 @@ export interface Booking {
   total_price: number;
   status: BookingStatus;
   customer_notes: string | null;
+  participants: BookingPerson[] | null;
   created_at: string;
   updated_at: string;
 }
@@ -264,6 +270,7 @@ export interface CreateBookingPayload {
   activity_session_id: number;
   number_of_people: number;
   customer_notes?: string;
+  participants?: BookingPerson[];
 }
 
 // ─── Business bookings (GET /business/me/bookings) ───────────────────────────
@@ -276,6 +283,7 @@ export interface BusinessBooking {
   total_price: number;
   status: BookingStatus;
   customer_notes: string | null;
+  participants: BookingPerson[] | null;
   created_at: string;
   updated_at: string;
 }

@@ -18,7 +18,7 @@ import { activityService } from '../../services/activity.service';
 import { bookingService } from '../../services/booking.service';
 import { ApiError } from '../../lib/apiClient';
 import { useAuth } from '../../auth/useAuth';
-import type { Activity, ActivitySession, Booking as BookingType } from '../../types/types';
+import type { Activity, ActivitySession, Booking as BookingType, BookingPerson } from '../../types/types';
 
 const WEEKDAYS = ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'];
 const MONTHS = [
@@ -155,6 +155,7 @@ export default function Booking() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedSessionId, setSelectedSessionId] = useState<number | null>(null);
   const [numberOfPeople, setNumberOfPeople] = useState(1);
+  const [participants, setParticipants] = useState<BookingPerson[]>([{ name: '', dni: '' }]);
   const [customerNotes, setCustomerNotes] = useState('');
   // const [cardNumber, setCardNumber] = useState('');
   // const [cardExpiry, setCardExpiry] = useState('');
@@ -246,13 +247,26 @@ export default function Booking() {
 
   const totalPrice = activity.base_price * numberOfPeople;
 
+  // ── helpers ──
+  const setCount = (n: number) => {
+    setNumberOfPeople(n);
+    setParticipants((prev) => {
+      if (n > prev.length) return [...prev, ...Array.from({ length: n - prev.length }, () => ({ name: '', dni: '' }))];
+      return prev.slice(0, n);
+    });
+  };
+
+  const updateParticipant = (index: number, field: keyof BookingPerson, value: string) => {
+    setParticipants((prev) => prev.map((p, i) => (i === index ? { ...p, [field]: value } : p)));
+  };
+
   // ── handlers ──
   const handleSelectDay = (date: Date) => {
     const daySessions = sessionsByDate.get(dateKey(date)) ?? [];
     if (daySessions.length === 0) return;
     setSelectedDate(date);
     setSelectedSessionId(daySessions.length === 1 ? daySessions[0].id : null);
-    setNumberOfPeople(1);
+    setCount(1);
   };
 
   const handleConfirm = async () => {
@@ -264,6 +278,7 @@ export default function Booking() {
         activity_session_id: selectedSessionId,
         number_of_people: numberOfPeople,
         customer_notes: customerNotes.trim() || undefined,
+        participants: participants.map((p) => ({ name: p.name.trim(), dni: p.dni.trim() })),
       });
       setBooking(result);
       setStep(3);
@@ -400,7 +415,7 @@ export default function Booking() {
                               disabled={single}
                               onClick={() => {
                                 setSelectedSessionId(s.id);
-                                setNumberOfPeople(1);
+                                setCount(1);
                               }}
                               className={`rounded-xl border-2 px-4 py-3 text-left transition ${
                                 isChosen ? 'border-teal-800 bg-teal-50' : 'border-sage-200 hover:border-teal-400'
@@ -444,17 +459,53 @@ export default function Booking() {
               <div className='flex items-center gap-4'>
                 <button
                   disabled={numberOfPeople <= 1}
-                  onClick={() => setNumberOfPeople((n) => Math.max(1, n - 1))}
+                  onClick={() => setCount(Math.max(1, numberOfPeople - 1))}
                   className='flex h-10 w-10 items-center justify-center rounded-full border-2 border-sage-200 text-teal-800 transition hover:border-teal-400 disabled:cursor-not-allowed disabled:text-sage-300'>
                   <Minus size={18} />
                 </button>
                 <span className='w-6 text-center font-sans text-body-large font-bold text-teal-900'>{numberOfPeople}</span>
                 <button
                   disabled={numberOfPeople >= maxPeople}
-                  onClick={() => setNumberOfPeople((n) => Math.min(maxPeople, n + 1))}
+                  onClick={() => setCount(Math.min(maxPeople, numberOfPeople + 1))}
                   className='flex h-10 w-10 items-center justify-center rounded-full border-2 border-sage-200 text-teal-800 transition hover:border-teal-400 disabled:cursor-not-allowed disabled:text-sage-300'>
                   <Plus size={18} />
                 </button>
+              </div>
+            </div>
+
+            {/* participant details */}
+            <div className='rounded-2xl bg-white p-6 shadow-sm'>
+              <p className='font-sans text-body font-bold text-teal-900'>Datos de los participantes</p>
+              <p className='mb-4 font-sans text-sm text-sage-600'>Nombre y DNI de cada persona que asistirá</p>
+              <div className='space-y-4'>
+                {participants.map((p, i) => (
+                  <div key={i} className='rounded-xl border-2 border-sage-100 p-4'>
+                    <p className='mb-3 font-sans text-xs font-bold uppercase tracking-wide text-sage-600'>Persona {i + 1}</p>
+                    <div className='grid grid-cols-2 gap-3'>
+                      <div>
+                        <label className='mb-1 block font-sans text-xs text-sage-600'>Nombre completo</label>
+                        <input
+                          type='text'
+                          value={p.name}
+                          onChange={(e) => updateParticipant(i, 'name', e.target.value)}
+                          placeholder='Juan Pérez'
+                          className='w-full rounded-xl border-2 border-sage-200 px-3 py-2 font-sans text-sm text-teal-900 outline-none transition focus:border-teal-600'
+                        />
+                      </div>
+                      <div>
+                        <label className='mb-1 block font-sans text-xs text-sage-600'>DNI</label>
+                        <input
+                          type='text'
+                          inputMode='numeric'
+                          value={p.dni}
+                          onChange={(e) => updateParticipant(i, 'dni', e.target.value.replace(/\D/g, ''))}
+                          placeholder='45746767'
+                          className='w-full rounded-xl border-2 border-sage-200 px-3 py-2 font-sans text-sm text-teal-900 outline-none transition focus:border-teal-600'
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
 
@@ -490,8 +541,9 @@ export default function Booking() {
             </div>
 
             <button
+              disabled={!participants.every((p) => p.name.trim() && p.dni.trim())}
               onClick={() => setStep(2)}
-              className='flex w-full items-center justify-center gap-2 rounded-2xl bg-teal-800 px-6 py-4 font-sans text-body font-bold text-white shadow-md transition hover:bg-teal-900'>
+              className='flex w-full items-center justify-center gap-2 rounded-2xl bg-teal-800 px-6 py-4 font-sans text-body font-bold text-white shadow-md transition hover:bg-teal-900 disabled:cursor-not-allowed disabled:bg-sage-400'>
               Continuar <ArrowRight size={18} />
             </button>
           </div>
@@ -514,6 +566,21 @@ export default function Booking() {
                 {activity.meeting_point && <SummaryRow label='Punto de encuentro' value={activity.meeting_point} />}
                 {customerNotes.trim() && <SummaryRow label='Notas' value={customerNotes.trim()} />}
               </div>
+              {participants.length > 0 && (
+                <div className='mt-4 border-t border-sage-200 pt-4'>
+                  <p className='mb-3 font-sans text-sm font-bold text-teal-900'>Participantes</p>
+                  <div className='space-y-2'>
+                    {participants.map((p, i) => (
+                      <div key={i} className='flex items-center justify-between'>
+                        <span className='font-sans text-sm text-sage-600'>Persona {i + 1}</span>
+                        <span className='font-sans text-sm font-bold text-teal-900'>
+                          {p.name} · DNI {p.dni}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
               <div className='mt-4 flex items-center justify-between border-t border-sage-200 pt-4'>
                 <span className='font-sans text-body font-bold text-teal-900'>Total a pagar</span>
                 <span className='font-display text-3xl text-teal-900'>
@@ -638,6 +705,23 @@ function Ticket({ booking }: { booking: BookingType }) {
           <TicketField label='Estado' value={BOOKING_STATUS_LABELS[booking.status] ?? booking.status} />
           {booking.customer_notes && <TicketField label='Notas' value={booking.customer_notes} />}
         </div>
+
+        {/* participants list */}
+        {booking.participants && booking.participants.length > 0 && (
+          <div className='mx-6 mb-6 border-t border-sage-100 pt-5'>
+            <p className='mb-3 font-sans text-xs font-bold uppercase tracking-wide text-sage-600'>Participantes</p>
+            <div className='space-y-2'>
+              {booking.participants.map((p, i) => (
+                <div key={i} className='flex items-center justify-between'>
+                  <span className='font-sans text-sm text-sage-600'>Persona {i + 1}</span>
+                  <span className='font-sans text-sm font-bold text-teal-900'>
+                    {p.name} · DNI {p.dni}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* reservation code */}
         <div className='mx-6 mb-6 flex items-center gap-4 rounded-2xl bg-sage-50 p-5'>

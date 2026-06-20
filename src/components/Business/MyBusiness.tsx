@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import {
   Building2,
   CalendarDays,
+  CheckCircle,
   Clock,
   DollarSign,
   Eye,
@@ -19,6 +20,7 @@ import {
 } from 'lucide-react';
 import { businessService } from '../../services/business.service';
 import { activityService } from '../../services/activity.service';
+import { bookingService } from '../../services/booking.service';
 import type { Activity, Booking, BookingStatus, Business } from '../../types/types';
 import { useAuth } from '../../auth/useAuth';
 
@@ -422,58 +424,101 @@ const ActividadesTab = ({
 
 // ── Reservas tab ─────────────────────────────────────────────────────
 
-const ReservasTab = ({ bookings }: { bookings: Booking[] }) => (
-  <div>
-    <h2 className='font-display text-4xl uppercase text-teal-800 mb-6'>Todas las reservas</h2>
+const ReservasTab = ({ bookings, onConfirmBooking }: { bookings: Booking[]; onConfirmBooking: (id: number) => Promise<void> }) => {
+  const [confirmingId, setConfirmingId] = useState<number | null>(null);
+  const [loadingId, setLoadingId] = useState<number | null>(null);
 
-    {bookings.length === 0 ? (
-      <div className='bg-white rounded-2xl border border-gray-100 p-10 text-center'>
-        <CalendarDays size={40} className='text-gray-200 mx-auto mb-3' />
-        <p className='text-gray-500 text-sm'>Todavía no recibiste reservas.</p>
-      </div>
-    ) : (
-      <div className='bg-white rounded-2xl border border-gray-100 shadow-sm shadow-black/5 overflow-x-auto'>
-        <table className='min-w-full text-sm'>
-          <thead>
-            <tr className='border-b border-gray-100'>
-              <th className='text-left font-sans text-xs font-bold text-teal-700 uppercase tracking-widest px-5 py-3'>ID</th>
-              <th className='text-left font-sans text-xs font-bold text-teal-700 uppercase tracking-widest px-4 py-3'>Actividad</th>
-              <th className='text-left font-sans text-xs font-bold text-teal-700 uppercase tracking-widest px-4 py-3'>Cliente</th>
-              <th className='text-left font-sans text-xs font-bold text-teal-700 uppercase tracking-widest px-4 py-3'>Fecha</th>
-              <th className='text-left font-sans text-xs font-bold text-teal-700 uppercase tracking-widest px-4 py-3'>Personas</th>
-              <th className='text-left font-sans text-xs font-bold text-teal-700 uppercase tracking-widest px-4 py-3'>Total</th>
-              <th className='text-left font-sans text-xs font-bold text-teal-700 uppercase tracking-widest px-4 py-3'>Estado</th>
-            </tr>
-          </thead>
-          <tbody className='divide-y divide-gray-50'>
-            {bookings.map((b) => {
-              const userName = b.app_user
-                ? `${b.app_user.first_name ?? ''} ${(b.app_user.last_name ?? '').charAt(0)}${b.app_user.last_name ? '.' : ''}`.trim() ||
-                  b.app_user.email
-                : `Usuario`;
-              return (
-                <tr key={b.id} className='hover:bg-gray-50/50 transition'>
-                  <td className='px-5 py-3.5 font-sans text-xs text-teal-600 font-semibold'>{b.id}</td>
-                  <td className='px-4 py-3.5 font-semibold text-gray-800'>{b.activity_session!.activity.title}</td>
-                  <td className='px-4 py-3.5 text-teal-600 font-semibold'>{userName}</td>
-                  <td className='px-4 py-3.5 text-gray-600 whitespace-nowrap'>{shortDate(b.activity_session!.datetime)}</td>
-                  <td className='px-4 py-3.5 text-gray-800 font-semibold'>{b.number_of_people}</td>
-                  <td className='px-4 py-3.5 font-bold text-gray-800'>{currency(b.total_price)}</td>
-                  <td className='px-4 py-3.5'>
-                    <span className={`inline-flex items-center gap-1.5 text-xs font-semibold ${STATUS_TEXT[b.status]}`}>
-                      <span className={`w-1.5 h-1.5 rounded-full ${STATUS_DOT[b.status]}`} />
-                      {STATUS_LABEL[b.status]}
-                    </span>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-    )}
-  </div>
-);
+  const handleConfirm = async (id: number) => {
+    setLoadingId(id);
+    await onConfirmBooking(id);
+    setLoadingId(null);
+    setConfirmingId(null);
+  };
+
+  return (
+    <div>
+      <h2 className='font-display text-4xl uppercase text-teal-800 mb-6'>Todas las reservas</h2>
+
+      {bookings.length === 0 ? (
+        <div className='bg-white rounded-2xl border border-gray-100 p-10 text-center'>
+          <CalendarDays size={40} className='text-gray-200 mx-auto mb-3' />
+          <p className='text-gray-500 text-sm'>Todavía no recibiste reservas.</p>
+        </div>
+      ) : (
+        <div className='bg-white rounded-2xl border border-gray-100 shadow-sm shadow-black/5 overflow-x-auto'>
+          <table className='min-w-full text-sm'>
+            <thead>
+              <tr className='border-b border-gray-100'>
+                <th className='text-left font-sans text-xs font-bold text-teal-700 uppercase tracking-widest px-5 py-3'>ID</th>
+                <th className='text-left font-sans text-xs font-bold text-teal-700 uppercase tracking-widest px-4 py-3'>Actividad</th>
+                <th className='text-left font-sans text-xs font-bold text-teal-700 uppercase tracking-widest px-4 py-3'>Cliente</th>
+                <th className='text-left font-sans text-xs font-bold text-teal-700 uppercase tracking-widest px-4 py-3'>Fecha</th>
+                <th className='text-left font-sans text-xs font-bold text-teal-700 uppercase tracking-widest px-4 py-3'>Personas</th>
+                <th className='text-left font-sans text-xs font-bold text-teal-700 uppercase tracking-widest px-4 py-3'>Total</th>
+                <th className='text-left font-sans text-xs font-bold text-teal-700 uppercase tracking-widest px-4 py-3'>Estado</th>
+                <th className='px-4 py-3' />
+              </tr>
+            </thead>
+            <tbody className='divide-y divide-gray-50'>
+              {bookings.map((b) => {
+                const userName = b.app_user
+                  ? `${b.app_user.first_name ?? ''} ${(b.app_user.last_name ?? '').charAt(0)}${b.app_user.last_name ? '.' : ''}`.trim() ||
+                    b.app_user.email
+                  : `Usuario`;
+                const isConfirming = confirmingId === b.id;
+                const isLoading = loadingId === b.id;
+                return (
+                  <tr key={b.id} className='hover:bg-gray-50/50 transition'>
+                    <td className='px-5 py-3.5 font-sans text-xs text-teal-600 font-semibold'>{b.id}</td>
+                    <td className='px-4 py-3.5 font-semibold text-gray-800'>{b.activity_session!.activity.title}</td>
+                    <td className='px-4 py-3.5 text-teal-600 font-semibold'>{userName}</td>
+                    <td className='px-4 py-3.5 text-gray-600 whitespace-nowrap'>{shortDate(b.activity_session!.datetime)}</td>
+                    <td className='px-4 py-3.5 text-gray-800 font-semibold'>{b.number_of_people}</td>
+                    <td className='px-4 py-3.5 font-bold text-gray-800'>{currency(b.total_price)}</td>
+                    <td className='px-4 py-3.5'>
+                      <span className={`inline-flex items-center gap-1.5 text-xs font-semibold ${STATUS_TEXT[b.status]}`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${STATUS_DOT[b.status]}`} />
+                        {STATUS_LABEL[b.status]}
+                      </span>
+                    </td>
+                    <td className='px-4 py-3.5 text-right whitespace-nowrap'>
+                      {b.status === 'PENDING' && (
+                        isConfirming ? (
+                          <div className='flex items-center justify-end gap-1.5'>
+                            <span className='text-xs text-emerald-600 font-semibold'>¿Confirmar pago?</span>
+                            <button
+                              onClick={() => handleConfirm(b.id)}
+                              disabled={isLoading}
+                              className='px-2.5 py-1 rounded-lg bg-emerald-500 text-white text-xs font-bold hover:bg-emerald-600 transition disabled:opacity-60'>
+                              {isLoading ? '...' : 'Sí'}
+                            </button>
+                            <button
+                              onClick={() => setConfirmingId(null)}
+                              disabled={isLoading}
+                              className='px-2.5 py-1 rounded-lg border border-gray-300 text-gray-600 text-xs font-bold hover:bg-gray-50 transition disabled:opacity-60'>
+                              No
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => setConfirmingId(b.id)}
+                            className='flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-emerald-600 border border-emerald-200 hover:bg-emerald-50 transition'>
+                            <CheckCircle size={13} />
+                            Confirmar pago
+                          </button>
+                        )
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+};
 
 // ── Dashboard (verified) ─────────────────────────────────────────────
 
@@ -485,6 +530,7 @@ const Dashboard = ({
   onDeleteActivity,
   onRenewActivity,
   onToggleActivity,
+  onConfirmBooking,
 }: {
   business: Business;
   activities: Activity[];
@@ -493,6 +539,7 @@ const Dashboard = ({
   onDeleteActivity: (id: number) => Promise<void>;
   onRenewActivity: (id: number) => Promise<void>;
   onToggleActivity: (id: number, currentlyActive: boolean) => Promise<void>;
+  onConfirmBooking: (id: number) => Promise<void>;
 }) => {
   const [tab, setTab] = useState<Tab>('resumen');
 
@@ -557,7 +604,7 @@ const Dashboard = ({
       <div className='mx-auto max-w-7xl px-6 py-8'>
         {tab === 'resumen' && <ResumenTab business={business} activities={activities} bookings={bookings} />}
         {tab === 'actividades' && <ActividadesTab activities={activities} onDeleteActivity={onDeleteActivity} onRenewActivity={onRenewActivity} onToggleActivity={onToggleActivity} />}
-        {tab === 'reservas' && <ReservasTab bookings={bookings} />}
+        {tab === 'reservas' && <ReservasTab bookings={bookings} onConfirmBooking={onConfirmBooking} />}
       </div>
     </div>
   );
@@ -630,6 +677,11 @@ const MyBusiness = () => {
     setActivities((prev) => prev.map((a) => (a.id === id ? { ...a, is_active: updated.is_active } : a)));
   };
 
+  const handleConfirmBooking = async (id: number) => {
+    const updated = await bookingService.confirmBooking(id);
+    setBookings((prev) => prev.map((b) => (b.id === id ? { ...b, status: updated.status } : b)));
+  };
+
   return (
     <Dashboard
       business={business}
@@ -639,6 +691,7 @@ const MyBusiness = () => {
       onDeleteActivity={handleDeleteActivity}
       onRenewActivity={handleRenewActivity}
       onToggleActivity={handleToggleActivity}
+      onConfirmBooking={handleConfirmBooking}
     />
   );
 };
