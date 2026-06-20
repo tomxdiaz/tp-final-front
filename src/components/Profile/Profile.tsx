@@ -1,5 +1,7 @@
-import { CalendarDays, Mail, Phone, ShieldCheck } from 'lucide-react';
+import { useState } from 'react';
+import { CalendarDays, Mail, Pencil, Phone, ShieldCheck, X } from 'lucide-react';
 import { useAuth } from '../../auth/useAuth';
+import { appUserService } from '../../services/app_user.service';
 import { GlobalRole } from '../../types/types';
 
 function formatDate(value: string): string {
@@ -32,7 +34,46 @@ function getInitials(displayName: string) {
 }
 
 export default function Profile() {
-  const { appUser, loading, session } = useAuth();
+  const { appUser, loading, session, reloadAppUser } = useAuth();
+
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [form, setForm] = useState({ first_name: '', last_name: '', phone: '' });
+
+  function openEdit() {
+    setForm({
+      first_name: appUser?.first_name ?? '',
+      last_name: appUser?.last_name ?? '',
+      phone: appUser?.phone ?? '',
+    });
+    setError(null);
+    setEditing(true);
+  }
+
+  function cancelEdit() {
+    setEditing(false);
+    setError(null);
+  }
+
+  async function handleSave(e: React.FormEvent) {
+    e.preventDefault();
+    setSaving(true);
+    setError(null);
+    try {
+      await appUserService.updateMyAppUser({
+        first_name: form.first_name,
+        last_name: form.last_name,
+        phone: form.phone,
+      });
+      await reloadAppUser();
+      setEditing(false);
+    } catch {
+      setError('No se pudo guardar los cambios. Intentá de nuevo.');
+    } finally {
+      setSaving(false);
+    }
+  }
 
   if (loading) {
     return (
@@ -53,36 +94,105 @@ export default function Profile() {
 
   const sobreMi = (
     <div className='rounded-3xl bg-white p-6 shadow-md shadow-black/5'>
-      <h2 className='font-display text-[2.2rem] uppercase leading-none tracking-[0.04em] text-teal-900'>Mi perfil</h2>
-
-      <div className='mt-6 space-y-3 rounded-2xl bg-sage-50 p-4'>
-        <div className='flex items-center gap-3 font-sans text-sm text-sage-800'>
-          <span className='font-bold text-sage-600'>Nombre:</span>
-          <span>{appUser?.first_name || 'N/A'}</span>
-        </div>
-        <div className='flex items-center gap-3 font-sans text-sm text-sage-800'>
-          <span className='font-bold text-sage-600'>Apellido:</span>
-          <span>{appUser?.last_name || 'N/A'}</span>
-        </div>
-        <div className='flex items-center gap-3 font-sans text-sm text-sage-800'>
-          <Mail size={16} className='text-sage-600' />
-          <span>{contactEmail}</span>
-        </div>
-        <div className='flex items-center gap-3 font-sans text-sm text-sage-800'>
-          <Phone size={16} className='text-sage-600' />
-          <span>{contactPhone || 'N/A'}</span>
-        </div>
-        {accountCreatedAt && (
-          <div className='flex items-center gap-3 font-sans text-sm text-sage-800'>
-            <CalendarDays size={16} className='text-sage-600' />
-            <span>Cuenta creada {formatDate(accountCreatedAt)}</span>
-          </div>
+      <div className='flex items-center justify-between'>
+        <h2 className='font-display text-[2.2rem] uppercase leading-none tracking-[0.04em] text-teal-900'>Mi perfil</h2>
+        {!editing && (
+          <button
+            onClick={openEdit}
+            className='flex items-center gap-2 rounded-xl bg-teal-700 px-4 py-2 font-sans text-sm font-semibold text-white transition hover:bg-teal-800'>
+            <Pencil size={14} />
+            Editar
+          </button>
         )}
-        <div className='flex items-center gap-3 font-sans text-sm text-sage-800'>
-          <ShieldCheck size={16} className='text-sage-600' />
-          <span>{accountRole === GlobalRole.SUPER_USER ? 'Super Usuario' : 'Usuario'}</span>
-        </div>
       </div>
+
+      {editing ? (
+        <form onSubmit={handleSave} className='mt-6 space-y-4'>
+          <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
+            <div className='flex flex-col gap-1'>
+              <label className='font-sans text-xs font-bold text-sage-600'>Nombre</label>
+              <input
+                type='text'
+                maxLength={100}
+                value={form.first_name}
+                onChange={(e) => setForm((f) => ({ ...f, first_name: e.target.value }))}
+                className='rounded-xl border border-sage-200 bg-sage-50 px-3 py-2 font-sans text-sm text-teal-900 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-200'
+                placeholder='Nombre'
+              />
+            </div>
+            <div className='flex flex-col gap-1'>
+              <label className='font-sans text-xs font-bold text-sage-600'>Apellido</label>
+              <input
+                type='text'
+                maxLength={100}
+                value={form.last_name}
+                onChange={(e) => setForm((f) => ({ ...f, last_name: e.target.value }))}
+                className='rounded-xl border border-sage-200 bg-sage-50 px-3 py-2 font-sans text-sm text-teal-900 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-200'
+                placeholder='Apellido'
+              />
+            </div>
+          </div>
+          <div className='flex flex-col gap-1'>
+            <label className='font-sans text-xs font-bold text-sage-600'>Teléfono</label>
+            <input
+              type='tel'
+              maxLength={30}
+              value={form.phone}
+              onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
+              className='rounded-xl border border-sage-200 bg-sage-50 px-3 py-2 font-sans text-sm text-teal-900 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-200'
+              placeholder='Teléfono'
+            />
+          </div>
+
+          {error && <p className='font-sans text-sm text-red-600'>{error}</p>}
+
+          <div className='flex gap-3 pt-1'>
+            <button
+              type='submit'
+              disabled={saving}
+              className='flex-1 rounded-xl bg-teal-700 px-4 py-2 font-sans text-sm font-semibold text-white transition hover:bg-teal-800 disabled:opacity-60'>
+              {saving ? 'Guardando…' : 'Guardar cambios'}
+            </button>
+            <button
+              type='button'
+              onClick={cancelEdit}
+              disabled={saving}
+              className='flex items-center gap-1 rounded-xl border border-sage-200 bg-white px-4 py-2 font-sans text-sm font-semibold text-teal-900 transition hover:bg-sage-50 disabled:opacity-60'>
+              <X size={14} />
+              Cancelar
+            </button>
+          </div>
+        </form>
+      ) : (
+        <div className='mt-6 space-y-3 rounded-2xl bg-sage-50 p-4'>
+          <div className='flex items-center gap-3 font-sans text-sm text-sage-800'>
+            <span className='font-bold text-sage-600'>Nombre:</span>
+            <span>{appUser?.first_name || 'N/A'}</span>
+          </div>
+          <div className='flex items-center gap-3 font-sans text-sm text-sage-800'>
+            <span className='font-bold text-sage-600'>Apellido:</span>
+            <span>{appUser?.last_name || 'N/A'}</span>
+          </div>
+          <div className='flex items-center gap-3 font-sans text-sm text-sage-800'>
+            <Mail size={16} className='text-sage-600' />
+            <span>{contactEmail}</span>
+          </div>
+          <div className='flex items-center gap-3 font-sans text-sm text-sage-800'>
+            <Phone size={16} className='text-sage-600' />
+            <span>{contactPhone || 'N/A'}</span>
+          </div>
+          {accountCreatedAt && (
+            <div className='flex items-center gap-3 font-sans text-sm text-sage-800'>
+              <CalendarDays size={16} className='text-sage-600' />
+              <span>Cuenta creada {formatDate(accountCreatedAt)}</span>
+            </div>
+          )}
+          <div className='flex items-center gap-3 font-sans text-sm text-sage-800'>
+            <ShieldCheck size={16} className='text-sage-600' />
+            <span>{accountRole === GlobalRole.SUPER_USER ? 'Super Usuario' : 'Usuario'}</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 

@@ -285,9 +285,10 @@ export default function ActivityDetail() {
                     const availableSpots =
                       activity.max_participants != null ? activity.max_participants - session.booked_spots : null;
                     return (
-                      <div
+                      <Link
                         key={session.id}
-                        className='flex items-center justify-between rounded-xl border border-sage-100 bg-sage-50 px-4 py-3'>
+                        to={`/activity/${activity.id}/session/${session.id}`}
+                        className='flex items-center justify-between rounded-xl border border-sage-100 bg-sage-50 px-4 py-3 transition hover:border-teal-200 hover:bg-teal-50'>
                         <div className='flex items-center gap-3'>
                           <CalendarDays size={18} className='shrink-0 text-teal-700' />
                           <div>
@@ -320,7 +321,7 @@ export default function ActivityDetail() {
                                   : 'Disponible'}
                           </p>
                         </div>
-                      </div>
+                      </Link>
                     );
                   })}
                 </div>

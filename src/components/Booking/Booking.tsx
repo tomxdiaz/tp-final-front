@@ -700,7 +700,7 @@ function Ticket({ booking }: { booking: BookingType }) {
           {session && <TicketField label='Fecha' value={formatLongDate(session.datetime)} />}
           {session && <TicketField label='Horario' value={formatTime(session.datetime)} />}
           <TicketField label='Personas' value={`${booking.number_of_people} persona${booking.number_of_people === 1 ? '' : 's'}`} />
-          <TicketField label='Total pagado' value={`$${formatPrice(booking.total_price)}`} />
+          <TicketField label='Total a pagar' value={`$${formatPrice(booking.total_price)}`} />
           {customerName && <TicketField label='Reservado por' value={customerName} />}
           <TicketField label='Estado' value={BOOKING_STATUS_LABELS[booking.status] ?? booking.status} />
           {booking.customer_notes && <TicketField label='Notas' value={booking.customer_notes} />}

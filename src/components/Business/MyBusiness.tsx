@@ -17,11 +17,12 @@ import {
   Star,
   Trash2,
   Users,
+  X,
 } from 'lucide-react';
 import { businessService } from '../../services/business.service';
 import { activityService } from '../../services/activity.service';
 import { bookingService } from '../../services/booking.service';
-import type { Activity, Booking, BookingStatus, Business } from '../../types/types';
+import type { Activity, Booking, BookingStatus, Business, UpdateBusinessPayload } from '../../types/types';
 import { useAuth } from '../../auth/useAuth';
 
 type Tab = 'resumen' | 'actividades' | 'reservas';
@@ -59,9 +60,151 @@ function durationLabel(minutes: number | null) {
   return m === 0 ? `${h} hs` : `${h}h ${m}m`;
 }
 
+// ── Edit modal ───────────────────────────────────────────────────────
+
+type EditForm = { business_name: string; description: string; contact_email: string; contact_phone: string };
+
+const BusinessEditModal = ({
+  business,
+  onClose,
+  onSaved,
+}: {
+  business: Business;
+  onClose: () => void;
+  onSaved: (updated: Business) => void;
+}) => {
+  const [form, setForm] = useState<EditForm>({
+    business_name: business.business_name,
+    description: business.description ?? '',
+    contact_email: business.contact_email ?? '',
+    contact_phone: business.contact_phone ?? '',
+  });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [nameError, setNameError] = useState<string | null>(null);
+
+  function set(field: keyof EditForm, value: string) {
+    setForm((f) => ({ ...f, [field]: value }));
+    if (field === 'business_name') setNameError(null);
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!form.business_name.trim()) {
+      setNameError('El nombre del negocio es obligatorio.');
+      return;
+    }
+    setSaving(true);
+    setError(null);
+    try {
+      const payload: UpdateBusinessPayload = {
+        business_name: form.business_name.trim(),
+        description: form.description,
+        contact_email: form.contact_email,
+        contact_phone: form.contact_phone,
+      };
+      const updated = await businessService.updateMyBusiness(payload);
+      onSaved(updated);
+    } catch {
+      setError('No se pudo guardar los cambios. Intentá de nuevo.');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4'>
+      <div className='w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl'>
+        <div className='flex items-center justify-between mb-6'>
+          <h2 className='font-display text-[1.8rem] uppercase leading-none tracking-[0.04em] text-teal-900'>Editar negocio</h2>
+          <button
+            onClick={onClose}
+            className='flex h-9 w-9 items-center justify-center rounded-xl text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition'>
+            <X size={18} />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className='space-y-4'>
+          <div className='flex flex-col gap-1'>
+            <label className='font-sans text-xs font-bold text-gray-500'>Nombre del negocio *</label>
+            <input
+              type='text'
+              maxLength={200}
+              value={form.business_name}
+              onChange={(e) => set('business_name', e.target.value)}
+              className={[
+                'rounded-xl border px-3 py-2 font-sans text-sm text-teal-900 outline-none focus:ring-2',
+                nameError
+                  ? 'border-red-300 bg-red-50 focus:border-red-400 focus:ring-red-100'
+                  : 'border-gray-200 bg-gray-50 focus:border-teal-500 focus:ring-teal-100',
+              ].join(' ')}
+              placeholder='Nombre del negocio'
+            />
+            {nameError && <p className='text-xs text-red-500'>{nameError}</p>}
+          </div>
+
+          <div className='flex flex-col gap-1'>
+            <label className='font-sans text-xs font-bold text-gray-500'>Descripción</label>
+            <textarea
+              maxLength={1000}
+              rows={3}
+              value={form.description}
+              onChange={(e) => set('description', e.target.value)}
+              className='rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 font-sans text-sm text-teal-900 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100 resize-none'
+              placeholder='Descripción del negocio'
+            />
+          </div>
+
+          <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
+            <div className='flex flex-col gap-1'>
+              <label className='font-sans text-xs font-bold text-gray-500'>Email de contacto</label>
+              <input
+                type='email'
+                value={form.contact_email}
+                onChange={(e) => set('contact_email', e.target.value)}
+                className='rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 font-sans text-sm text-teal-900 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100'
+                placeholder='contacto@negocio.com'
+              />
+            </div>
+            <div className='flex flex-col gap-1'>
+              <label className='font-sans text-xs font-bold text-gray-500'>Teléfono de contacto</label>
+              <input
+                type='tel'
+                maxLength={30}
+                value={form.contact_phone}
+                onChange={(e) => set('contact_phone', e.target.value)}
+                className='rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 font-sans text-sm text-teal-900 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100'
+                placeholder='+54911234567'
+              />
+            </div>
+          </div>
+
+          {error && <p className='font-sans text-sm text-red-600'>{error}</p>}
+
+          <div className='flex gap-3 pt-1'>
+            <button
+              type='submit'
+              disabled={saving}
+              className='flex-1 rounded-xl bg-teal-700 px-4 py-2.5 font-sans text-sm font-semibold text-white transition hover:bg-teal-800 disabled:opacity-60'>
+              {saving ? 'Guardando…' : 'Guardar cambios'}
+            </button>
+            <button
+              type='button'
+              onClick={onClose}
+              disabled={saving}
+              className='flex items-center gap-1 rounded-xl border border-gray-200 bg-white px-4 py-2.5 font-sans text-sm font-semibold text-gray-700 transition hover:bg-gray-50 disabled:opacity-60'>
+              Cancelar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
 // ── Pending state ────────────────────────────────────────────────────
 
-const PendingBusiness = ({ business }: { business: Business }) => (
+const PendingBusiness = ({ business, onEdit }: { business: Business; onEdit: () => void }) => (
   <div className='min-h-screen bg-gray-50'>
     <div className='mx-auto max-w-2xl px-4 py-8'>
       <div className='mb-8'>
@@ -80,14 +223,22 @@ const PendingBusiness = ({ business }: { business: Business }) => (
       </div>
 
       <div className='bg-white rounded-xl border border-gray-200 p-5'>
-        <div className='flex items-center gap-3 pb-4 mb-4 border-b border-gray-100'>
-          <div className='w-10 h-10 rounded-full bg-teal-50 border border-teal-100 flex items-center justify-center'>
-            <Building2 size={18} className='text-teal-700' />
+        <div className='flex items-center justify-between pb-4 mb-4 border-b border-gray-100'>
+          <div className='flex items-center gap-3'>
+            <div className='w-10 h-10 rounded-full bg-teal-50 border border-teal-100 flex items-center justify-center'>
+              <Building2 size={18} className='text-teal-700' />
+            </div>
+            <div>
+              <p className='font-semibold text-gray-800'>{business.business_name}</p>
+              <p className='text-xs text-gray-400'>Registrado el {new Date(business.created_at).toLocaleDateString('es-AR')}</p>
+            </div>
           </div>
-          <div>
-            <p className='font-semibold text-gray-800'>{business.business_name}</p>
-            <p className='text-xs text-gray-400'>Registrado el {new Date(business.created_at).toLocaleDateString('es-AR')}</p>
-          </div>
+          <button
+            onClick={onEdit}
+            className='flex items-center gap-2 rounded-xl bg-teal-700 px-4 py-2 font-sans text-sm font-semibold text-white transition hover:bg-teal-800'>
+            <Pencil size={14} />
+            Editar
+          </button>
         </div>
 
         {business.description && (
@@ -527,6 +678,7 @@ const Dashboard = ({
   activities,
   bookings,
   firstName,
+  onEdit,
   onDeleteActivity,
   onRenewActivity,
   onToggleActivity,
@@ -536,6 +688,7 @@ const Dashboard = ({
   activities: Activity[];
   bookings: Booking[];
   firstName: string;
+  onEdit: () => void;
   onDeleteActivity: (id: number) => Promise<void>;
   onRenewActivity: (id: number) => Promise<void>;
   onToggleActivity: (id: number, currentlyActive: boolean) => Promise<void>;
@@ -559,7 +712,7 @@ const Dashboard = ({
     <div className='min-h-screen bg-sage-50'>
       <div className='bg-teal-800'>
         <div className='mx-auto max-w-7xl px-6 pt-8 pb-0'>
-          <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8'>
+          <div className='flex flex-col gap-4 mb-8'>
             <div className='flex items-center gap-4'>
               <div className='w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-teal-700 border-2 border-teal-600 flex items-center justify-center shrink-0'>
                 <span className='font-display text-xl sm:text-2xl text-white'>{initials}</span>
@@ -569,16 +722,22 @@ const Dashboard = ({
                 <h1 className='font-display text-2xl sm:text-4xl text-white leading-none mt-0.5'>HOLA, {firstName.toUpperCase()} 👋</h1>
               </div>
             </div>
-            <div className='flex items-center gap-2'>
+            <div className='flex flex-col sm:flex-row gap-2'>
               <Link
                 to={`/business/${business.id}`}
-                className='flex items-center justify-center gap-2 rounded-xl border border-teal-600 px-5 py-3 font-sans text-sm font-bold text-teal-200 hover:bg-teal-700/40 transition sm:w-auto'>
+                className='flex items-center justify-center gap-2 rounded-xl border border-teal-600 px-5 py-3 font-sans text-sm font-bold text-teal-200 hover:bg-teal-700/40 transition'>
                 <Eye size={16} />
                 Ver perfil público
               </Link>
+              <button
+                onClick={onEdit}
+                className='flex items-center justify-center gap-2 rounded-xl border border-teal-600 px-5 py-3 font-sans text-sm font-bold text-teal-200 hover:bg-teal-700/40 transition'>
+                <Pencil size={16} />
+                Editar negocio
+              </button>
               <Link
                 to='/create-activity'
-                className='flex items-center justify-center gap-2 rounded-xl border border-teal-600 bg-teal-700/40 px-5 py-3 font-sans text-sm font-bold text-white hover:bg-teal-700 transition sm:w-auto'>
+                className='flex items-center justify-center gap-2 rounded-xl border border-teal-600 bg-teal-700/40 px-5 py-3 font-sans text-sm font-bold text-white hover:bg-teal-700 transition'>
                 <PlusCircle size={16} />
                 Nueva actividad
               </Link>
@@ -619,6 +778,7 @@ const MyBusiness = () => {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editOpen, setEditOpen] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -657,7 +817,19 @@ const MyBusiness = () => {
     );
   }
 
-  if (!business.verified) return <PendingBusiness business={business} />;
+  const handleSaved = (updated: Business) => {
+    setBusiness(updated);
+    setEditOpen(false);
+  };
+
+  if (!business.verified) {
+    return (
+      <>
+        <PendingBusiness business={business} onEdit={() => setEditOpen(true)} />
+        {editOpen && <BusinessEditModal business={business} onClose={() => setEditOpen(false)} onSaved={handleSaved} />}
+      </>
+    );
+  }
 
   const firstName = appUser?.first_name ?? business.business_name.split(' ')[0];
 
@@ -683,16 +855,20 @@ const MyBusiness = () => {
   };
 
   return (
-    <Dashboard
-      business={business}
-      activities={activities}
-      bookings={bookings}
-      firstName={firstName}
-      onDeleteActivity={handleDeleteActivity}
-      onRenewActivity={handleRenewActivity}
-      onToggleActivity={handleToggleActivity}
-      onConfirmBooking={handleConfirmBooking}
-    />
+    <>
+      <Dashboard
+        business={business}
+        activities={activities}
+        bookings={bookings}
+        firstName={firstName}
+        onEdit={() => setEditOpen(true)}
+        onDeleteActivity={handleDeleteActivity}
+        onRenewActivity={handleRenewActivity}
+        onToggleActivity={handleToggleActivity}
+        onConfirmBooking={handleConfirmBooking}
+      />
+      {editOpen && <BusinessEditModal business={business} onClose={() => setEditOpen(false)} onSaved={handleSaved} />}
+    </>
   );
 };
 

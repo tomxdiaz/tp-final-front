@@ -273,6 +273,59 @@ export interface CreateBookingPayload {
   participants?: BookingPerson[];
 }
 
+// ─── Session detail (GET /activity/:id/session/:sessionId) ───────────────────
+
+export interface SessionDetailActivity {
+  id: number;
+  title: string;
+  description: string | null;
+  base_price: number;
+  currency: string;
+  max_participants: number | null;
+  location: string | null;
+  duration_minutes: number | null;
+  difficulty: DifficultyLevel | null;
+  images: string[];
+  meeting_point: string | null;
+}
+
+export interface SessionDetailBookingPerson {
+  name: string;
+  dni: string;
+}
+
+export interface SessionDetailBookingUser {
+  id: string;
+  email: string;
+  first_name: string | null;
+  last_name: string | null;
+}
+
+export interface SessionDetailBooking {
+  id: number;
+  app_user: SessionDetailBookingUser;
+  number_of_people: number;
+  total_price: number;
+  status: BookingStatus;
+  customer_notes: string | null;
+  participants: SessionDetailBookingPerson[] | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SessionDetail {
+  id: number;
+  activity_id: number;
+  datetime: string;
+  booked_spots: number;
+  remaining_spots: number | null;
+  status: SessionStatus;
+  activity: SessionDetailActivity;
+  bookings: SessionDetailBooking[];
+  created_at: string;
+  updated_at: string;
+}
+
 // ─── Business bookings (GET /business/me/bookings) ───────────────────────────
 
 export interface BusinessBooking {
