@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { MapPin, Clock, Timer, Users, ArrowLeft, Phone, Mail, Building2, CalendarDays, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react';
+import { MapPin, Clock, Timer, Users, ArrowLeft, Phone, Mail, Building2, CalendarDays, RefreshCw, ChevronLeft, ChevronRight, Star } from 'lucide-react';
 import { activityService } from '../../services/activity.service';
+import { reviewService } from '../../services/review.service';
 import type { Activity } from '../../types/types';
 import { useAuth } from '../../auth/useAuth';
 
@@ -33,6 +34,46 @@ function formatSessionDatetime(datetime: string): { date: string; time: string }
   return { date, time };
 }
 
+function StarRating({ rating }: { rating: number }) {
+  return (
+    <div className='flex items-center gap-0.5'>
+      {[1, 2, 3, 4, 5].map((star) => (
+        <Star
+          key={star}
+          size={14}
+          className={star <= rating ? 'fill-amber-400 text-amber-400' : 'fill-sage-200 text-sage-200'}
+        />
+      ))}
+    </div>
+  );
+}
+
+function InteractiveStars({ value, onChange }: { value: number; onChange: (v: number) => void }) {
+  const [hovered, setHovered] = useState(0);
+  return (
+    <div className='flex items-center gap-1'>
+      {[1, 2, 3, 4, 5].map((star) => (
+        <button
+          key={star}
+          type='button'
+          onClick={() => onChange(star)}
+          onMouseEnter={() => setHovered(star)}
+          onMouseLeave={() => setHovered(0)}
+          className='transition'>
+          <Star
+            size={24}
+            className={(hovered || value) >= star ? 'fill-amber-400 text-amber-400' : 'fill-sage-100 text-sage-300'}
+          />
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function formatDate(dateStr: string): string {
+  return new Date(dateStr).toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
 export default function ActivityDetail() {
   const { id } = useParams<{ id: string }>();
   const { appUser } = useAuth();
@@ -41,6 +82,10 @@ export default function ActivityDetail() {
   const [error, setError] = useState(!id);
   const [renewing, setRenewing] = useState(false);
   const [activeImage, setActiveImage] = useState(0);
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   useEffect(() => {
     if (!id) return;
@@ -91,6 +136,41 @@ export default function ActivityDetail() {
   const hasDaysOfWeek = activity.days_of_week.length > 0;
   const hasAdditionalInfo = hasDaysOfWeek || activity.min_age !== null;
   const isOwner = appUser != null && activity.business != null && appUser.id === activity.business.app_user_id;
+
+  const reviews = activity.reviews ?? [];
+  const avgRating = reviews.length > 0
+    ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+    : null;
+  const existingReview = appUser ? reviews.find((r) => r.app_user_id === appUser.id) : undefined;
+  const canReview = !!appUser && !isOwner && !existingReview && activity.has_confirmed_booking === true;
+
+  const handleSubmitReview = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (rating === 0) {
+      setSubmitError('Seleccioná una puntuación.');
+      return;
+    }
+    setSubmitting(true);
+    setSubmitError('');
+    try {
+      const newReview = await reviewService.createReview({
+        activity_id: activity.id,
+        rating,
+        comment: comment.trim() || undefined,
+      });
+      setActivity((prev) => prev && {
+        ...prev,
+        reviews: [newReview, ...(prev.reviews ?? [])],
+        has_confirmed_booking: prev.has_confirmed_booking,
+      });
+      setRating(0);
+      setComment('');
+    } catch {
+      setSubmitError('No se pudo enviar la reseña. Intentá de nuevo.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <div className='min-h-screen bg-sage-50 font-sans text-teal-900'>
@@ -326,6 +406,78 @@ export default function ActivityDetail() {
                 </div>
               </div>
             )}
+
+            {/* Reviews */}
+            <div className='rounded-2xl bg-white p-6 shadow-sm'>
+              <div className='mb-5 flex items-center gap-3'>
+                <h2 className='font-display text-2xl uppercase tracking-[0.04em] text-teal-900'>
+                  Reseñas{reviews.length > 0 && <span className='ml-2 text-sage-500'>({reviews.length})</span>}
+                </h2>
+                {avgRating !== null && (
+                  <div className='flex items-center gap-2'>
+                    <StarRating rating={Math.round(avgRating)} />
+                    <span className='font-sans text-sm font-bold text-teal-900'>{avgRating.toFixed(1)}</span>
+                  </div>
+                )}
+              </div>
+
+              {canReview && (
+                <form onSubmit={handleSubmitReview} className='mb-6 rounded-xl border border-sage-100 bg-sage-50 p-5'>
+                  <p className='mb-3 font-sans text-sm font-bold text-teal-900'>Dejá tu reseña</p>
+                  <InteractiveStars value={rating} onChange={setRating} />
+                  <textarea
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    placeholder='Contá tu experiencia (opcional)'
+                    rows={3}
+                    className='mt-3 w-full resize-none rounded-xl border border-sage-200 bg-white px-4 py-3 font-sans text-sm text-teal-900 outline-none placeholder:text-sage-400 focus:border-teal-400'
+                  />
+                  {submitError && <p className='mt-2 font-sans text-xs text-red-500'>{submitError}</p>}
+                  <button
+                    type='submit'
+                    disabled={submitting}
+                    className='mt-3 rounded-xl bg-teal-800 px-5 py-2.5 font-sans text-sm font-bold text-white transition hover:bg-teal-900 disabled:opacity-60'>
+                    {submitting ? 'Enviando...' : 'Publicar reseña'}
+                  </button>
+                </form>
+              )}
+
+              {!appUser && (
+                <p className='mb-5 font-sans text-sm text-sage-600'>
+                  <Link to='/login' className='font-bold text-teal-700 underline'>Iniciá sesión</Link> para dejar una reseña.
+                </p>
+              )}
+              {appUser && existingReview && (
+                <div className='mb-5 rounded-xl border border-teal-100 bg-teal-50 px-4 py-3'>
+                  <p className='font-sans text-sm font-bold text-teal-800'>Ya dejaste una reseña para esta actividad.</p>
+                </div>
+              )}
+
+              {reviews.length === 0 ? (
+                <p className='font-sans text-sm text-sage-600'>Esta actividad aún no tiene reseñas.</p>
+              ) : (
+                <div className='space-y-4'>
+                  {reviews.map((review) => (
+                    <div
+                      key={review.id}
+                      className={`rounded-xl border p-4 ${review.app_user_id === appUser?.id ? 'border-teal-200 bg-teal-50' : 'border-sage-100 bg-sage-50'}`}>
+                      <div className='mb-2 flex items-center justify-between gap-2'>
+                        <div className='flex items-center gap-2'>
+                          <StarRating rating={review.rating} />
+                          {review.app_user_id === appUser?.id && (
+                            <span className='rounded-full bg-teal-100 px-2 py-0.5 font-sans text-xs font-bold text-teal-700'>Tu reseña</span>
+                          )}
+                        </div>
+                        <span className='font-sans text-xs text-sage-500'>{formatDate(review.created_at)}</span>
+                      </div>
+                      {review.comment && (
+                        <p className='font-sans text-sm leading-relaxed text-teal-900'>{review.comment}</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
 
             {/* Botón reserva mobile */}
             <div className='lg:hidden'>
