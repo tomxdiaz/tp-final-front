@@ -62,16 +62,18 @@ export interface Category {
 
 export interface Review {
   id: number;
+  activity_id: number;
   business_id: number;
   app_user_id: string;
   rating: number;
   comment: string | null;
   created_at: string;
   updated_at: string;
+  activity?: { id: number; title: string };
 }
 
 export interface CreateReviewPayload {
-  business_id: number;
+  activity_id: number;
   /** 1–5 */
   rating: number;
   comment?: string;
@@ -145,6 +147,10 @@ export interface Activity {
   sessions?: ActivitySession[];
   /** Only present on GET /activity/:id */
   business?: BookingBusiness;
+  /** Only present on GET /activity/:id */
+  reviews?: Review[];
+  /** Only present on GET /activity/:id when authenticated */
+  has_confirmed_booking?: boolean;
 }
 
 export interface CreateActivityPayload {
