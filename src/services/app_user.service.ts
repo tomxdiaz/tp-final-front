@@ -8,10 +8,9 @@ export interface UpdateAppUserDto {
 }
 
 export const appUserService = {
-  getMyAppUser: async (token?: string) => {
+  getMyAppUser: async () => {
     return apiClient<AppUser>('/app_user/me', {
       requireAuth: true,
-      token,
     });
   },
 
