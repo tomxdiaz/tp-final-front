@@ -372,7 +372,9 @@ export default function ActivityDetail() {
                   </button>
                 </div>
                 <div className='space-y-3'>
-                  {activity.sessions.map((session) => {
+                  {[...activity.sessions]
+                    .sort((a, b) => new Date(a.datetime).getTime() - new Date(b.datetime).getTime())
+                    .map((session) => {
                     const { date, time } = formatSessionDatetime(session.datetime);
                     const availableSpots =
                       activity.max_participants != null ? activity.max_participants - session.booked_spots : null;
