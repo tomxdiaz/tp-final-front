@@ -78,6 +78,7 @@ export default function ActivityDetail() {
   const { id } = useParams<{ id: string }>();
   const { appUser } = useAuth();
   const [activity, setActivity] = useState<Activity | null>(null);
+  const [hasConfirmedBooking, setHasConfirmedBooking] = useState(false);
   const [loading, setLoading] = useState(!!id);
   const [error, setError] = useState(!id);
   const [renewing, setRenewing] = useState(false);
@@ -101,6 +102,18 @@ export default function ActivityDetail() {
         setLoading(false);
       });
   }, [id]);
+
+  useEffect(() => {
+    if (!id || !appUser) {
+      setHasConfirmedBooking(false);
+      return;
+    }
+
+    activityService
+      .getReviewEligibility(Number(id))
+      .then((res) => setHasConfirmedBooking(res.has_confirmed_booking))
+      .catch(() => setHasConfirmedBooking(false));
+  }, [id, appUser]);
 
   if (loading) {
     return (
@@ -142,7 +155,7 @@ export default function ActivityDetail() {
     ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
     : null;
   const existingReview = appUser ? reviews.find((r) => r.app_user_id === appUser.id) : undefined;
-  const canReview = !!appUser && !isOwner && !existingReview && activity.has_confirmed_booking === true;
+  const canReview = !!appUser && !isOwner && !existingReview && hasConfirmedBooking;
 
   const handleSubmitReview = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -161,7 +174,6 @@ export default function ActivityDetail() {
       setActivity((prev) => prev && {
         ...prev,
         reviews: [newReview, ...(prev.reviews ?? [])],
-        has_confirmed_booking: prev.has_confirmed_booking,
       });
       setRating(0);
       setComment('');

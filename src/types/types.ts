@@ -149,8 +149,10 @@ export interface Activity {
   business?: BookingBusiness;
   /** Only present on GET /activity/:id */
   reviews?: Review[];
-  /** Only present on GET /activity/:id when authenticated */
-  has_confirmed_booking?: boolean;
+}
+
+export interface ReviewEligibility {
+  has_confirmed_booking: boolean;
 }
 
 export interface CreateActivityPayload {

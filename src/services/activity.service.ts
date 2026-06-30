@@ -1,5 +1,5 @@
 import { apiClient } from '../lib/apiClient';
-import type { Activity, CreateActivityPayload, SessionDetail, UpdateActivityPayload } from '../types/types';
+import type { Activity, CreateActivityPayload, ReviewEligibility, SessionDetail, UpdateActivityPayload } from '../types/types';
 
 function buildCreateFormData(payload: CreateActivityPayload): FormData {
   const fd = new FormData();
@@ -59,6 +59,12 @@ export const activityService = {
   getActivityById: async (id: number) => {
     return apiClient<Activity>(`/activity/${id}`, {
       requireAuth: false,
+    });
+  },
+
+  getReviewEligibility: async (id: number) => {
+    return apiClient<ReviewEligibility>(`/activity/${id}/review-eligibility`, {
+      requireAuth: true,
     });
   },
 
