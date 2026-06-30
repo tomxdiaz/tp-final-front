@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CalendarDays, Eye, Users, XCircle } from 'lucide-react';
+import { CalendarDays, Eye, MapPin, Navigation, Users, XCircle } from 'lucide-react';
 import { bookingService } from '../../services/booking.service';
 import type { Booking, BookingStatus } from '../../types/types';
 
@@ -118,6 +118,18 @@ const MyBookings = () => {
                           <Users size={13} className='text-teal-500' />
                           {b.number_of_people} {b.number_of_people === 1 ? 'persona' : 'personas'}
                         </span>
+                        {session?.activity.location && (
+                          <span className='flex items-center gap-1.5'>
+                            <MapPin size={13} className='text-teal-500' />
+                            {session.activity.location}
+                          </span>
+                        )}
+                        {session?.activity.meeting_point && (
+                          <span className='flex items-center gap-1.5'>
+                            <Navigation size={13} className='text-teal-500' />
+                            {session.activity.meeting_point}
+                          </span>
+                        )}
                       </div>
 
                       {b.customer_notes && <p className='mt-2 text-xs text-gray-400 italic'>"{b.customer_notes}"</p>}

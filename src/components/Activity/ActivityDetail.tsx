@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { MapPin, Clock, Timer, Users, ArrowLeft, Phone, Mail, Building2, CalendarDays, RefreshCw, ChevronLeft, ChevronRight, Star } from 'lucide-react';
+import { MapPin, Navigation, Clock, Timer, Users, ArrowLeft, Phone, Mail, Building2, CalendarDays, RefreshCw, ChevronLeft, ChevronRight, Star } from 'lucide-react';
 import { activityService } from '../../services/activity.service';
 import { reviewService } from '../../services/review.service';
 import type { Activity } from '../../types/types';
@@ -147,7 +147,8 @@ export default function ActivityDetail() {
 
   const images = activity.images;
   const hasDaysOfWeek = activity.days_of_week.length > 0;
-  const hasAdditionalInfo = hasDaysOfWeek || activity.min_age !== null;
+  const hasCoords = activity.latitude != null && activity.longitude != null;
+  const hasAdditionalInfo = hasDaysOfWeek || activity.min_age !== null || !!activity.meeting_point || hasCoords;
   const isOwner = appUser != null && activity.business != null && appUser.id === activity.business.app_user_id;
 
   const reviews = activity.reviews ?? [];
@@ -300,6 +301,33 @@ export default function ActivityDetail() {
               <div className='rounded-2xl bg-white p-6 shadow-sm'>
                 <h2 className='mb-4 font-display text-2xl uppercase tracking-[0.04em] text-teal-900'>Información adicional</h2>
                 <div className='space-y-4'>
+                  {activity.meeting_point && (
+                    <div className='flex items-start gap-3'>
+                      <MapPin size={18} className='mt-0.5 shrink-0 text-sage-600' />
+                      <div>
+                        <p className='font-sans text-sm font-bold text-sage-600'>Punto de encuentro</p>
+                        <p className='font-sans text-sm text-sage-800'>{activity.meeting_point}</p>
+                      </div>
+                    </div>
+                  )}
+                  {hasCoords && (
+                    <div className='flex items-start gap-3'>
+                      <Navigation size={18} className='mt-0.5 shrink-0 text-sage-600' />
+                      <div>
+                        <p className='font-sans text-sm font-bold text-sage-600'>Coordenadas</p>
+                        <p className='font-sans text-sm text-sage-800'>
+                          {activity.latitude}, {activity.longitude}
+                        </p>
+                        <a
+                          href={`https://www.google.com/maps/search/?api=1&query=${activity.latitude},${activity.longitude}`}
+                          target='_blank'
+                          rel='noopener noreferrer'
+                          className='mt-1 inline-block font-sans text-sm font-bold text-teal-700 underline'>
+                          Ver en el mapa
+                        </a>
+                      </div>
+                    </div>
+                  )}
                   {hasDaysOfWeek && (
                     <div>
                       <p className='mb-2 font-sans text-sm font-bold text-sage-600'>Días disponibles</p>
